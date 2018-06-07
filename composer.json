@@ -10,5 +10,11 @@
             "name": "Baiyou",
             "email": "it@baiyoudata.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "baiyou\\backend\\": "backend/",
+            "baiyou\\frontend\\": "frontend/"
+        }
+    }
 }
