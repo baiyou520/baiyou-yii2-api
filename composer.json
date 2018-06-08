@@ -1,8 +1,8 @@
 {
     "name": "baiyou/yii2-api",
     "require": {
-        "mdmsoft/yii2-admin": "^3.2",
-        "firebase/php-jwt": "^5.0"
+        "mdmsoft/yii2-admin": "~2.0",
+        "firebase/php-jwt": "^4.0"
     },
     "license": "MIT",
     "authors": [
