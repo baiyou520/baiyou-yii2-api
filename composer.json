@@ -13,7 +13,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "baiyou\\backend\\": "",
+            "baiyou\\api\\": "",
+            "baiyou\\backend\\": "backend/",
             "baiyou\\frontend\\": "frontend/",
             "baiyou\\common\\": "common/"
         }

@@ -1,28 +1,45 @@
 <?php
 
-namespace baiyou\backend;
+namespace baiyou\api;
 
-/**
- * v1 module definition class
- */
+use Yii;
+
 class Module extends \yii\base\Module
 {
     /**
-     * @inheritdoc
-     */
-    public $defaultRoute = 'auth';
-    /**
-     * {@inheritdoc}
-     */
-//    public $controllerNamespace = 'baiyou\backend\controllers';
+    * @inheritdoc
+    */
+//    public $defaultRoute = 'log';
 
     /**
-     * {@inheritdoc}
-     */
+    * @inheritdoc
+    */
     public function init()
     {
         parent::init();
-
-        // custom initialization code goes here
+//        Yii::setAlias('@actionlog', $this->getBasePath());
+//        $this->registerTranslations();
+        $this->modules = [
+            'backend' => [
+                // 此处应考虑使用一个更短的命名空间
+                'class' => 'baiyou\backend\Module',
+            ],
+            'frontend' => [
+                // 此处应考虑使用一个更短的命名空间
+                'class' => 'baiyou\frontend\Module',
+            ],
+        ];
     }
+
+//    /**
+//    * Translating module messages
+//    */
+//    public function registerTranslations()
+//    {
+//        Yii::$app->i18n->translations['actionlog'] = [
+//            'class' => 'yii\i18n\PhpMessageSource',
+//            'basePath' => '@actionlog/messages',
+//            'sourceLanguage' => 'en-US',
+//        ];
+//    }
 }
