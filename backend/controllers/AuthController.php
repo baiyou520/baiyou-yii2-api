@@ -98,7 +98,7 @@ class AuthController extends ActiveController
                     'role_alias' => $item_name['role_alias'],
                     'menu'=>$menu
                 ];
-                return ['message' => '登录成功4','code' => 1,'data' => $responseData];
+                return ['message' => '登录成功','code' => 1,'data' => $responseData];
             }
             else {
                 return ["message"=>"用户名或密码错误","code"=>10002];
