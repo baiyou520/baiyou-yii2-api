@@ -1,15 +1,17 @@
 <?php
 /**
- * 微信前端api基础控制器
+ * 基类，用户处理权限认证等,绝大部分控制器需要继承这个控制器，以达到权限控制的目的
  * User: billyshen
- * Date: 2018/6/1
- * Time: 上午10:51
+ * Date: 2018/5/28
+ * Time: 下午3:42
  */
 
-namespace baiyou\frontend\controllers;
+namespace baiyou\backend\controllers;
 
+use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
+use mdm\admin\components\AccessControl;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\CompositeAuth;
 
@@ -58,10 +60,9 @@ class BaseController extends ActiveController
         // avoid authentication on CORS-pre-flight requests (HTTP OPTIONS method)
         $behaviors['authenticator']['except'] = ['options'];//加了之后 需要登录认证
 
-        // 微信端用户存在customer表中，暂时不启用权限控制
-//        $behaviors['access'] = [
-//            'class' => AccessControl::className(),
-//        ];
+        $behaviors['access'] = [//给角色判断权限用的
+            'class' => AccessControl::className(),
+        ];
         return $behaviors;
     }
 
@@ -74,8 +75,9 @@ class BaseController extends ActiveController
     {
         return ArrayHelper::merge(parent::actions(),[
             'index' => [
-                'class' => 'common\frame\IndexAction'
+                'class' => 'baiyou\common\frame\IndexAction'
             ]
         ]);
     }
+
 }

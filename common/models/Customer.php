@@ -1,9 +1,7 @@
 <?php
 
-namespace baiyou\backend\models;
+namespace baiyou\common\models;
 
-use common\models\JwtModel;
-use Yii;
 
 /**
  * This is the model class for table "customer".

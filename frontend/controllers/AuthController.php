@@ -6,11 +6,11 @@
  * Time: 上午10:56
  */
 
-namespace frontend\modules\v1\controllers;
+namespace baiyou\frontend\controllers;
 
-use backend\modules\v1\models\Instance;
-use backend\modules\v1\models\Customer;
-use common\frame\GlobalFunctions;
+use baiyou\common\models\Instance;
+use baiyou\common\models\Customer;
+use baiyou\common\frame\GlobalFunctions;
 use yii\rest\ActiveController;
 use Yii;
 class AuthController extends ActiveController
@@ -59,7 +59,7 @@ class AuthController extends ActiveController
         $url='https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$secret.'&js_code='.$jscode.'&grant_type=authorization_code';
         $out=json_decode($this->wx_https_request($url));
         if(isset($out->errcode) && $out->errcode!=0){
-            return ['message'=>'与微信服务器通信失败,请坚持appid是否填写正确！','code'=>$out->errcode,'data'=>$out->errmsg];
+            return ['message'=>'与微信服务器通信失败,请检查appid是否填写正确！','code'=>$out->errcode,'data'=>$out->errmsg];
         }
         $customer=Customer::find()->where(['openid'=>$out->openid])->one();
         $data['nickname'] = $nickname;

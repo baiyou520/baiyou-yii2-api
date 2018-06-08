@@ -6,7 +6,7 @@
  * Time: 下午5:35
  */
 
-namespace baiyouu\common\frame;
+namespace baiyou\common\frame;
 
 
 class GlobalFunctions
