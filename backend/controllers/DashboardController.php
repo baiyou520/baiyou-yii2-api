@@ -7,7 +7,7 @@
  */
 
 namespace baiyou\backend\controllers;
-use common\models\User;
+use baiyou\backend\models\User;
 
 class DashboardController extends BaseController
 {

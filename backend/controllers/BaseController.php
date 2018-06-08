@@ -8,7 +8,6 @@
 
 namespace baiyou\backend\controllers;
 
-use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use mdm\admin\components\AccessControl;
@@ -75,7 +74,7 @@ class BaseController extends ActiveController
     {
         return ArrayHelper::merge(parent::actions(),[
             'index' => [
-                'class' => 'baiyou\common\frame\IndexAction'
+                'class' => 'baiyou\common\components\IndexAction'
             ]
         ]);
     }

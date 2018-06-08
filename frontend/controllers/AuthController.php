@@ -10,7 +10,7 @@ namespace baiyou\frontend\controllers;
 
 use baiyou\common\models\Instance;
 use baiyou\common\models\Customer;
-use baiyou\common\frame\GlobalFunctions;
+use baiyou\common\components\Helper;
 use yii\rest\ActiveController;
 use Yii;
 class AuthController extends ActiveController
@@ -67,7 +67,7 @@ class AuthController extends ActiveController
         $data['avatar'] = $avatarUrl;
         if(empty($customer)){
             $customer = new Customer();
-            $data['username']=GlobalFunctions::randomString(11);
+            $data['username']=Helper::randomString(11);
             $data['openid'] = $out->openid;
             $customer->load($data, '');
         }

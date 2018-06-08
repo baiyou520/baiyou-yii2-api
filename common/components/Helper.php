@@ -6,10 +6,10 @@
  * Time: 下午5:35
  */
 
-namespace baiyou\common\frame;
+namespace baiyou\common\components;
 
 
-class GlobalFunctions
+class Helper
 {
     /**
      * 随机字符串
