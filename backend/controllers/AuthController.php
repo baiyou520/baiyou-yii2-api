@@ -15,7 +15,7 @@ use mdm\admin\components\MenuHelper;
 
 class AuthController extends ActiveController
 {
-    public $modelClass = 'baiyou\common\models\User';
+    public $modelClass = 'baiyou\backend\models\User';
 
     public function behaviors()
     {

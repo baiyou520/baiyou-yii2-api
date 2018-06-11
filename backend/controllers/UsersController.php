@@ -141,9 +141,8 @@ class UsersController extends BaseController
         $parms=Yii::$app->request->post();
         $user=User::findOne($id);
         if($user->load($parms,'')){
-            Yii::error($user,'s222');
             if(!$user->save()){
-                throw new HttpException(500,json_encode($user->errors),10002);
+                return ["message"=>"参数错误","code"=>10002,"data"=>$user->errors];
             }
             if(isset($parms['role'])&&!empty($parms['role'])){
                 $assignment=AuthAssignment::find()->where(['user_id'=>$id])->one();
@@ -154,14 +153,13 @@ class UsersController extends BaseController
                 }
                 $assignment->item_name=$parms['role'];
                 if(!$assignment->save()){
-                    throw new HttpException(500,json_encode($assignment->errors),10002);
+                    return ["message"=>"参数错误","code"=>10002,"data"=>$assignment->errors];
                 }
 
             }
             return ["message"=>"修改用户信息成功","code"=>1];
         }
-        throw new HttpException(500,json_encode($user->errors),10002);
-
+        return ["message"=>"参数错误","code"=>10002,"data"=>$user->errors];
     }
 
     /**
@@ -323,13 +321,11 @@ class UsersController extends BaseController
             return ["message"=>"id参数错误","code"=>10010];
         }
         if(!empty($parms['avatar'])) {//修改头像
-            $user->avatar32 = $parms['avatar'];
-            $user->avatar64 = str_replace('_32', '_64', $parms['avatar']);
-            $user->avatar128 = str_replace('_32', '_128', $parms['avatar']);
-            $user->avatar256 = str_replace('_32', '_256', $parms['avatar']);
+            $user->avatar = $parms['avatar'];
+            $user->avatar_thumb = str_replace('avatar', 'avatar_thumb', $parms['avatar']);
             $code=$user->save();
             if(!$code){
-                throw new HttpException(500,json_encode($user->errors),10002);
+                return ["message"=>"参数错误","code"=>10002,"data" => $user->errors];
             }
             return ["message"=>"修改成功","code"=>1];
         }

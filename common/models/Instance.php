@@ -1,7 +1,7 @@
 <?php
 
 namespace baiyou\common\models;
-use common\models\User;
+use baiyou\backend\models\User;
 use Yii;
 
 /**

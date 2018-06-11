@@ -11,7 +11,7 @@ use baiyou\backend\models\User;
 
 class DashboardController extends BaseController
 {
-    public $modelClass = 'baiyou\common\models\User';
+    public $modelClass = 'baiyou\backend\models\User';
 
     public function actions()
     {
