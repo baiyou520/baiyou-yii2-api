@@ -74,7 +74,7 @@ class BaseController extends ActiveController
     {
         return ArrayHelper::merge(parent::actions(),[
             'index' => [
-                'class' => 'common\frame\IndexAction'
+                'class' => 'baiyou\common\components\IndexAction'
             ]
         ]);
     }
