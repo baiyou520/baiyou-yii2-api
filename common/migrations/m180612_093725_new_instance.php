@@ -22,10 +22,9 @@ class m180612_093725_new_instance extends Migration
             'applet_appsecret'  => $this->string(32)->defaultValue('')->comment('微信小程序密钥'),
             'status'            => $this->tinyInteger(1)->notNull()->defaultValue(1)->comment('0:已关闭，1:正常'),
             'created_at'        => $this->integer()->notNull()->defaultValue(0)->comment('时间戳，创建时间'),
-            'updated_at'        => $this->integer()->notNull()->defaultValue(0)->comment('时间戳，修改时间')
-
+            'updated_at'        => $this->integer()->notNull()->defaultValue(0)->comment('时间戳，修改时间'),
+            'PRIMARY KEY ([[instance_id]])',
         ],$tableOptions);
-        $this->addPrimaryKey('instance_id','instance','instance_id');
     }
 
     public function safeDown(){

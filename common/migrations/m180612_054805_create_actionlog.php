@@ -18,7 +18,7 @@ class m180612_054805_create_actionlog extends Migration
         }
         $this->createTable('{{%actionlog}}', [
             'id'           =>Schema::TYPE_INTEGER.'(11) UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT "主键"',
-            'user_id'     => $this->integer(11)->unsigned()->notNull()->defaultValue(0)->comment('用户id'),
+            'user_id'     => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('用户id'),
             'user_remote'=> $this->text()->notNull()->comment('值'),
             'time'        => $this->timestamp()->notNull()->comment('时间'),
             'action'     => $this->string(255)->notNull()->comment('方法'),

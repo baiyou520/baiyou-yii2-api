@@ -28,12 +28,12 @@ class m180612_022844_create_customer extends Migration
             'openid'                    => $this->string(28)->notNull()->comment('微信移动端标识符'),
             'access_token_expired_at' => $this->timestamp()->notNull()->defaultValue(NULL)->comment('JWT认证(用于api)	过期时间'),
             'phone'           => $this->string(20)->notNull()->defaultValue(' ')->comment('电话'),
-            'parent_id'      => $this->integer(11)->unsigned()->notNull()->defaultValue(0)->comment('推荐人id'),
+            'parent_id'      => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('推荐人id'),
             'status'         => $this->tinyInteger(2)->unsigned()->notNull()->defaultValue(10)->comment('激活状态:10为启用，0位禁用'),
             'last_login_at' => $this->timestamp()->notNull()->defaultValue(NULL)->comment('最后登录时间	'),
             'last_login_ip' => $this->string(14)->notNull()->defaultValue(' ')->comment('最后登录ip'),
-            'created_at'    => $this->integer(11)->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
-            'updated_at'    => $this->integer(11)->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
+            'created_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
+            'updated_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
         ], $tableOptions);
     }
 

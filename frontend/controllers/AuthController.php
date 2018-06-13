@@ -55,7 +55,7 @@ class AuthController extends ActiveController
 //            'password' => 'Baiyou!0612',
 //            'charset' => 'utf8',
 //        ]);
-//        $id=Yii::$app->request->get('id');
+        $id=Yii::$app->request->get('id');
 //        $instance = $db->createCommand('SELECT * FROM instance WHERE instance_id='.$id)->queryOne();
 
         $instance = Instance::findOne($id);
