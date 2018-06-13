@@ -49,16 +49,16 @@ class AuthController extends ActiveController
     public function actionWxJsCode2Session(){
         //从总后台数据库获取appid 和 appsecret （这块后期要做安全管控）
 
-        $db = new yii\db\Connection([
-            'dsn' => 'mysql:host=116.62.122.60;dbname=by_admin',
-            'username' => 'by_admin_user',
-            'password' => 'Baiyou!0612',
-            'charset' => 'utf8',
-        ]);
-        $id=Yii::$app->request->get('id');
-        $instance = $db->createCommand('SELECT * FROM instance WHERE instance_id='.$id)->queryOne();
+//        $db = new yii\db\Connection([
+//            'dsn' => 'mysql:host=116.62.122.60;dbname=by_admin',
+//            'username' => 'by_admin_user',
+//            'password' => 'Baiyou!0612',
+//            'charset' => 'utf8',
+//        ]);
+//        $id=Yii::$app->request->get('id');
+//        $instance = $db->createCommand('SELECT * FROM instance WHERE instance_id='.$id)->queryOne();
 
-//        $instance = Instance::findOne($id);
+        $instance = Instance::findOne($id);
         $appid = $instance['applet_appid'];
         $secret = $instance['applet_appsecret'];
 

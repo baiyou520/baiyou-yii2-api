@@ -32,16 +32,6 @@ class m140602_111327_create_menu_table extends yii\db\Migration
             "FOREIGN KEY ([[parent]]) REFERENCES {$menuTable}([[id]]) ON DELETE SET NULL ON UPDATE CASCADE",
         ], $tableOptions);
 
-//        INSERT INTO `menu` VALUES
-//    (1,'L1-Customer',8,'/by/customers/index',NULL,'{"icon":"icon-user","text":"客户管理"}'),
-//        (2,'L2-UserMgr',4,'/by/users/index',NULL,'{"link":"/customers/index","text":"员工管理"}'),
-//        (3,'L2-LogMgr',4,'/by/logs/index',NULL,'{"link":"/setting/log","text":"错误日志"}'),
-//        (4,'L1-Setting',8,'/by/logs/index',NULL,'{"icon":"anticon anticon-setting","text":"设置管理"}'),
-//        (5,'L2-CustMgr',1,'/by/customers/index',NULL,'{"link":"/customers/index","text":"客户管理"}'),
-//        (6,'L1-Demo',9,'/v1/demo/index',NULL,'{"icon":"icon-list","text":"Demo演示管理"}'),
-//        (7,'L2-DemoMgr',6,'/v1/demo/index',NULL,'{"link":"/demo/list","text":"Demo列表"}'),
-//        (8,'L0-System',NULL,'/by/dashboard/index',NULL,'{"text":"系统","group":"true"}'),
-//        (9,'L0-Application',NULL,'/by/dashboard/index',NULL,'{"text":"应用","group":"true"}');
         $this->insert('{{%menu}}', [
             'id' => 1,
             'name' => 'L0-System',

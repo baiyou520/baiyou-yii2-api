@@ -75,19 +75,130 @@ class m140506_102106_rbac_init extends \yii\db\Migration
             'updated_at' => $this->integer(),
             'PRIMARY KEY ([[name]])',
             'FOREIGN KEY ([[rule_name]]) REFERENCES ' . $authManager->ruleTable . ' ([[name]])' .
-                $this->buildFkClause('ON DELETE SET NULL', 'ON UPDATE CASCADE'),
+            $this->buildFkClause('ON DELETE SET NULL', 'ON UPDATE CASCADE'),
         ], $tableOptions);
         $this->createIndex('idx-auth_item-type', $authManager->itemTable, 'type');
+
+        // 插入初始化数据
+//        $this->insert($authManager->itemTable, [
+//            'name' => '/*',
+//            'type' =>  2,
+//            'created_at' => time(),
+//            'updated_at' => time()
+//        ]);
+        //继续
+        $this->batchInsert($authManager->itemTable,
+            ['name','type','description','rule_name','data','created_at','updated_at'],
+            [
+                ['/*', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/auth/login', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/common/upload-avatar', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/customers/index', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/customers/update', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/customers/view', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/dashboard/index', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/dashboard/notice', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/logs/index', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/logs/view', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/change-password', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/create', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/delete', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/edit-avatar', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/index', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/roles', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/start-up', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/update', 2, NULL, NULL, NULL, time(), time()],
+                ['/by/users/view', 2, NULL, NULL, NULL, time(), time()],
+                ['/v1/demo/create', 2, NULL, NULL, NULL, time(), time()],
+                ['/v1/demo/delete', 2, NULL, NULL, NULL, time(), time()],
+                ['/v1/demo/index', 2, NULL, NULL, NULL, time(), time()],
+                ['/v1/demo/update', 2, NULL, NULL, NULL, time(), time()],
+                ['/v1/demo/view', 2, NULL, NULL, NULL, time(), time()],
+                ['admin', 1, '普通管理员', NULL, NULL, time(), time()],
+                ['Demo演示修改', 2, 'Demo演示修改', NULL, NULL, time(), time()],
+                ['Demo演示删除', 2, 'Demo演示删除', NULL, NULL, time(), time()],
+                ['Demo演示新增', 2, 'Demo演示新增', NULL, NULL, time(), time()],
+                ['Demo演示查看', 2, 'Demo演示查看，包括列表和详情', NULL, NULL, time(), time()],
+                ['Demo演示管理', 2, 'Demo演示管理权限点集合', NULL, NULL, time(), time()],
+                ['super_admin', 1, '超级管理员', NULL, NULL, time(), time()],
+                ['员工修改(中台)', 2, '修改某个员工', NULL, NULL, time(), time()],
+                ['员工删除(中台)', 2, '删除某个员工', NULL, NULL, time(), time()],
+                ['员工新增(中台)', 2, '后台直接新增一个员工', NULL, NULL, time(), time()],
+                ['员工管理(中台)', 2, '整个员工管理模块权限点集合', NULL, NULL, time(), time()],
+                ['基础权限', 2, '各类基础权限集合', NULL, NULL, time(), time()],
+                ['客户修改(C端)', 2, '修改微信端客户资料', NULL, NULL, time(), time()],
+                ['客户管理(C端)', 2, '整个微信端客户管理权限', NULL, NULL, time(), time()],
+                ['查看客户(C端)', 2, '查看客户列表页及详情页', NULL, NULL, time(), time()],
+                ['查看用户(中台)', 2, '查看中台管理端的用户', NULL, NULL, time(), time()],
+                ['错误日志', 2, '错误日志管理', NULL, NULL, time(), time()]
+            ]);
+
+
+
+
 
         $this->createTable($authManager->itemChildTable, [
             'parent' => $this->string(64)->notNull(),
             'child' => $this->string(64)->notNull(),
             'PRIMARY KEY ([[parent]], [[child]])',
             'FOREIGN KEY ([[parent]]) REFERENCES ' . $authManager->itemTable . ' ([[name]])' .
-                $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
+            $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
             'FOREIGN KEY ([[child]]) REFERENCES ' . $authManager->itemTable . ' ([[name]])' .
-                $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
+            $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
         ], $tableOptions);
+
+        // 插入初始化数据
+//        $this->insert($authManager->itemChildTable, [
+//            'parent' => 'super_admin',
+//            'child' =>  '/*'
+//        ]);
+
+        //继续
+
+        $this->batchInsert($authManager->itemChildTable,['parent','child'],[
+
+            ['super_admin', '/*'],
+            ['基础权限', '/by/auth/login'],
+            ['基础权限', '/by/common/upload-avatar'],
+            ['查看客户(C端)', '/by/customers/index'],
+            ['客户修改(C端)', '/by/customers/update'],
+            ['查看客户(C端)', '/by/customers/view'],
+            ['基础权限', '/by/dashboard/index'],
+            ['基础权限', '/by/dashboard/notice'],
+            ['错误日志', '/by/logs/index'],
+            ['错误日志', '/by/logs/view'],
+            ['基础权限', '/by/users/change-password'],
+            ['员工新增(中台)', '/by/users/create'],
+            ['员工删除(中台)', '/by/users/delete'],
+            ['基础权限', '/by/users/edit-avatar'],
+            ['查看用户(中台)', '/by/users/index'],
+            ['基础权限', '/by/users/start-up'],
+            ['员工修改(中台)', '/by/users/update'],
+            ['查看用户(中台)', '/by/users/view'],
+            ['Demo演示新增', '/v1/demo/create'],
+            ['Demo演示删除', '/v1/demo/delete'],
+            ['Demo演示查看', '/v1/demo/index'],
+            ['Demo演示修改', '/v1/demo/update'],
+            ['Demo演示查看', '/v1/demo/view'],
+            ['Demo演示管理', 'Demo演示修改'],
+            ['Demo演示管理', 'Demo演示删除'],
+            ['Demo演示管理', 'Demo演示新增'],
+            ['Demo演示管理', 'Demo演示查看'],
+            ['admin', 'Demo演示管理'],
+            ['员工管理(中台)', '员工修改(中台)'],
+            ['员工管理(中台)', '员工删除(中台)'],
+            ['员工管理(中台)', '员工新增(中台)'],
+            ['admin', '员工管理(中台)'],
+            ['admin', '基础权限'],
+            ['客户管理(C端)', '客户修改(C端)'],
+            ['admin', '客户管理(C端)'],
+            ['客户管理(C端)', '查看客户(C端)'],
+            ['员工管理(中台)', '查看用户(中台)'],
+            ['admin', '错误日志']
+
+        ]);
+
+
 
         $this->createTable($authManager->assignmentTable, [
             'item_name' => $this->string(64)->notNull(),
@@ -95,10 +206,23 @@ class m140506_102106_rbac_init extends \yii\db\Migration
             'created_at' => $this->integer(),
             'PRIMARY KEY ([[item_name]], [[user_id]])',
             'FOREIGN KEY ([[item_name]]) REFERENCES ' . $authManager->itemTable . ' ([[name]])' .
-                $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
+            $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
             'FOREIGN KEY ([[user_id]]) REFERENCES user ([[id]])' .
             $this->buildFkClause('ON DELETE NO ACTION', 'ON UPDATE NO ACTION'),
         ], $tableOptions);
+
+        // 插入初始化数据
+        $this->insert($authManager->assignmentTable, [
+            'user_id' => 1,
+            'item_name' => 'super_admin',
+            'created_at' => time()
+        ]);
+        $this->insert($authManager->assignmentTable, [
+            'user_id' => 2,
+            'item_name' => 'admin',
+            'created_at' => time()
+        ]);
+
 
         if ($this->isMSSQL()) {
             $this->execute("CREATE TRIGGER dbo.trigger_auth_item_child
