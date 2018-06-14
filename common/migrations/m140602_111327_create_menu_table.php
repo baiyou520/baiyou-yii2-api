@@ -4,7 +4,7 @@ use mdm\admin\components\Configs;
 
 /**
  * Migration table of table_menu
- * 
+ *
  * @author Misbahul D Munir <misbahuldmunir@gmail.com>
  * @since 1.0
  */
@@ -65,13 +65,13 @@ class m140602_111327_create_menu_table extends yii\db\Migration
         ]);
 
 
-        $this->insert('{{%menu}}', [
-            'id' => 5,
-            'name' => 'L1-Demo',
-            'parent' => 2,
-            'route' => '/v1/demo/index',
-            'data' => '{"icon":"icon-list","text":"Demo演示管理"}'
-        ]);
+//        $this->insert('{{%menu}}', [
+//            'id' => 5,
+//            'name' => 'L1-Demo',
+//            'parent' => 2,
+//            'route' => '/v1/demo/index',
+//            'data' => '{"icon":"icon-list","text":"Demo演示管理"}'
+//        ]);
 
         $this->insert('{{%menu}}', [
             'id' => 6,
@@ -96,13 +96,13 @@ class m140602_111327_create_menu_table extends yii\db\Migration
             'data' => '{"link":"/customers/index","text":"客户管理"}'
         ]);
 
-        $this->insert('{{%menu}}', [
-            'id' => 9,
-            'name' => 'L2-DemoMgr',
-            'parent' => 5,
-            'route' => '/v1/demo/index',
-            'data' => '{"link":"/demo/list","text":"Demo列表"}'
-        ]);
+//        $this->insert('{{%menu}}', [
+//            'id' => 9,
+//            'name' => 'L2-DemoMgr',
+//            'parent' => 5,
+//            'route' => '/v1/demo/index',
+//            'data' => '{"link":"/demo/list","text":"Demo列表"}'
+//        ]);
 
 
     }
