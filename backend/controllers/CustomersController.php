@@ -45,7 +45,7 @@ class CustomersController extends BaseController
         $status = isset($parms['status']) ? $parms['status'] : "";//用户状态
         $provider = new ActiveDataProvider([
             'query' =>
-                $query->select(['customer_id', 'nickname', 'name', 'avatar', 'last_login_at', 'last_login_ip', 'status', 'phone'])
+                $query->select(['id', 'nickname', 'name', 'avatar', 'last_login_at', 'last_login_ip', 'status', 'phone'])
                     ->from('customer')
                     ->andFilterWhere(['like', 'nickname', $keyword])
                     ->orFilterWhere(['like', 'name', $keyword])
