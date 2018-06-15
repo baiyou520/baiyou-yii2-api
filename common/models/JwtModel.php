@@ -100,6 +100,18 @@ class JwtModel extends ActiveRecord implements IdentityInterface
         $this->access_token = $tokens[0];   // Token
         $this->access_token_expired_at = date("Y-m-d H:i:s", $tokens[1]['exp']); // Expire
 
+        $cookies = Yii::$app->response->cookies;
+
+        // 在要发送的响应中添加一个新的 cookie
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'jwt',
+            'value' => $this->access_token,
+            'domain' => '.baiyoudata.com',
+            'httpOnly' => true,
+            'expire' => time() + 10 * 365 * 24 * 60 * 60,
+        ]));
+
+//        \Yii::error($cookies,'cookies');
     }
 
     /*

@@ -21,10 +21,9 @@ class m180612_022844_create_customer extends Migration
         $this->createTable('{{%customer}}', [
             'id'                        =>Schema::TYPE_INTEGER.'(11) UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT "主键"',
             'username'                  => $this->string(100)->notNull()->comment('用户名(即登录名)	'),
-            'avatar_thumb'             => $this->string(100)->notNull()->defaultValue(' ')->comment('小头像(缩略图64*64)	'),
-            'avatar'                    => $this->string(100)->notNull()->defaultValue(' ')->comment('大头像(原图)'),
+            'avatar'                    => $this->string(255)->notNull()->defaultValue(' ')->comment('大头像(原图)'),
             'nickname'                  => $this->string(50)->notNull()->comment('微信昵称'),
-            'name'                      => $this->string(20)->notNull()->comment('真实姓名(比如取自订单地址)'),
+            'name'                      => $this->string(50)->notNull()->comment('真实姓名(比如取自订单地址)'),
             'openid'                    => $this->string(28)->notNull()->comment('微信移动端标识符'),
             'access_token_expired_at' => $this->timestamp()->notNull()->defaultValue(NULL)->comment('JWT认证(用于api)	过期时间'),
             'phone'           => $this->string(20)->notNull()->defaultValue(' ')->comment('电话'),
