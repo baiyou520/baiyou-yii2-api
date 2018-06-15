@@ -144,9 +144,20 @@ class JwtModel extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
+        \Yii::error($token,'header');
         $cookies = Yii::$app->request->cookies;
         $token =  $cookies->getValue('jwt', '');
-        \Yii::error($token,'sssssssdfsdf');
+        \Yii::error($token,'jwtcookies');
+
+        $entit =  $cookies->getValue('_identity-backend', '');
+        \Yii::error($entit,'$identity');
+
+        $csrf =  $cookies->getValue('_csrf-backend', '');
+        \Yii::error($csrf,'csrf-backend');
+
+        $advanced =  $cookies->getValue('advanced-backend', '');
+        \Yii::error($advanced,'advanced');
+
 
         $secret = static::getSecretKey();
         // Decode token and transform it into array.
