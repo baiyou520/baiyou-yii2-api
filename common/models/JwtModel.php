@@ -104,14 +104,14 @@ class JwtModel extends ActiveRecord implements IdentityInterface
 
         // 在要发送的响应中添加一个新的 cookie
         $cookies->add(new \yii\web\Cookie([
-            'name' => 'jwt',
+            'name' => 'jwt2',
             'value' => $this->access_token,
             'domain' => '.baiyoudata.com',
             'httpOnly' => true,
             'expire' => time() + 10 * 365 * 24 * 60 * 60,
         ]));
 
-//        \Yii::error($cookies,'cookies');
+        \Yii::error($cookies,'cookies');
     }
 
     /*
@@ -145,18 +145,11 @@ class JwtModel extends ActiveRecord implements IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
         \Yii::error($token,'header');
+
+
         $cookies = Yii::$app->request->cookies;
-        $token =  $cookies->getValue('jwt', '');
+        $token =  $cookies->getValue('jwt2', '');
         \Yii::error($token,'jwtcookies');
-
-        $entit =  $cookies->getValue('_identity-backend', '');
-        \Yii::error($entit,'$identity');
-
-        $csrf =  $cookies->getValue('_csrf-backend', '');
-        \Yii::error($csrf,'csrf-backend');
-
-        $advanced =  $cookies->getValue('advanced-backend', '');
-        \Yii::error($advanced,'advanced');
 
 
         $secret = static::getSecretKey();
