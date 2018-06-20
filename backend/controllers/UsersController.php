@@ -220,11 +220,11 @@ class UsersController extends BaseController
 
     /**
      * 登录以后获得菜单，角色，用户信息等
-     * @param $id
      * @return array
      * @author  billyshen 2018/5/30 上午10:21
      */
-    public function actionStartUp($id){
+    public function actionStartUp(){
+        $id = \Yii::$app->user->id;
         $query=New Query();
         //用户角色
         $item_name=$query->select('aa.item_name as role,ai.description as role_alias')
