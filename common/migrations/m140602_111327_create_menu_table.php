@@ -78,7 +78,7 @@ class m140602_111327_create_menu_table extends yii\db\Migration
             'name' => 'L2-UserMgr',
             'parent' => 4,
             'route' => '/by/users/index',
-            'data' => '{"link":"/customers/index","text":"员工管理"}'
+            'data' => '{"link":"/setting/user","text":"员工管理"}'
         ]);
         $this->insert('{{%menu}}', [
             'id' => 7,

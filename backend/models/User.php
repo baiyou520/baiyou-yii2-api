@@ -32,7 +32,7 @@ class User extends JwtModel
      */
     public static function tableName()
     {
-        return '{{%user}}';
+        return 'user';
     }
 
 
