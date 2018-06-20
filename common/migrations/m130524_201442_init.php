@@ -26,7 +26,7 @@ class m130524_201442_init extends Migration
             'phone'          => $this->string(20)->Null()->defaultValue(' ')->comment('电话'),
             'status'         => $this->tinyInteger(2)->unsigned()->notNull()->defaultValue(10)->comment('激活状态:10为启用，0位禁用'),
             'last_login_at' => $this->timestamp()->Null()->defaultValue(NULL)->comment('最后登录时间	'),
-            'last_login_ip' => $this->string(14)->Null()->defaultValue(' ')->comment('最后登录ip'),
+            'last_login_ip' => $this->string(15)->Null()->defaultValue(' ')->comment('最后登录ip'),
             'created_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
             'PRIMARY KEY ([[id]])',

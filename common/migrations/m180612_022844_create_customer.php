@@ -30,7 +30,7 @@ class m180612_022844_create_customer extends Migration
             'parent_id'      => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('推荐人id'),
             'status'         => $this->tinyInteger(2)->unsigned()->notNull()->defaultValue(10)->comment('激活状态:10为启用，0位禁用'),
             'last_login_at' => $this->timestamp()->notNull()->defaultValue(NULL)->comment('最后登录时间	'),
-            'last_login_ip' => $this->string(14)->notNull()->defaultValue(' ')->comment('最后登录ip'),
+            'last_login_ip' => $this->string(15)->notNull()->defaultValue(' ')->comment('最后登录ip'),
             'created_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
         ], $tableOptions);
