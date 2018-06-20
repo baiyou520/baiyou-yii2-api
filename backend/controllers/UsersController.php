@@ -330,4 +330,20 @@ class UsersController extends BaseController
             return ["message"=>"修改成功","code"=>1];
         }
     }
+
+    /**
+     * 获取本人个人信息
+     * @return array|bool
+     * @author  billyshen 2018/6/20 下午5:55
+     */
+    public function actionProfile(){
+        $id = \Yii::$app->user->id;
+        $user=(new Query())->from("user u")
+            ->select(["u.*","aa.item_name role","ai.description role_alias"])
+            ->leftJoin("auth_assignment aa","aa.user_id=u.id")
+            ->leftJoin("auth_item ai","ai.name=aa.item_name")
+            ->where(["u.id"=>$id])
+            ->one();
+        return  ['message' => '获取本人个人信息成功','code' => 1,'data' => $user];
+    }
 }
