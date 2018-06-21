@@ -48,18 +48,10 @@ class BaseController extends ActiveController
         $behaviors['corsFilter'] = [
             'class' => \yii\filters\Cors::className(),
             'cors' => [
-                // restrict access to
                 'Origin' => ['*'],
-                // restrict access to
-                'Access-Control-Request-Method' => ['*'],
-                // Allow only POST and PUT methods
+                'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
                 'Access-Control-Request-Headers' => ['*'],
-                // Allow only headers 'X-Wsse'
-                'Access-Control-Allow-Credentials' => true,
-                // Allow OPTIONS caching
-                'Access-Control-Max-Age' => 3600,
-                // Allow the X-Pagination-Current-Page header to be exposed to the browser.
-                'Access-Control-Expose-Headers' => ['X-Pagination-Current-Page']
+                'Access-Control-Allow-Credentials' => true
             ],
         ];
 

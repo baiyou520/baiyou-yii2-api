@@ -15,6 +15,7 @@ use Firebase\JWT\JWT;
 use yii\web\IdentityInterface;
 use yii\web\Request as WebRequest;
 use yii\behaviors\TimestampBehavior;
+use baiyou\common\components\Configs;
 
 class JwtModel extends ActiveRecord implements IdentityInterface
 {
@@ -102,7 +103,7 @@ class JwtModel extends ActiveRecord implements IdentityInterface
 
         $cookies = Yii::$app->response->cookies;
 
-        if (Yii::$app->params['jwtCookies']) {
+        if (Configs::instance()->cookiesSwitch) {
             if (self::tableName() == '{{%user}}') {
                 // 在要发送的响应中添加一个新的 cookie
                 $cookies->add(new \yii\web\Cookie([
@@ -147,7 +148,7 @@ class JwtModel extends ActiveRecord implements IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
 
-        if (Yii::$app->params['jwtCookies']) {
+        if (Configs::instance()->cookiesSwitch) {
             if (self::tableName() == '{{%user}}'){
                 $cookies = Yii::$app->request->cookies;
                 $token =  $cookies->getValue('jwt-token', '');

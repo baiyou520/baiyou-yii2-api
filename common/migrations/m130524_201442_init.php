@@ -32,6 +32,21 @@ class m130524_201442_init extends Migration
             'PRIMARY KEY ([[id]])',
         ], $tableOptions);
 
+        $this->insert('{{%user}}', [
+            'id' => '1',
+            'username' => 'sadmin',
+            'name' => '超级管理员',
+            'auth_key' => 'ynHBGd5ndD032AC76oDCBck9VGVlVTsp',
+            'password_hash' => '$2y$13$zXfbGfH7ez8xHDfsx5CDMODffHt47Q/mHFezmKT7/yvGauuxEqSwy'
+        ]);
+        $this->insert('{{%user}}', [
+            'id' => '2',
+            'username' => 'admin',
+            'name' => '管理员',
+            'auth_key' => 'ynHBGd5ndD032AC76oDCBck9VGVlVTsp',
+            'password_hash' => '$2y$13$zXfbGfH7ez8xHDfsx5CDMODffHt47Q/mHFezmKT7/yvGauuxEqSwy'
+        ]);
+
     }
 
     public function safeDown()
