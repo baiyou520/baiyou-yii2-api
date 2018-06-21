@@ -42,7 +42,7 @@ class Configs extends \yii\base\Object
 
 
     /**
-     * @var Connection Database connection.
+     * 使用cookies完成sso,这个版本关闭
      */
     public $cookiesSwitch = false;
 
