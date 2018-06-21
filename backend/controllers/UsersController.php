@@ -346,4 +346,29 @@ class UsersController extends BaseController
             ->one();
         return  ['message' => '获取本人个人信息成功','code' => 1,'data' => $user];
     }
+
+    /**
+     * 批量启用/禁用
+     * @return array
+     * @throws HttpException
+     * @author  billyshen 2018/6/21 下午2:33
+     */
+    public function actionSetStatus(){
+        $request=Yii::$app->request;
+        $parms=$request->post();
+        foreach($parms['id'] as $val){
+            $user=User::findOne($val);
+            $item_name=AuthAssignment::find()->where(['user_id'=>$val])->one()['item_name'];
+            if($item_name=="super_admin"&&$parms['status'] == 0){ //super_admin为默认超级管理员角色名
+                return ['message'=>'超管不能禁用','code'=>10001];
+            }
+            $user->status=$parms['status'];
+            $code=$user->save();
+            if(!$code){
+                return ['message'=>'参数错误','code'=>10002,"data" => $user->errors];
+            }
+        }
+        $msg = $parms['status']===0 ? '禁用成功' : '启用成功';
+        return ['message'=>$msg,'code'=>1];
+    }
 }

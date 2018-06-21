@@ -44,7 +44,7 @@ class Configs extends \yii\base\Object
     /**
      * @var Connection Database connection.
      */
-    public $cookiesSwitch = true;
+    public $cookiesSwitch = false;
 
 
 

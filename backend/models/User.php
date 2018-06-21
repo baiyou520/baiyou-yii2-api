@@ -42,7 +42,7 @@ class User extends JwtModel
     public function rules()
     {
         return [
-            [['id','username', 'auth_key', 'password_hash', 'email'], 'required'],
+            [['id','username', 'auth_key', 'password_hash'], 'required'],
             [['access_token_expired_at', 'last_login_at'], 'safe'],
             [['id','status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'auth_key'], 'string', 'max' => 32],
