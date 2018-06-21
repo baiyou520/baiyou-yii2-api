@@ -32,7 +32,7 @@ class User extends JwtModel
      */
     public static function tableName()
     {
-        return 'user';
+        return '{{%user}}';
     }
 
 
@@ -49,7 +49,7 @@ class User extends JwtModel
             [['avatar_thumb', 'avatar'], 'string', 'max' => 100],
             [['name', 'phone'], 'string', 'max' => 20],
             [['password_hash', 'password_reset_token', 'email'], 'string', 'max' => 255],
-            [['last_login_ip'], 'string', 'max' => 14],
+            [['last_login_ip'], 'string', 'max' => 15],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
         ];

@@ -103,7 +103,7 @@ class JwtModel extends ActiveRecord implements IdentityInterface
         $cookies = Yii::$app->response->cookies;
 
         if (Yii::$app->params['jwtCookies']) {
-            if (self::tableName() == 'user') {
+            if (self::tableName() == '{{%user}}') {
                 // 在要发送的响应中添加一个新的 cookie
                 $cookies->add(new \yii\web\Cookie([
                     'name' => 'jwt-token',
@@ -148,7 +148,7 @@ class JwtModel extends ActiveRecord implements IdentityInterface
     {
 
         if (Yii::$app->params['jwtCookies']) {
-            if (self::tableName() == 'user'){
+            if (self::tableName() == '{{%user}}'){
                 $cookies = Yii::$app->request->cookies;
                 $token =  $cookies->getValue('jwt-token', '');
             }

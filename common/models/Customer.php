@@ -44,7 +44,7 @@ class Customer extends JwtModel
             [['avatar'], 'string', 'max' => 255],
             [['nickname'], 'string', 'max' => 50],
             [['openid'], 'string', 'max' => 28],
-            [['last_login_ip'], 'string', 'max' => 14],
+            [['last_login_ip'], 'string', 'max' => 15],
         ];
     }
 
