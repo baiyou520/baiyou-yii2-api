@@ -260,8 +260,6 @@ class UsersController extends BaseController
             'user_id' => $userObj->id,
             'username' => $userObj->username,
             'name' => $userObj->name,
-            'avatar' => $userObj->avatar_thumb,
-            'email' => $userObj->email,
             'role' => $item_name['role'],
             'role_alias' => $item_name['role_alias'],
         ];
