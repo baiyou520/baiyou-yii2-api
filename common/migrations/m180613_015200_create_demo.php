@@ -107,6 +107,7 @@ class m180613_015200_create_demo extends Migration
     public function safeDown()
     {
         $this->dropTable('{{%demo}}');
+        // 待完善
     }
 
     /*

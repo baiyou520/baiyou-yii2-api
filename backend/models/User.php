@@ -4,37 +4,28 @@ namespace baiyou\backend\models;
 use baiyou\common\models\JwtModel;
 
 /**
- * User model 必须和数据库字段保持一致
+ * This is the model class for table "user".
  *
- * @property integer $id
- * @property string $username
- * @property string $name
- * @property string $avatar_thumb
- * @property string $avatar
- * @property string $password_hash
- * @property string $password_reset_token
- * @property string $access_token_expired_at JWT认证(用于api)	过期时间
- * @property string $email
- * @property string $auth_key
- * @property string $phone
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
- * @property string $password write-only password
- * @property string $last_login_at 登录时间
- * @property string $last_login_ip 登录ip
+ * @property int $id id，来自总后台数据库
+ * @property string $username 用户名(即百优账号)
+ * @property string $name 姓名(昵称)
+ * @property string $phone 联系方式(电话)
+ * @property int $status 激活状态:10为启用，0位禁用
+ * @property int $created_at 创建时间戳
+ * @property int $updated_at 修改时间戳
+ *
+ * @property AuthAssignment[] $authAssignments
+ * @property AuthItem[] $itemNames
  */
-class User extends JwtModel
+class User  extends JwtModel
 {
-
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return '{{%user}}';
+        return 'user';
     }
-
 
     /**
      * {@inheritdoc}
@@ -42,55 +33,43 @@ class User extends JwtModel
     public function rules()
     {
         return [
-            [['id','username', 'auth_key', 'password_hash'], 'required'],
-            [['access_token_expired_at', 'last_login_at'], 'safe'],
-            [['id','status', 'created_at', 'updated_at'], 'integer'],
-            [['username', 'auth_key'], 'string', 'max' => 32],
-            [['avatar_thumb', 'avatar'], 'string', 'max' => 100],
-            [['name', 'phone'], 'string', 'max' => 20],
-            [['password_hash', 'password_reset_token', 'email'], 'string', 'max' => 255],
-            [['last_login_ip'], 'string', 'max' => 15],
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            [['id', 'username', 'name', 'phone'], 'required'],
+            [['id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['username', 'name'], 'string', 'max' => 30],
+            [['phone'], 'string', 'max' => 20],
+            [['id'], 'unique'],
         ];
     }
 
     /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
+     * {@inheritdoc}
      */
-    public static function findByUsername($username)
+    public function attributeLabels()
     {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        return [
+            'id' => 'id，来自总后台数据库',
+            'username' => '用户名(即百优账号)',
+            'name' => '姓名(昵称)',
+            'phone' => '联系方式(电话)',
+            'status' => '激活状态:10为启用，0位禁用',
+            'created_at' => '创建时间戳',
+            'updated_at' => '修改时间戳',
+        ];
     }
 
     /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
+     * @return \yii\db\ActiveQuery
      */
-    public function validatePassword($password)
+    public function getAuthAssignments()
     {
-        return \Yii::$app->security->validatePassword($password, $this->password_hash);
-    }
-    /**
-     * Generates password hash from password and sets it to the model
-     *
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password_hash = \Yii::$app->security->generatePasswordHash($password);
-    }
-    /**
-     * Generates "remember me" authentication key
-     */
-    public function generateAuthKey()
-    {
-        $this->auth_key = \Yii::$app->security->generateRandomString();
+        return $this->hasMany(AuthAssignment::className(), ['user_id' => 'id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getItemNames()
+    {
+        return $this->hasMany(AuthItem::className(), ['name' => 'item_name'])->viaTable('auth_assignment', ['user_id' => 'id']);
+    }
 }

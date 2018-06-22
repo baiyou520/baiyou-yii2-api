@@ -183,19 +183,26 @@ class JwtModel extends ActiveRecord implements IdentityInterface
     public static function findByJTI($id)
     {
         /** @var User $user */
-        $user = static::find()->where([
-            '=', 'id', $id
-        ])
-            ->andWhere([
-                '=', 'status',  self::STATUS_ACTIVE
+
+        if (self::tableName() == '{{%user}}'){ // 中台SSO，不需要access_token_expired_at
+            $user = static::find()->where([
+                '=', 'id', $id
             ])
-            ->andWhere([
-                '>', 'access_token_expired_at', new Expression('NOW()')
-            ])->one();
-//        if($user !== null &&
-//            ($user->getIsBlocked() == true || $user->getIsConfirmed() == false)) {
-//            return null;
-//        }
+                ->andWhere([
+                    '=', 'status',  self::STATUS_ACTIVE
+                ])->one();
+        }else{ // 微信端仍旧需要
+            $user = static::find()->where([
+                '=', 'id', $id
+            ])
+                ->andWhere([
+                    '=', 'status',  self::STATUS_ACTIVE
+                ])
+                ->andWhere([
+                    '>', 'access_token_expired_at', new Expression('NOW()')
+                ])->one();
+        }
+
         return $user;
     }
 

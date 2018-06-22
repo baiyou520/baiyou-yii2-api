@@ -23,7 +23,7 @@ class m180611_131548_create_category extends Migration
             'symbol'      => $this->string(20)->notNull()->comment('标识'),
             'category_no'=> $this->string(12)->notNull()->defaultValue(' ')->comment('编号'),
             'name'        => $this->string(20)->notNull()->comment('名称'),
-            'sort'        => $this->tinyInteger(2)->unsigned()->notNull()->defaultValue(0)->comment('排序'),
+            'sort'        => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0)->comment('排序'),
             'created_at' => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at' => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
         ], $tableOptions);
@@ -34,7 +34,7 @@ class m180611_131548_create_category extends Migration
      */
     public function safeDown()
     {
-        return false;
+        $this->dropTable('{{%category}}');
     }
 
     /*

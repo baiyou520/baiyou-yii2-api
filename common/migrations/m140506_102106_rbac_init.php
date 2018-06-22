@@ -91,7 +91,6 @@ class m140506_102106_rbac_init extends \yii\db\Migration
             ['name','type','description','rule_name','data','created_at','updated_at'],
             [
                 ['/*', 2, NULL, NULL, NULL, time(), time()],
-                ['/by/auth/login', 2, NULL, NULL, NULL, time(), time()],
                 ['/by/common/upload-avatar', 2, NULL, NULL, NULL, time(), time()],
                 ['/by/customers/index', 2, NULL, NULL, NULL, time(), time()],
                 ['/by/customers/update', 2, NULL, NULL, NULL, time(), time()],
@@ -150,7 +149,6 @@ class m140506_102106_rbac_init extends \yii\db\Migration
         $this->batchInsert($authManager->itemChildTable,['parent','child'],[
 
             ['super_admin', '/*'],
-            ['基础权限', '/by/auth/login'],
             ['基础权限', '/by/common/upload-avatar'],
             ['查看客户(C端)', '/by/customers/index'],
             ['客户修改(C端)', '/by/customers/update'],
@@ -196,17 +194,17 @@ class m140506_102106_rbac_init extends \yii\db\Migration
             $this->buildFkClause('ON DELETE NO ACTION', 'ON UPDATE NO ACTION'),
         ], $tableOptions);
 
-        // 插入初始化数据
-        $this->insert($authManager->assignmentTable, [
-            'user_id' => 1,
-            'item_name' => 'super_admin',
-            'created_at' => time()
-        ]);
-        $this->insert($authManager->assignmentTable, [
-            'user_id' => 2,
-            'item_name' => 'admin',
-            'created_at' => time()
-        ]);
+//        // 插入初始化数据
+//        $this->insert($authManager->assignmentTable, [
+//            'user_id' => 1,
+//            'item_name' => 'super_admin',
+//            'created_at' => time()
+//        ]);
+//        $this->insert($authManager->assignmentTable, [
+//            'user_id' => 2,
+//            'item_name' => 'admin',
+//            'created_at' => time()
+//        ]);
 
 
         if ($this->isMSSQL()) {

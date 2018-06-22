@@ -42,9 +42,9 @@ class Configs extends \yii\base\Object
 
 
     /**
-     * 使用cookies完成sso,这个版本关闭
+     * 使用cookies完成sso
      */
-    public $cookiesSwitch = false;
+    public $cookiesSwitch = true;
 
 
 
