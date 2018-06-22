@@ -51,7 +51,7 @@ class UsersController extends BaseController
 
         $provider = new ActiveDataProvider([
             'query' =>
-                $query->select(['id','username','user.name','avatar_thumb','email','user.created_at','user.updated_at','last_login_at','last_login_ip','user.status','aa.item_name as role','ai.description as role_alias'])
+                $query->select(['id','username','user.name','user.created_at','user.updated_at','user.status','aa.item_name as role','ai.description as role_alias'])
                     ->from('user')
                     ->leftJoin("auth_assignment aa","aa.user_id=user.id")
                     ->leftJoin('auth_item ai','ai.name=aa.item_name')
@@ -62,10 +62,7 @@ class UsersController extends BaseController
                     ->andFilterWhere(['<=','user.created_at',$end])
                     ->andFilterWhere(['user.status'=>$status])
                     ->andFilterWhere(['aa.item_name'=>$role])
-                    ->orderBy('created_at desc'),
-            'pagination' => [
-                'pageSizeParam' => 'size',
-            ]
+                    ->orderBy('created_at desc')
         ]);
 
         // 获取分页和排序数据
@@ -105,15 +102,13 @@ class UsersController extends BaseController
         $request=Yii::$app->request;
         if ($request->isPost){
             $data=$request->post();
-            //验证注册数据合法性
-            $res=$this->validate($data,true);
+            //验证账号是否在百优总后台中已经注册过了
+            $res=$this->checkExist($data,true);
             if ($res['code']!=200){
                 return ["message"=>$res['message'],"code"=>$res['code'],'data' => []];
             }
             $user = new User();
-            $data['password']=$user->setPassword($data['password']);
             $user->load($data, '');
-            $user->generateAuthKey();
             if (!$user->validate($data)||!$res=$user->save()) {
                 return ["message"=>"参数错误","code"=>10002,"data"=>$user->errors];
             }
@@ -128,6 +123,13 @@ class UsersController extends BaseController
             }
             return ["message"=>"注册成功","code"=>1];
         }
+    }
+
+    private function checkExist($data,$type=false){
+
+        //调用总后台提供的接口，检查该账号是否已经注册了
+
+        return ['code'=>200];
     }
 
     /**
@@ -186,36 +188,6 @@ class UsersController extends BaseController
         }
 
         return ["message"=>"删除成功","code"=>1];
-    }
-    /**
-     * 密码/账号验证
-     * @param $data
-     * @param bool $type
-     * @return array
-     * @author  billyshen 2018/5/29 下午1:38
-     */
-    private function validate($data,$type=false){
-
-        //格式验证
-        $username="/^(1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8})|([\x7f-\xff\a-zA-Z]{2,30})$/";
-        if(!preg_match($username,$data['username'])){
-            return ['code'=>10006,'message'=>'请输入正确格式作为账号！'];
-        }
-        $password="/^[a-zA-Z\d_]{6,20}$/";
-        if(!preg_match($password,$data['password'])){
-            return ['code'=>10007,'message'=>'请输入英文、数字、下划线6-20位字符密码！'];
-        }
-        if($data['password']!==$data['repassword']){
-            return ['code'=>10004,'message'=>'两次密码输入不一致！'];
-        }
-        if($type){//注册时的用户名重复验证,密码忘记重置时不用
-            //验证用户名不重复
-            $validate=User::find()->where(['username'=>$data['username']])->one();
-            if ($validate){
-                return ['message'=>'账号已存在！','code'=>10009];
-            }
-        }
-        return ['code'=>200];
     }
 
     /**
@@ -283,66 +255,6 @@ class UsersController extends BaseController
     public function actionRoles(){
         $role=AuthItem::find()->select(['name','description'])->where(['type'=>1])->all();
         return ['message' => '获取角色信息成功','code' => 1,'data' => $role];
-    }
-
-    /**
-     * 修改密码
-     * @return array
-     * @author  billyshen 2018/5/30 下午4:53
-     */
-    public function actionChangePassword(){
-        $model = new ChangePassword();
-        $request = Yii::$app->request;
-        $data = $request->post();
-        if($request->isPost) {
-            $datas=$data['ChangePassword'];
-            if($datas['newPassword']!=$datas['retypePassword']){
-                return ["message"=>"两次密码输入不一致","code"=>10004];
-            }
-            if (!$model->load($data)||!$model->change()) {
-                return ["message"=>"原密码不正确","code"=>10005];
-            }
-            return ["message"=>"密码修改成功","code"=>1];
-        }
-    }
-
-    /**
-     * 修改头像
-     * @return array
-     * @throws HttpException
-     * @author  billyshen 2018/5/30 下午5:16
-     */
-    public function actionEditAvatar(){
-        $request=Yii::$app->request;
-        $parms=$request->post();
-        if(!isset($parms['user_id'])||empty($parms['user_id'])||empty($user=User::findOne($parms['user_id']))){
-            return ["message"=>"id参数错误","code"=>10010];
-        }
-        if(!empty($parms['avatar'])) {//修改头像
-            $user->avatar = $parms['avatar'];
-            $user->avatar_thumb = str_replace('avatar', 'avatar_thumb', $parms['avatar']);
-            $code=$user->save();
-            if(!$code){
-                return ["message"=>"参数错误","code"=>10002,"data" => $user->errors];
-            }
-            return ["message"=>"修改成功","code"=>1];
-        }
-    }
-
-    /**
-     * 获取本人个人信息
-     * @return array|bool
-     * @author  billyshen 2018/6/20 下午5:55
-     */
-    public function actionProfile(){
-        $id = \Yii::$app->user->id;
-        $user=(new Query())->from("user u")
-            ->select(["u.*","aa.item_name role","ai.description role_alias"])
-            ->leftJoin("auth_assignment aa","aa.user_id=u.id")
-            ->leftJoin("auth_item ai","ai.name=aa.item_name")
-            ->where(["u.id"=>$id])
-            ->one();
-        return  ['message' => '获取本人个人信息成功','code' => 1,'data' => $user];
     }
 
     /**
