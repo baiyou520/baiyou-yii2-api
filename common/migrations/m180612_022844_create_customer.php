@@ -41,9 +41,7 @@ class m180612_022844_create_customer extends Migration
      */
     public function safeDown()
     {
-        echo "m180612_022844_create_customer cannot be reverted.\n";
-
-        return false;
+        $this->dropTable('{{%customer}}');
     }
 
     /*

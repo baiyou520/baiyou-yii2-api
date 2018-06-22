@@ -34,9 +34,7 @@ class m180612_054805_create_actionlog extends Migration
      */
     public function safeDown()
     {
-        echo "m180612_054805_create_actionlog cannot be reverted.\n";
-
-        return false;
+        $this->dropTable('{{%actionlog}}');
     }
 
     /*

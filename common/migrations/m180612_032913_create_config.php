@@ -19,10 +19,10 @@ class m180612_032913_create_config extends Migration
         }
 
         $this->createTable('{{%config}}', [
-            'config_id'     =>Schema::TYPE_INTEGER.'(11) UNSIGNED PRIMARY KEY AUTO_INCREMENT NOT NULL COMMENT "主键"',
+            'config_id'     => $this->primaryKey()->unsigned()->comment('主键'),
             'symbol'        => $this->string(20)->notNull()->comment('标识'),
             'content'       => $this->text()->notNull()->comment('值'),
-            'encode'        => $this->tinyInteger(1)->unsigned()->notNull()->defaultValue(1)->comment('值的编码形式1:string,2:json,3:int'),
+            'encode'        => $this->tinyInteger()->unsigned()->notNull()->defaultValue(1)->comment('值的编码形式1:string,2:json,3:int'),
             'created_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
         ], $tableOptions);
@@ -33,9 +33,7 @@ class m180612_032913_create_config extends Migration
      */
     public function safeDown()
     {
-        echo "m180612_032913_create_config cannot be reverted.\n";
-
-        return false;
+        $this->dropTable('{{%config}}');
     }
 
     /*

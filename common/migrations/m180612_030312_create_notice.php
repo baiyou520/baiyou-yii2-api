@@ -39,9 +39,7 @@ class m180612_030312_create_notice extends Migration
      */
     public function safeDown()
     {
-        echo "m180612_030312_create_notice cannot be reverted.\n";
-
-        return false;
+        $this->dropTable('{{%notice}}');
     }
 
     /*
