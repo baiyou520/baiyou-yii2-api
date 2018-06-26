@@ -28,4 +28,34 @@ class Helper
         }
         return $string;
     }
+
+    /**
+     * 从cookies中得到实例编号sid
+     * @return mixed
+     * @author sft@caiyoudata.com
+     * @time   2018/6/26 下午3:40
+     */
+    public static function getSid()
+    {
+        $cookies = \Yii::$app->request->cookies;
+        $sid =  $cookies->getValue('sid');
+
+        if(empty($sid)){
+            $sid=\Yii::$app->request->get('sid');
+        }
+        return $sid;
+    }
+
+    /**
+     * 从cookies中得到实例名称sname
+     * @return mixed
+     * @author sft@caiyoudata.com
+     * @time   2018/6/26 下午6:51
+     */
+    public static function getSname()
+    {
+        $cookies = \Yii::$app->request->cookies;
+        $sid =  $cookies->getValue('sname');
+        return $sid;
+    }
 }

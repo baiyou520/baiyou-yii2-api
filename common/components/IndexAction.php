@@ -72,6 +72,12 @@ class IndexAction extends Action
         if ($this->checkAccess) {
             call_user_func($this->checkAccess, $this->id);
         }
+
+        /**
+         * 复写区域 sft@caiyoudata.com
+         * ————————————————————————————
+         * 格式化返回
+         */
         return [ 'list' =>  $this->prepareDataProvider()->getModels(),'pagination'=>['total' => $this->prepareDataProvider()->getTotalCount()]];
     }
 
@@ -85,17 +91,12 @@ class IndexAction extends Action
         if (empty($requestParams)) {
             $requestParams = Yii::$app->getRequest()->getQueryParams();
         }
-        YII::error($requestParams,'para111');
         $filter = null;
         if ($this->dataFilter !== null) {
-            YII::error($this->dataFilter,'para222');
             $this->dataFilter = Yii::createObject($this->dataFilter);
-            YII::error($this->dataFilter,'para333');
             if ($this->dataFilter->load($requestParams)) {
                 $filter = $this->dataFilter->build();
-                YII::error($filter,'para444');
                 if ($filter === false) {
-                    YII::error($filter,'para555');
                     return $this->dataFilter;
                 }
             }
@@ -112,7 +113,15 @@ class IndexAction extends Action
         if (!empty($filter)) {
             $query->andWhere($filter);
         }
-        YII::error($filter,'para666');
+
+        /**
+         * 复写区域 sft@caiyoudata.com
+         * ————————————————————————————
+         *  添加sid限制条件，实现多租户SAAS
+         */
+        $query->andWhere(['sid' => Helper::getSid()]);
+
+
         return Yii::createObject([
             'class' => ActiveDataProvider::className(),
             'query' => $query,

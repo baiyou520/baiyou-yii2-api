@@ -8,9 +8,9 @@
 
 namespace baiyou\common\models;
 
+use baiyou\common\components\ActiveRecord;
 use Yii;
 use yii\db\Expression;
-use yii\db\ActiveRecord;
 use Firebase\JWT\JWT;
 use yii\web\IdentityInterface;
 use yii\web\Request as WebRequest;

@@ -7,11 +7,11 @@
  */
 
 namespace baiyou\backend\controllers;
-use mdm\admin\models\form\ChangePassword;
+use baiyou\common\components\ActiveDataProvider;
+use baiyou\common\components\Helper;
 use Yii;
 use yii\db\Query;
 use yii\web\HttpException;
-use yii\data\ActiveDataProvider;
 use baiyou\backend\models\User;
 use baiyou\backend\models\AuthAssignment;
 use baiyou\backend\models\AuthItem;
@@ -236,8 +236,8 @@ class UsersController extends BaseController
             'role_alias' => $item_name['role_alias'],
         ];
         $app = [
-            'name' => '百优数据',
-            'description' => '百优数据脚手架'
+            'name' => Yii::$app->params['app-name'],
+            'description' => Helper::getSname()
         ];
         $responseData = [
             'menu'=>$menu,

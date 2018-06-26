@@ -177,9 +177,10 @@ class m140506_102106_rbac_init extends \yii\db\Migration
 
         $this->createTable($authManager->assignmentTable, [
             'item_name' => $this->string(64)->notNull(),
+            'sid' => $this->integer()->unsigned()->notNull(),
             'user_id' => $this->integer()->unsigned()->notNull(),
             'created_at' => $this->integer(),
-            'PRIMARY KEY ([[item_name]], [[user_id]])',
+            'PRIMARY KEY ([[item_name]], [[user_id]], [[sid]])',
             'FOREIGN KEY ([[item_name]]) REFERENCES ' . $authManager->itemTable . ' ([[name]])' .
             $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
             'FOREIGN KEY ([[user_id]]) REFERENCES user ([[id]])' .
@@ -189,6 +190,7 @@ class m140506_102106_rbac_init extends \yii\db\Migration
 //        // 插入初始化数据
 //        $this->insert($authManager->assignmentTable, [
 //            'user_id' => 1,
+//            'sid' => 1,
 //            'item_name' => 'super_admin',
 //            'created_at' => time()
 //        ]);

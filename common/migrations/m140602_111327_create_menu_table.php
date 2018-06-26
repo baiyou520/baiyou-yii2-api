@@ -37,6 +37,7 @@ class m140602_111327_create_menu_table extends yii\db\Migration
             'name' => 'L0-System',
             'parent' => NULL,
             'route' => '/by/dashboard/index',
+            'order' => 3,
             'data' => '{"text":"系统","group":"true"}'
         ]);
 
@@ -45,7 +46,25 @@ class m140602_111327_create_menu_table extends yii\db\Migration
             'name' => 'L0-Application',
             'parent' => NULL,
             'route' => '/by/dashboard/index',
+            'order' => 2,
             'data' => '{"text":"应用","group":"true"}'
+        ]);
+
+        $this->insert('{{%menu}}', [
+            'id' => 10,
+            'name' => 'L0-Home',
+            'parent' => NULL,
+            'route' => '/by/dashboard/index',
+            'order' => 1,
+            'data' => '{"text":"概况","group":"true"}'
+        ]);
+        $this->insert('{{%menu}}', [
+            'id' => 11,
+            'name' => 'L0-Dashboard',
+            'parent' => 10,
+            'route' => '/by/dashboard/index',
+            'order' => 1,
+            'data' => '{"text":"首页","icon":"icon-speedometer","link":"/dashboard/index"}'
         ]);
 
         $this->insert('{{%menu}}', [
