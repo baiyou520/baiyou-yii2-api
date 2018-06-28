@@ -107,7 +107,8 @@ class ActiveRecord extends \yii\db\ActiveRecord
          * ——————————————————————————————————————————————————————————————————————————————
          * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，插入到数据库
          */
-        return Yii::createObject(ActiveQuery::className(), [get_called_class()])->where(['sid' => Helper::getSid()]);
+        \Yii::error('sdfsd','sdfsdf');
+        return Yii::createObject(ActiveQuery::className(), [get_called_class()])->andWhere(['sid' => Helper::getSid()]);
 
 //        return Yii::createObject(ActiveQuery::className(), [get_called_class()]);
     }

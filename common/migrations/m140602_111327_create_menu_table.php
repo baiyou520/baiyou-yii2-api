@@ -112,7 +112,7 @@ class m140602_111327_create_menu_table extends yii\db\Migration
             'name' => 'L2-CustMgr',
             'parent' => 3,
             'route' => '/by/customers/index',
-            'data' => '{"link":"/customers/index","text":"客户管理"}'
+            'data' => '{"link":"/customer/list","text":"客户管理"}'
         ]);
 
 //        $this->insert('{{%menu}}', [
