@@ -40,22 +40,23 @@ class Helper
         $cookies = \Yii::$app->request->cookies;
         $sid =  $cookies->getValue('sid');
 
+        // 如果是微信端访问的话，是没有cookies，这个时候需要微信端提供一个sid参数
         if(empty($sid)){
             $sid=\Yii::$app->request->get('sid');
         }
         return $sid;
     }
 
-    /**
-     * 从cookies中得到实例名称sname
-     * @return mixed
-     * @author sft@caiyoudata.com
-     * @time   2018/6/26 下午6:51
-     */
-    public static function getSname()
-    {
-        $cookies = \Yii::$app->request->cookies;
-        $sid =  $cookies->getValue('sname');
-        return $sid;
-    }
+//    /**
+//     * 从cookies中得到实例名称sname
+//     * @return mixed
+//     * @author sft@caiyoudata.com
+//     * @time   2018/6/26 下午6:51
+//     */
+//    public static function getSname()
+//    {
+//        $cookies = \Yii::$app->request->cookies;
+//        $sid =  $cookies->getValue('sname');
+//        return $sid;
+//    }
 }

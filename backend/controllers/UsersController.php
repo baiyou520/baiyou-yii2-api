@@ -9,6 +9,7 @@
 namespace baiyou\backend\controllers;
 use baiyou\common\components\ActiveDataProvider;
 use baiyou\common\components\Helper;
+use baiyou\common\models\Instance;
 use Yii;
 use yii\db\Query;
 use yii\web\HttpException;
@@ -235,9 +236,28 @@ class UsersController extends BaseController
             'role' => $item_name['role'],
             'role_alias' => $item_name['role_alias'],
         ];
+
+        $instance = Instance::findOne(Helper::getSid());
+        $cert = '';
+        switch ($instance->certificate_flag)
+        {
+            case 0:
+                $cert = '未认证';
+                break;
+            case 1:
+                $cert = '认证中';
+                break;
+            case 2:
+                $cert = '已认证';
+                break;
+            default:
+                break;
+        }
         $app = [
             'name' => Yii::$app->params['app-name'],
-            'description' => Helper::getSname()
+            'description' => $instance->name,
+            'certificate_flag' => $cert,
+            'level' => $instance->level
         ];
         $responseData = [
             'menu'=>$menu,

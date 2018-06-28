@@ -17,7 +17,7 @@ class m180612_093725_new_instance extends Migration
             'user_id'           => $this->integer()->unsigned()->notNull()->comment('user_id，来自总后台数据库user表中的id'),
             'name'              => $this->string(20)->notNull()->defaultValue('')->comment('实例名称，如：百优甄选'),
             'certificate_flag'  => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0)->comment('是否认证，0：未认证，1：已认证'),
-            'level'             => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0)->comment('实例等级：0：未认证，1：初级，2：中级'),
+            'level'             => $this->string(20)->notNull()->defaultValue('未认证')->comment('实例级别，如：初级版'),
             'expired_at'        => $this->integer()->unsigned()->notNull()->comment('到期时间'),
             'applet_appid'      => $this->string(18)->defaultValue('')->comment('微信小程序id'),
             'applet_appsecret'  => $this->string(32)->defaultValue('')->comment('微信小程序密钥'),
