@@ -7,10 +7,10 @@
  */
 
 namespace baiyou\backend\controllers;
-use baiyou\common\components\ActiveDataProvider;
 use baiyou\common\components\Helper;
 use baiyou\common\models\Instance;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\db\Query;
 use yii\web\HttpException;
 use baiyou\backend\models\User;
@@ -56,6 +56,8 @@ class UsersController extends BaseController
                     ->from('user')
                     ->leftJoin("auth_assignment aa","aa.user_id=user.id")
                     ->leftJoin('auth_item ai','ai.name=aa.item_name')
+                    ->andWhere(['=','aa.sid',Helper::getSid()])
+                    ->andWhere(['=','user.sid',Helper::getSid()])
                     ->andFilterWhere(['like','user.name',$keyword])
                     ->orFilterWhere(['like','user.email',$keyword])
                     ->orFilterWhere(['like','user.username',$keyword])

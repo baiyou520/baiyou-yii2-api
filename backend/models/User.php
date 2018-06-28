@@ -7,6 +7,7 @@ use baiyou\common\models\JwtModel;
  * This is the model class for table "user".
  *
  * @property int $id id，来自总后台数据库
+ * @property int $sid sid，来自总后台数据库instance表中instance_id
  * @property string $username 用户名(即百优账号)
  * @property string $name 姓名(昵称)
  * @property string $phone 联系方式(电话)
@@ -33,8 +34,8 @@ class User  extends JwtModel
     public function rules()
     {
         return [
-            [['id', 'username', 'name', 'phone'], 'required'],
-            [['id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['id','sid', 'username', 'name', 'phone'], 'required'],
+            [['id','sid', 'status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'name'], 'string', 'max' => 30],
             [['phone'], 'string', 'max' => 20],
             [['id'], 'unique'],
@@ -48,6 +49,7 @@ class User  extends JwtModel
     {
         return [
             'id' => 'id，来自总后台数据库',
+            'sid' => 'sid，来自总后台数据库instance表中instance_id',
             'username' => '用户名(即百优账号)',
             'name' => '姓名(昵称)',
             'phone' => '联系方式(电话)',

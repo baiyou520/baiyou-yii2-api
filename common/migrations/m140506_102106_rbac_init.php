@@ -80,13 +80,6 @@ class m140506_102106_rbac_init extends \yii\db\Migration
         $this->createIndex('idx-auth_item-type', $authManager->itemTable, 'type');
 
         // 插入初始化数据
-//        $this->insert($authManager->itemTable, [
-//            'name' => '/*',
-//            'type' =>  2,
-//            'created_at' => time(),
-//            'updated_at' => time()
-//        ]);
-        //继续
         $this->batchInsert($authManager->itemTable,
             ['name','type','description','rule_name','data','created_at','updated_at'],
             [
@@ -135,12 +128,6 @@ class m140506_102106_rbac_init extends \yii\db\Migration
         ], $tableOptions);
 
         // 插入初始化数据
-//        $this->insert($authManager->itemChildTable, [
-//            'parent' => 'super_admin',
-//            'child' =>  '/*'
-//        ]);
-
-        //继续
 
         $this->batchInsert($authManager->itemChildTable,['parent','child'],[
 
@@ -186,19 +173,6 @@ class m140506_102106_rbac_init extends \yii\db\Migration
             'FOREIGN KEY ([[user_id]]) REFERENCES user ([[id]])' .
             $this->buildFkClause('ON DELETE NO ACTION', 'ON UPDATE NO ACTION'),
         ], $tableOptions);
-
-//        // 插入初始化数据
-//        $this->insert($authManager->assignmentTable, [
-//            'user_id' => 1,
-//            'sid' => 1,
-//            'item_name' => 'super_admin',
-//            'created_at' => time()
-//        ]);
-//        $this->insert($authManager->assignmentTable, [
-//            'user_id' => 2,
-//            'item_name' => 'admin',
-//            'created_at' => time()
-//        ]);
 
 
         if ($this->isMSSQL()) {

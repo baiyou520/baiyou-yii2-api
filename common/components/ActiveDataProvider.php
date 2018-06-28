@@ -41,6 +41,7 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
          */
         $query->andWhere(['sid' => Helper::getSid()]);
 
+        \Yii::error($query,'sdfsdfsdfdsf');
         return $query->all($this->db);
     }
 }

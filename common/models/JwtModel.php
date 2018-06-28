@@ -51,7 +51,8 @@ class JwtModel extends ActiveRecord implements IdentityInterface
      */
     public function getId()
     {
-        return $this->getPrimaryKey();
+//        return $this->getPrimaryKey(); // 因为多了一个sid，所以必须直接指定id，不然/yii2/web/User.php 256行报错
+        return $this->id;
     }
     /**
      * {@inheritdoc}
