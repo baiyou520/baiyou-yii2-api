@@ -7,10 +7,10 @@
  */
 
 namespace baiyou\backend\controllers;
+use baiyou\common\components\ActiveDataProvider;
 use baiyou\common\components\Helper;
 use baiyou\common\models\Instance;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\db\Query;
 use yii\web\HttpException;
 use baiyou\backend\models\User;
@@ -56,8 +56,7 @@ class UsersController extends BaseController
                     ->from('user')
                     ->leftJoin("auth_assignment aa","aa.user_id=user.id")
                     ->leftJoin('auth_item ai','ai.name=aa.item_name')
-                    ->andWhere(['=','aa.sid',Helper::getSid()])
-                    ->andWhere(['=','user.sid',Helper::getSid()])
+                    ->andWhere(['=','aa.sid',Helper::getSid()]) ////这里由于没有设计外键，必须手动加sid
                     ->andFilterWhere(['like','user.name',$keyword])
                     ->orFilterWhere(['like','user.email',$keyword])
                     ->orFilterWhere(['like','user.username',$keyword])
