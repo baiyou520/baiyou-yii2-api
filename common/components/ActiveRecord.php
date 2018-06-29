@@ -10,12 +10,23 @@ namespace baiyou\common\components;
 
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveQueryInterface;
 use yii\helpers\ArrayHelper;
 
 class ActiveRecord extends \yii\db\ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
     /**
      * 复写
      * Inserts an ActiveRecord into DB without considering transaction.

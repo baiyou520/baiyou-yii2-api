@@ -27,15 +27,6 @@ class JwtModel extends ActiveRecord implements IdentityInterface
      */
     public $access_token;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
-    }
 
     /**
      * {@inheritdoc}
