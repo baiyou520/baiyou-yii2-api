@@ -62,7 +62,9 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
          * ————————————————————————————
          *  添加sid限制条件，实现多租户SAAS
          */
-        $query->andWhere([($query->from)[0].'.sid' => Helper::getSid()]);
+        $tab=explode(' ',($query->from)[0]);
+        $table=$tab[count($tab)-1];
+        $query->andWhere([$table.'.sid' => Helper::getSid()]);
 
         return (int) $query->limit(-1)->offset(-1)->orderBy([])->count('*', $this->db);
     }
