@@ -198,6 +198,7 @@ class UsersController extends BaseController
      * @author  billyshen 2018/5/30 上午10:21
      */
     public function actionStartUp(){
+        \Yii::error('sss','ddd');
         $id = \Yii::$app->user->id;
         $query=New Query();
         //用户角色

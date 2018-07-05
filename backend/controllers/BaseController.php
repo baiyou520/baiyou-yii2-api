@@ -8,6 +8,7 @@
 
 namespace baiyou\backend\controllers;
 
+use baiyou\common\components\CookiesAuth;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use mdm\admin\components\AccessControl;
@@ -24,7 +25,7 @@ class BaseController extends ActiveController
         $behaviors['authenticator'] = [
             'class' => CompositeAuth::className(),
             'authMethods' => [
-                HttpBearerAuth::className(),
+                CookiesAuth::className(),
             ],
 
         ];

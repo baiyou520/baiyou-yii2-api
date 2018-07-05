@@ -20,6 +20,7 @@ class m180613_015200_create_demo extends Migration
         // 1. 建表（主外键）
         $this->createTable('{{%demo}}',[
             'demo_id'       => $this->primaryKey()->unsigned()->comment('主键'),
+            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
             'name'              => $this->string(30)->notNull()->comment('名称'),
             'avatar'            => $this->string(200)->notNull()->defaultValue('https://img.zcool.cn/community/01786557e4a6fa0000018c1bf080ca.png@2o.png')->comment('头像地址'),
             'call_no'           => $this->integer()->notNull()->comment('调用次数'),

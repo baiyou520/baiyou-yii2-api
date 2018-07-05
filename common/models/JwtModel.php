@@ -15,7 +15,6 @@ use Firebase\JWT\JWT;
 use yii\web\IdentityInterface;
 use yii\web\Request as WebRequest;
 use yii\behaviors\TimestampBehavior;
-use baiyou\common\components\Configs;
 
 class JwtModel extends ActiveRecord implements IdentityInterface
 {
@@ -95,18 +94,14 @@ class JwtModel extends ActiveRecord implements IdentityInterface
 
         $cookies = Yii::$app->response->cookies;
 
-        if (Configs::instance()->cookiesSwitch) {
-            if (self::tableName() == '{{%user}}') {
-                // 在要发送的响应中添加一个新的 cookie
-                $cookies->add(new \yii\web\Cookie([
-                    'name' => 'jwt-token',
-                    'value' => $this->access_token,
-                    'domain' => '.baiyoudata.com',
-                    'httpOnly' => true,
-                    'expire' => time() + 10 * 365 * 24 * 60 * 60,
-                ]));
-            }
-        }
+        // 创建sso登录所需的cookies值
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'access-token',
+            'value' => $this->access_token,
+            'domain' => '.baiyoudata.com',
+            'httpOnly' => true,
+            'expire' => time() + 10 * 365 * 24 * 60 * 60,
+        ]));
     }
 
     /*
@@ -139,14 +134,6 @@ class JwtModel extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-
-        if (Configs::instance()->cookiesSwitch) {
-            if (self::tableName() == '{{%user}}'){
-                $cookies = Yii::$app->request->cookies;
-                $token =  $cookies->getValue('jwt-token', '');
-            }
-        }
-
 
         $secret = static::getSecretKey();
         // Decode token and transform it into array.

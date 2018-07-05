@@ -19,6 +19,7 @@ class m180611_131548_create_category extends Migration
 
         $this->createTable('{{%category}}', [
             'category_id' => $this->primaryKey()->unsigned()->comment('主键'),
+            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
             'category_pid'=> $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('父级id'),
             'symbol'      => $this->string(20)->notNull()->comment('标识'),
             'category_no'=> $this->string(12)->notNull()->defaultValue(' ')->comment('编号'),

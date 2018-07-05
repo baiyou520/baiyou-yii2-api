@@ -20,6 +20,7 @@ class m180612_032913_create_config extends Migration
 
         $this->createTable('{{%config}}', [
             'config_id'     => $this->primaryKey()->unsigned()->comment('主键'),
+            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
             'symbol'        => $this->string(20)->notNull()->comment('标识'),
             'content'       => $this->text()->notNull()->comment('值'),
             'encode'        => $this->tinyInteger()->unsigned()->notNull()->defaultValue(1)->comment('值的编码形式1:string,2:json,3:int'),

@@ -20,6 +20,7 @@ class m180612_030312_create_notice extends Migration
 
         $this->createTable('{{%notice}}', [
             'notice_id'      =>$this->primaryKey()->unsigned()->comment('主键'),
+            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
             'user_id'         => $this->integer()->unsigned()->notNull()->comment('用户id'),
             'title'           => $this->string(50)->notNull()->defaultValue(' ')->comment('标题'),
             'content'         => $this->text()->notNull()->comment('内容'),

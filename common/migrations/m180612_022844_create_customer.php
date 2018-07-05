@@ -20,6 +20,7 @@ class m180612_022844_create_customer extends Migration
 
         $this->createTable('{{%customer}}', [
             'id'                        =>$this->primaryKey()->unsigned()->comment('主键'),
+            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
             'username'                  => $this->string(100)->notNull()->comment('用户名(即登录名)	'),
             'avatar'                    => $this->string(255)->notNull()->defaultValue(' ')->comment('大头像(原图)'),
             'nickname'                  => $this->string(50)->notNull()->comment('微信昵称'),

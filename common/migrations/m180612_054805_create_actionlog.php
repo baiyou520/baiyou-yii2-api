@@ -18,6 +18,7 @@ class m180612_054805_create_actionlog extends Migration
         }
         $this->createTable('{{%actionlog}}', [
             'id'           =>$this->primaryKey()->unsigned()->comment('主键'),
+            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
             'user_id'     => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('用户id'),
             'user_remote'=> $this->text()->notNull()->comment('值'),
             'time'        => $this->timestamp()->notNull()->comment('时间'),
