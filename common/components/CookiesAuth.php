@@ -22,7 +22,6 @@ class CookiesAuth extends AuthMethod
 
         $cookies = \Yii::$app->request->cookies;
         $token =  $cookies->getValue('access-token');
-
         if ($token){
             $identity = $user->loginByAccessToken($token);
             if ($identity === null) {

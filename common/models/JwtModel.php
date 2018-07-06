@@ -134,7 +134,7 @@ class JwtModel extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-
+        \Yii::error($token,'1111');
         $secret = static::getSecretKey();
         // Decode token and transform it into array.
         // Firebase\JWT\JWT throws exception if token can not be decoded
@@ -162,7 +162,6 @@ class JwtModel extends ActiveRecord implements IdentityInterface
     public static function findByJTI($id)
     {
         /** @var User $user */
-
         if (self::tableName() == '{{%user}}'){ // 中台SSO，不需要access_token_expired_at
             $user = static::find()->where([
                 '=', 'id', $id
