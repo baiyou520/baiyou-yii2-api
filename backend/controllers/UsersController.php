@@ -8,6 +8,7 @@
 
 namespace baiyou\backend\controllers;
 use baiyou\common\components\ActiveDataProvider;
+use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 use baiyou\common\models\Instance;
 use Yii;
@@ -231,6 +232,10 @@ class UsersController extends BaseController
         };
         $menu = MenuHelper::getAssignedMenu($id,null,$callback,true);
         $userObj = User::findOne($id);
+        // 如果找不到用户信息，意味着当前用户并没有这个实例的权限，一般发生在跨应用访问，让程序跳回总控制台即可
+        if (!$userObj){
+            return  ['message' => 'sid不对，跳回总控制台，重新点击进入控制台即可','code' => BaseErrorCode::$SID_WRONG];
+        }
         $user = [
             'user_id' => $userObj->id,
             'username' => $userObj->username,

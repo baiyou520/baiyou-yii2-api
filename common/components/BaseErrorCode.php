@@ -14,4 +14,5 @@ class BaseErrorCode
 {
     public static $PARAMS_ERROR = 1000; // 参数错误，data中返回 $model->errors
     public static $OBJECT_NOT_FOUND = 1001; // 对象未找到
+    public static $SID_WRONG = 1002; // sid不对，跳回总控制台，重新点击进入控制台即可
 }
