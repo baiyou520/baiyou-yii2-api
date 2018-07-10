@@ -115,6 +115,13 @@ class m140602_111327_create_menu_table extends \yii\db\Migration
             'data' => '{"link":"/customer/list","text":"客户管理"}'
         ]);
 
+        $this->insert('{{%menu}}', [
+            'id' =>12,
+            'name' => 'L2-WechatMgr',
+            'parent' => 4,
+            'route' => '/by/wecaht/index',
+            'data' => '{"link":"/setting/user","text":"微信设置"}'
+        ]);
 //        $this->insert('{{%menu}}', [
 //            'id' => 9,
 //            'name' => 'L2-DemoMgr',

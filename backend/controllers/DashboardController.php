@@ -25,7 +25,6 @@ class DashboardController extends BaseController
     }
     // 工作台
     public function actionIndex(){
-        \Yii::error('sss','ddd');
 
         $user_total = User::find()->count();// 用户总数
         $user_new_in_month = User::find()->count();// 本月新增用户数

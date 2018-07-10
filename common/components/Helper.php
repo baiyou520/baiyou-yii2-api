@@ -47,16 +47,4 @@ class Helper
         return $sid;
     }
 
-//    /**
-//     * 从cookies中得到实例名称sname
-//     * @return mixed
-//     * @author sft@caiyoudata.com
-//     * @time   2018/6/26 下午6:51
-//     */
-//    public static function getSname()
-//    {
-//        $cookies = \Yii::$app->request->cookies;
-//        $sid =  $cookies->getValue('sname');
-//        return $sid;
-//    }
 }
