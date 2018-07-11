@@ -243,10 +243,12 @@ class UsersController extends BaseController
             'role' => $item_name['role'],
             'role_alias' => $item_name['role_alias'],
         ];
-
-        $instance = Instance::findOne(Helper::getSid());
+        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.Helper::getSid();
+        $instance = Helper::https_request($url);
+//        return $result;
+//        $instance = Instance::findOne(Helper::getSid());
         $cert = '';
-        switch ($instance->certificate_flag)
+        switch ($instance['data']['certificate_flag'])
         {
             case 0:
                 $cert = '未认证';
@@ -262,9 +264,9 @@ class UsersController extends BaseController
         }
         $app = [
             'name' => Yii::$app->params['app-name'],
-            'description' => $instance->name,
+            'description' => $instance['data']['name'],
             'certificate_flag' => $cert,
-            'level' => $instance->level
+            'level' => $instance['data']['level_name'],
         ];
         $responseData = [
             'menu'=>$menu,

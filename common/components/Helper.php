@@ -46,5 +46,32 @@ class Helper
         }
         return $sid;
     }
+    /**
+     * url请求的通用版本,
+     * @param $url
+     * @param null $data 当内容为空时,默认进行get请求,有内容时,进行post请求
+     * @return mixed
+     * @author nwh@caiyoudata.com
+     * @time 2018/7/7 11:50
+     */
+    public static function https_request($url, $data = null){
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        if (!empty($data)){
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json; charset=utf-8',
+                    'Content-Length: ' . strlen($data)
+                )
+            );
+        }
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return json_decode($output,true);
+    }
 
 }
