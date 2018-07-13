@@ -70,6 +70,7 @@ class Helper
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($curl);
+        $error = curl_error($curl);//返回一条最近一次cURL操作明确的文本的错误信息。
         curl_close($curl);
         return json_decode($output,true);
     }

@@ -50,9 +50,10 @@ class AuthController extends ActiveController
 
         // 获得实例信息
         $sid=Yii::$app->request->get('sid');
-        $instance = Instance::findOne($sid);
-        $appid = $instance['applet_appid'];
-        $secret = $instance['applet_appsecret'];
+        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.$sid;
+        $instance = Helper::https_request($url);
+        $appid = $instance['data']['applet_appid'];
+        $secret = $instance['data']['applet_appsecret'];
 
         $jscode=Yii::$app->request->get('jscode');
         $nickname=Yii::$app->request->get('nickname');
