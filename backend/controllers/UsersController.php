@@ -243,30 +243,47 @@ class UsersController extends BaseController
             'role' => $item_name['role'],
             'role_alias' => $item_name['role_alias'],
         ];
+
+        // 调用总后台提供的获取实例信息的接口，这块权限方面有待完善，目前是无需认证的
         $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.Helper::getSid();
         $instance = Helper::https_request($url);
 //        return $result;
 //        $instance = Instance::findOne(Helper::getSid());
-        $cert = '';
-        switch ($instance['data']['certificate_flag'])
+        $sub_title = '';
+        $license = '';
+        $expired_at = '';
+        switch ($instance['data']['status'])
         {
             case 0:
-                $cert = '未认证';
+                $sub_title = '欢迎使用'.Yii::$app->params['app-name'].',您的店铺为试用版，为不影响使用，请及时购买正式版！';
+                $license = '试用版';
+                $expired_at =  (int)(($instance['data']['expired_at'] - time()) / 86400)  .'天后过期，请及时续费！';
                 break;
             case 1:
-                $cert = '认证中';
+                $sub_title = '欢迎回来，祝您生意欣荣！';
+                $license = '正式版';
+                $expired_at =  (int)(($instance['data']['expired_at'] - time()) / 86400) .'天后过期，请及时续费！';
                 break;
-            case 2:
-                $cert = '已认证';
+            case -1:
+                $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
+                $license = '已打样';
+                $expired_at = '已打样，请及时续费！';
                 break;
             default:
                 break;
         }
         $app = [
-            'name' => Yii::$app->params['app-name'],
-            'description' => $instance['data']['name'],
-            'certificate_flag' => $cert,
-            'level' => $instance['data']['level_name'],
+            'app_name' => Yii::$app->params['app-name'],
+            'instance_id' => $instance['data']['instance_id'],
+            'instance_name' => $instance['data']['name'],
+            'license' => $license, // 版本
+            'expired_at' => $expired_at, // 多久过期
+            'sub_title' => $sub_title,
+            'instance_thumb' => $instance['data']['instance_thumb'],
+            'experience_qrcode' => $instance['data']['experience_qrcode'], // 体验版二维码
+            'online_qrcode' => $instance['data']['online_qrcode'],// 上线后二维码
+            'is_bind' => $instance['data']['is_bind'],// 是否已经绑定小程序
+            'level' => $instance['data']['level_name'], // 购买版本，暂定
         ];
         $responseData = [
             'menu'=>$menu,

@@ -10,8 +10,7 @@ namespace baiyou\backend\controllers;
 
 use Yii;
 use yii\db\Query;
-use yii\data\ActiveDataProvider;
-
+use baiyou\common\components\ActiveDataProvider;
 
 class CustomersController extends BaseController
 {

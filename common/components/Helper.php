@@ -19,7 +19,6 @@ class Helper
      */
     public static function randomString($length = 8)
     {
-        // 密码字符集，可任意添加你需要的字符
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $string ='';
         for ( $i = 0; $i < $length; $i++ )
@@ -49,7 +48,7 @@ class Helper
     /**
      * url请求的通用版本,
      * @param $url
-     * @param null $data 当内容为空时,默认进行get请求,有内容时,进行post请求
+     * @param null $data 当内容为空时,默认进行get请求,有内容时,进行post请求; 输入和输出去已经json格式化了
      * @return mixed
      * @author nwh@caiyoudata.com
      * @time 2018/7/7 11:50
@@ -64,7 +63,7 @@ class Helper
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                     'Content-Type: application/json; charset=utf-8',
-                    'Content-Length: ' . strlen($data)
+                    'Content-Length: ' . strlen(json_encode($data))
                 )
             );
         }
@@ -74,6 +73,7 @@ class Helper
         curl_close($curl);
         return json_decode($output,true);
     }
+
     /**发送验证码
      * @param $phone
      * @param $msg
@@ -99,6 +99,36 @@ class Helper
         $res = curl_exec( $ch );
         curl_close( $ch );
         return $res;
+    }
+
+    /**
+     * 给图片添加中台域名
+     * @param $data
+     * @param array $field 待加域名的 字段集合
+     * @param string $host ,域名
+     * @return mixed
+     * @author nwh@caiyoudata.com
+     * @time 2018/7/7 11:46
+     */
+    public static function add_host($data,$field=[]){
+        //Yii::$app->request->hostInfo,可以获取当前域名
+        $host="https://api-by-mall-web.baiyoudata.com";
+        foreach($data as $key => &$value){
+            if(is_array($value)){
+                if(in_array((string)$key,$field)){
+                    foreach ($value as &$val){
+                        $val=$host.$val;
+                    }
+                }else{
+                    $value=Helper::add_host($value,$field);
+                }
+            }else{
+                if(in_array((string)$key,$field)&&!empty($value)&&$value!=' '){
+                    $value=$host.$value;
+                }
+            }
+        }
+        return $data;
     }
 
 }

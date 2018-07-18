@@ -7,7 +7,8 @@
  */
 
 namespace baiyou\backend\controllers;
-use baiyou\backend\models\User;
+use baiyou\backend\models\Config;
+use baiyou\common\models\Customer;
 
 class DashboardController extends BaseController
 {
@@ -24,17 +25,27 @@ class DashboardController extends BaseController
         return $actions;
     }
     // 工作台
+
+    /**
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time  adt
+     */
     public function actionIndex(){
 
-        $user_total = User::find()->count();// 用户总数
-        $user_new_in_month = User::find()->count();// 本月新增用户数
+        $user_total = Customer::find()->count();// 用户总数
+        $user_new_in_past_24hours = Customer::find()->where(['>', 'created_at', time()-60*60*24])->count();// 过去24小时新增用户数
 
         // 统计
         $statistics = [];
+        array_push($statistics,['title' => '今天新增用户数','count' => $user_new_in_past_24hours,'class' => 'bg-success']);
         array_push($statistics,['title' => '用户总数','count' => $user_total,'class' => 'bg-primary']);
-        array_push($statistics,['title' => '本月新增用户数','count' => $user_new_in_month,'class' => 'bg-success']);
 
-        $data = ['statistics' => $statistics];// 统计
+        // 快捷菜单
+        $quick_start_menus = Config::findOne(['symbol' => 'quick_start_menu']);
+        $quick_start_menus = unserialize($quick_start_menus->content);
+
+        $data = ['statistics' => $statistics,'by_quick_start_menus' => $quick_start_menus];
         return  ['message' => 'ok','code' => 1,'data' => $data];
     }
 
