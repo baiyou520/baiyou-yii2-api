@@ -244,25 +244,25 @@ class UsersController extends BaseController
             'role_alias' => $item_name['role_alias'],
         ];
 
-        // 调用总后台提供的获取实例信息的接口，这块权限方面有待完善，目前是无需认证的
-        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.Helper::getSid();
-        $instance = Helper::https_request($url);
+//        // 调用总后台提供的获取实例信息的接口，这块权限方面有待完善，目前是无需认证的
+//        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.Helper::getSid();
+//        $instance = Helper::https_request($url);
 //        return $result;
-//        $instance = Instance::findOne(Helper::getSid());
+        $instance = Instance::findOne(Helper::getSid());
         $sub_title = '';
         $license = '';
         $expired_at = '';
-        switch ($instance['data']['status'])
+        switch ($instance->status)
         {
             case 0:
                 $sub_title = '欢迎使用'.Yii::$app->params['app-name'].',您的店铺为试用版，为不影响使用，请及时购买正式版！';
                 $license = '试用版';
-                $expired_at =  (int)(($instance['data']['expired_at'] - time()) / 86400)  .'天后过期，请及时续费！';
+                $expired_at =  (int)(($instance->expired_at - time()) / 86400)  .'天后过期，请及时续费！';
                 break;
             case 1:
                 $sub_title = '欢迎回来，祝您生意欣荣！';
                 $license = '正式版';
-                $expired_at =  (int)(($instance['data']['expired_at'] - time()) / 86400) .'天后过期，请及时续费！';
+                $expired_at =  (int)(($instance->expired_at - time()) / 86400) .'天后过期，请及时续费！';
                 break;
             case -1:
                 $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
@@ -274,16 +274,16 @@ class UsersController extends BaseController
         }
         $app = [
             'app_name' => Yii::$app->params['app-name'],
-            'instance_id' => $instance['data']['instance_id'],
-            'instance_name' => $instance['data']['name'],
+            'sid' => $instance->sid,
+            'instance_name' => $instance->name,
             'license' => $license, // 版本
             'expired_at' => $expired_at, // 多久过期
             'sub_title' => $sub_title,
-            'instance_thumb' => $instance['data']['instance_thumb'],
-            'experience_qrcode' => $instance['data']['experience_qrcode'], // 体验版二维码
-            'online_qrcode' => $instance['data']['online_qrcode'],// 上线后二维码
-            'is_bind' => $instance['data']['is_bind'],// 是否已经绑定小程序
-            'level' => $instance['data']['level_name'], // 购买版本，暂定
+            'instance_thumb' => $instance->thumb,
+            'experience_qrcode' => Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode, // 体验版二维码，存在总后台的后端
+            'online_qrcode' => Yii::$app->request->hostInfo.'/'.$instance->online_qrcode,// 上线后二维码,存在具体应用的后端
+            'is_bind' => $instance->is_bind,// 是否已经绑定小程序
+            'level' => $instance->level, // 购买版本，暂定
         ];
         $responseData = [
             'menu'=>$menu,

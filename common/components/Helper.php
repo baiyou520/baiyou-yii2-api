@@ -45,15 +45,17 @@ class Helper
         }
         return $sid;
     }
+
     /**
-     * url请求的通用版本,
+     * url请求的通用版本,当内容为空时,默认进行get请求,有内容时,进行post请求; 输入默认格式化，输出可选择
      * @param $url
-     * @param null $data 当内容为空时,默认进行get请求,有内容时,进行post请求; 输入和输出去已经json格式化了
+     * @param null $data
+     * @param bool $is_decode
      * @return mixed
-     * @author nwh@caiyoudata.com
-     * @time 2018/7/7 11:50
+     * @author sft@caiyoudata.com
+     * @time   2018/7/18 下午4:08
      */
-    public static function https_request($url, $data = null){
+    public static function https_request($url, $data = null,$is_decode = true){
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -69,9 +71,18 @@ class Helper
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($curl);
-        $error = curl_error($curl);//返回一条最近一次cURL操作明确的文本的错误信息。
+
+        if($error = curl_error($curl)){ // 返回一条最近一次cURL操作明确的文本的错误信息。
+            \Yii::error($error,'curl请求错误');
+        };
         curl_close($curl);
-        return json_decode($output,true);
+
+        if ($is_decode){
+            return json_decode($output,true);
+        } else {
+            return $output; // 小程序码等文件流直接返回数据即可
+        }
+
     }
 
     /**发送验证码
