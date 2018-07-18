@@ -49,11 +49,11 @@ class AuthController extends ActiveController
     public function actionWxJsCode2Session(){
 
         // 获得实例信息
-        $sid=Yii::$app->request->get('sid');
-        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.$sid;
-        $instance = Helper::https_request($url);
-        $appid = $instance['data']['applet_appid'];
-        $secret = $instance['data']['applet_appsecret'];
+        $sid=Helper::getSid()
+//        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.$sid;
+        $instance = Instance::findOne($sid);
+        $appid = $instance->applet_appid;
+        $secret = $instance->applet_appsecret;
 
         $jscode=Yii::$app->request->get('jscode');
         $nickname=Yii::$app->request->get('nickname');

@@ -42,10 +42,10 @@ class DashboardController extends BaseController
         array_push($statistics,['title' => '用户总数','count' => $user_total,'class' => 'bg-primary']);
 
         // 快捷菜单
-        $quick_start_menus = Config::findOne(['symbol' => 'quick_start_menu']);
+        $quick_start_menus = Config::findOne(['symbol' => 'by_quick_start_menu']);
         $quick_start_menus = unserialize($quick_start_menus->content);
 
-        $data = ['statistics' => $statistics,'by_quick_start_menus' => $quick_start_menus];
+        $data = ['statistics' => $statistics,'quick_start_menus' => $quick_start_menus];
         return  ['message' => 'ok','code' => 1,'data' => $data];
     }
 

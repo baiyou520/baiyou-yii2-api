@@ -272,6 +272,13 @@ class UsersController extends BaseController
             default:
                 break;
         }
+        $qr_code_status = 0; // 出现立即绑定按钮
+        if ($instance->is_bind == 1){
+            $qr_code_status = 1; // 出现设置秘钥按钮
+        }
+        if ($instance->online_qrcode !== ''){
+            $qr_code_status = 2; // 出现2个二维码
+        }
         $app = [
             'app_name' => Yii::$app->params['app-name'],
             'sid' => $instance->sid,
@@ -282,7 +289,7 @@ class UsersController extends BaseController
             'instance_thumb' => $instance->thumb,
             'experience_qrcode' => Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode, // 体验版二维码，存在总后台的后端
             'online_qrcode' => Yii::$app->request->hostInfo.'/'.$instance->online_qrcode,// 上线后二维码,存在具体应用的后端
-            'is_bind' => $instance->is_bind,// 是否已经绑定小程序
+            'qr_code_status' => $qr_code_status,// 如何显示微信小程序二维码区域
             'level' => $instance->level, // 购买版本，暂定
         ];
         $responseData = [
