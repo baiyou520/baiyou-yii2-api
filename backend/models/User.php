@@ -6,6 +6,7 @@ use baiyou\common\models\JwtModel;
 /**
  * This is the model class for table "user".
  *
+ *
  * @property int $id id，来自总后台数据库
  * @property int $sid sid，来自总后台数据库instance表中instance_id
  * @property string $username 用户名(即百优账号)
@@ -15,8 +16,8 @@ use baiyou\common\models\JwtModel;
  * @property int $created_at 创建时间戳
  * @property int $updated_at 修改时间戳
  *
- * @property AuthAssignment[] $authAssignments
- * @property AuthItem[] $itemNames
+ * @property ActionLog[] $actionLogs
+ * @property AuthAssignment[] $authAssignment
  */
 class User  extends JwtModel
 {
@@ -34,11 +35,11 @@ class User  extends JwtModel
     public function rules()
     {
         return [
-            [['id','sid', 'username', 'name', 'phone'], 'required'],
-            [['id','sid', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'sid', 'username', 'name', 'phone'], 'required'],
+            [['id', 'sid', 'status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'name'], 'string', 'max' => 30],
             [['phone'], 'string', 'max' => 20],
-            [['id'], 'unique'],
+            [['id', 'sid'], 'unique', 'targetAttribute' => ['id', 'sid']],
         ];
     }
 
@@ -62,16 +63,16 @@ class User  extends JwtModel
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthAssignments()
+    public function getActionLogs()
     {
-        return $this->hasMany(AuthAssignment::className(), ['user_id' => 'id']);
+        return $this->hasMany(ActionLog::className(), ['user_id' => 'id']);
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getItemNames()
+    public function getAuthAssignments()
     {
-        return $this->hasMany(AuthItem::className(), ['name' => 'item_name'])->viaTable('auth_assignment', ['user_id' => 'id']);
+        return $this->hasMany(AuthAssignment::className(), ['user_id' => 'id']);
     }
 }

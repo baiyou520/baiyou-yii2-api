@@ -27,6 +27,43 @@ class m180612_032913_create_config extends Migration
             'created_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
         ], $tableOptions);
+
+        // 插入初始化数据
+        // 1.快捷菜单信息
+        $quick_start_menu = [];
+        array_push($quick_start_menu,
+            [
+                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+                'title' => '客户管理',
+                'desc' => '查看微信端客户信息',
+                'route' => '/customer/mgr'
+            ]);
+        array_push($quick_start_menu,
+            [
+                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+                'title' => '错误日志',
+                'desc' => '查看系统错误日志，仅系统开发人员可见',
+                'route' => '/setting/log'
+            ]);
+        array_push($quick_start_menu,
+            [
+                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+                'title' => '员工管理',
+                'desc' => '管理店铺员工，设置相关权限等',
+                'route' => '/setting/user'
+            ]);
+        array_push($quick_start_menu,
+            [
+                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+                'title' => '微信设置',
+                'desc' => '设置相关参数，包括店铺设置，微信设置，体验者设置等',
+                'route' => '/setting/wechat'
+            ]);
+        $this->batchInsert('{{%config}}',
+            ['symbol','content','encode','sid','created_at','updated_at'],
+            [
+                ['by_quick_start_menu', serialize($quick_start_menu), 2, 0, time(), time()],
+            ]);
     }
 
     /**

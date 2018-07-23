@@ -2,6 +2,7 @@
 
 namespace baiyou\backend\models;
 
+use baiyou\common\components\ActiveRecord;
 use Yii;
 
 /**
@@ -15,7 +16,7 @@ use Yii;
  * @property int $updated_at 修改时间戳
  * @property int $sid
  */
-class Config extends \yii\db\ActiveRecord
+class Config extends ActiveRecord
 {
     /**
      * {@inheritdoc}

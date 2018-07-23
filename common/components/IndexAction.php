@@ -81,56 +81,74 @@ class IndexAction extends Action
         return [ 'list' =>  $this->prepareDataProvider()->getModels(),'pagination'=>['total' => $this->prepareDataProvider()->getTotalCount()]];
     }
 
+//    /**
+//     * Prepares the data provider that should return the requested collection of the models.
+//     * @return ActiveDataProvider
+//     */
+//    protected function prepareDataProvider()
+//    {
+//        $requestParams = Yii::$app->getRequest()->getBodyParams();
+//        if (empty($requestParams)) {
+//            $requestParams = Yii::$app->getRequest()->getQueryParams();
+//        }
+//        $filter = null;
+//        if ($this->dataFilter !== null) {
+//            $this->dataFilter = Yii::createObject($this->dataFilter);
+//            if ($this->dataFilter->load($requestParams)) {
+//                $filter = $this->dataFilter->build();
+//                if ($filter === false) {
+//                    return $this->dataFilter;
+//                }
+//            }
+//        }
+//
+//        if ($this->prepareDataProvider !== null) {
+//            return call_user_func($this->prepareDataProvider, $this, $filter);
+//        }
+//
+//        /* @var $modelClass \yii\db\BaseActiveRecord */
+//        $modelClass = $this->modelClass;
+//
+//        $query = $modelClass::find();
+//        if (!empty($filter)) {
+//            $query->andWhere($filter);
+//        }
+//
+//        /**
+//         * 复写区域 sft@caiyoudata.com
+//         * ————————————————————————————
+//         *  添加sid限制条件，实现多租户SAAS
+//         */
+//        $query->andWhere(['sid' => Helper::getSid()]);
+//
+//
+//        return Yii::createObject([
+//            'class' => ActiveDataProvider::className(),
+//            'query' => $query,
+//            'pagination' => [
+//                'params' => $requestParams,
+//            ],
+//            'sort' => [
+//                'params' => $requestParams,
+//            ],
+//        ]);
+//    }
+
     /**
-     * Prepares the data provider that should return the requested collection of the models.
+     * 用于增强查询功能，基于https://github.com/HarryZheng0907/yii2-rest改写
      * @return ActiveDataProvider
+     * @author sft@caiyoudata.com
+     * @time   2018/7/20 下午7:00
      */
     protected function prepareDataProvider()
     {
-        $requestParams = Yii::$app->getRequest()->getBodyParams();
-        if (empty($requestParams)) {
-            $requestParams = Yii::$app->getRequest()->getQueryParams();
-        }
-        $filter = null;
-        if ($this->dataFilter !== null) {
-            $this->dataFilter = Yii::createObject($this->dataFilter);
-            if ($this->dataFilter->load($requestParams)) {
-                $filter = $this->dataFilter->build();
-                if ($filter === false) {
-                    return $this->dataFilter;
-                }
-            }
-        }
-
-        if ($this->prepareDataProvider !== null) {
-            return call_user_func($this->prepareDataProvider, $this, $filter);
-        }
-
-        /* @var $modelClass \yii\db\BaseActiveRecord */
         $modelClass = $this->modelClass;
-
-        $query = $modelClass::find();
-        if (!empty($filter)) {
-            $query->andWhere($filter);
-        }
-
-        /**
-         * 复写区域 sft@caiyoudata.com
-         * ————————————————————————————
-         *  添加sid限制条件，实现多租户SAAS
-         */
-        $query->andWhere(['sid' => Helper::getSid()]);
-
-
-        return Yii::createObject([
-            'class' => ActiveDataProvider::className(),
-            'query' => $query,
-            'pagination' => [
-                'params' => $requestParams,
-            ],
-            'sort' => [
-                'params' => $requestParams,
-            ],
+        $sort = yii::$app->request->get('sort','');
+        $query = CreateQueryHelper::createQuery($this->modelClass);
+        CreateQueryHelper::addOrderSort($sort, $modelClass::tableName(), $query);
+        return new ActiveDataProvider([
+            'query' => $query->distinct(),
+            'pagination' => isset($_GET['page'])?[]:false
         ]);
     }
 }

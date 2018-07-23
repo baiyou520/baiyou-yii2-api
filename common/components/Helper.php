@@ -142,4 +142,20 @@ class Helper
         return $data;
     }
 
+    /**
+     * 中断输出，用于调试
+     * @param $data
+     * @param bool $die
+     * @author sft@caiyoudata.com
+     * @time   2018/7/21 上午11:01
+     */
+
+    public static function p($data,$die = true){
+        echo "<pre>";
+        var_dump($data);
+        echo "</pre>";
+        if ($die){
+            die();
+        }
+    }
 }

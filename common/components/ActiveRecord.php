@@ -24,6 +24,9 @@ class ActiveRecord extends \yii\db\ActiveRecord
     {
         return [
             TimestampBehavior::className(),
+            'actionlog' => [
+               'class' => 'baiyou\common\components\ActionLogBehavior',
+           ],
         ];
     }
 
