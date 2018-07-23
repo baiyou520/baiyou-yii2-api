@@ -2,7 +2,7 @@
 use yii\db\Schema;
 use yii\db\Migration;
 
-class m180612_093725_new_instance extends Migration
+class m180610_093725_new_instance extends Migration
 {
 
     public function safeUp(){

@@ -45,8 +45,10 @@ class DashboardController extends BaseController
 
         // 快捷菜单
         $quick_start_menus_custom = Config::findOne(['symbol' => 'by_quick_start_menu']);
-        $quick_start_menus_custom = unserialize($quick_start_menus_custom->content);
-
+        if ($quick_start_menus_custom)
+            $quick_start_menus_custom = unserialize($quick_start_menus_custom->content);
+        else
+            $quick_start_menus_custom = [];
         $quick_start_menus_system = (new \yii\db\Query())
             ->from('config')
             ->where(['symbol' => 'by_quick_start_menu'])
