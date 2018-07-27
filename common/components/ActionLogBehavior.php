@@ -52,7 +52,11 @@ class ActionLogBehavior extends Behavior
         }
         $this->message = "新增了编号为%s的%s数据";
         $tableName = $event->sender->tableSchema->name;
-        $this->message = sprintf($this->message,$event->sender->getPrimaryKey(), $tableName);
+        $key = $event->sender->getPrimaryKey();
+        if (is_array($key)){
+            $key = json_encode($key);
+        }
+        $this->message = sprintf($this->message,$key, $tableName);
 
         ActionLog::add($this->message,null,0);
     }
@@ -64,7 +68,11 @@ class ActionLogBehavior extends Behavior
         }
         $this->message = "修改了编号为%s的%s数据";
         $tableName = $event->sender->tableSchema->name;
-        $this->message = sprintf($this->message,$event->sender->getPrimaryKey(), $tableName);
+        $key = $event->sender->getPrimaryKey();
+        if (is_array($key)){
+            $key = json_encode($key);
+        }
+        $this->message = sprintf($this->message,$key, $tableName);
         ActionLog::add($this->message,null,0);
     }
 
@@ -76,7 +84,11 @@ class ActionLogBehavior extends Behavior
         }
         $this->message = "删除了编号为%s的%s数据";
         $tableName = $event->sender->tableSchema->name;
-        $this->message = sprintf($this->message,$event->sender->getPrimaryKey(), $tableName);
+        $key = $event->sender->getPrimaryKey();
+        if (is_array($key)){
+            $key = json_encode($key);
+        }
+        $this->message = sprintf($this->message,$key, $tableName);
         ActionLog::add($this->message,null,0);
     }
 

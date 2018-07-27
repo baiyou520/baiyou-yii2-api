@@ -10,6 +10,7 @@ namespace baiyou\backend\controllers;
 
 
 use baiyou\backend\models\ActionLog;
+use baiyou\backend\models\ActionLogView;
 use baiyou\backend\models\Log;
 use yii\data\ActiveDataProvider;
 
@@ -26,7 +27,7 @@ class LogsController extends BaseController
     }
 
     /**
-     * 获取用户列表数据
+     * 获取错误日志列表数据
      * @return array
      * @author  billyshen 2018/5/28 下午8:24
      */
@@ -65,5 +66,23 @@ class LogsController extends BaseController
 
         ActionLog::add('执行了一次查询错误日志数据库，得到了'.$totalCount.'条数据','设置模块'); // 测试操作日志，比较重要的日志需要记录，参考https://help.youzan.com/displaylist/detail_4_11697
         return  ['message' => '获取错误日志列表成功','code' => 1,'data' => $data];
+    }
+
+    /**
+     * 获得操作日志列表
+     * @author sft@caiyoudata.com
+     * @time   2018/7/27 上午11:10
+     */
+    public function actionGetActionLog(){
+        $provider = new ActiveDataProvider([
+            'query' => ActionLogView::find()
+        ]);
+        // 获取分页和排序数据
+        $models = $provider->getModels();
+
+        // 获取所有页面的数据项的总数
+        $totalCount = $provider->getTotalCount();
+        $data = ['list' => $models,'pagination'=>['total' => $totalCount]];
+        return  ['message' => '获得操作日志列表成功','code' => 1,'data' => $data];
     }
 }

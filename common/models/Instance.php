@@ -2,6 +2,7 @@
 
 namespace baiyou\common\models;
 
+use baiyou\backend\models\ActionLog;
 use Yii;
 
 /**
@@ -13,15 +14,21 @@ use Yii;
  * @property string $thumb 实例头像，取值微信小程序图标
  * @property int $certificate_flag 是否认证，0：未认证，1：已认证
  * @property string $level 实例级别，如：初级版
+ * @property int $is_bind 是否绑定，0：未绑定，1：绑定
  * @property int $expired_at 到期时间
  * @property string $applet_appid 微信小程序id
  * @property string $applet_appsecret 微信小程序密钥
- * @property int $is_bind 是否绑定，0：未绑定，1：绑定
  * @property string $experience_qrcode 体验版二维码
  * @property string $online_qrcode 上线小程序码
- * @property int $status 0:已关闭，1:正常
+ * @property string $wx_mch_id 微信支付分配的商户号
+ * @property string $wx_mch_key 商户平台设置的密钥key
+ * @property string $ssl_cert_path cert证书地址
+ * @property string $ssl_key_path key证书地址
+ * @property int $status 0:试用，1:正常，-1:过期，-2:删除
  * @property int $created_at 时间戳，创建时间
  * @property int $updated_at 时间戳，修改时间
+ *
+ * @property ActionLog[] $actionLogs
  */
 class Instance extends \yii\db\ActiveRecord
 {
@@ -40,13 +47,15 @@ class Instance extends \yii\db\ActiveRecord
     {
         return [
             [['sid', 'user_id', 'expired_at'], 'required'],
-            [['sid', 'user_id', 'certificate_flag', 'expired_at', 'is_bind', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['sid', 'user_id', 'certificate_flag', 'is_bind', 'expired_at', 'status', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 50],
             [['thumb'], 'string', 'max' => 255],
             [['level'], 'string', 'max' => 20],
             [['applet_appid'], 'string', 'max' => 18],
-            [['applet_appsecret'], 'string', 'max' => 32],
+            [['applet_appsecret', 'wx_mch_key'], 'string', 'max' => 32],
             [['experience_qrcode', 'online_qrcode'], 'string', 'max' => 100],
+            [['wx_mch_id'], 'string', 'max' => 10],
+            [['ssl_cert_path', 'ssl_key_path'], 'string', 'max' => 40],
             [['sid'], 'unique'],
         ];
     }
@@ -63,15 +72,27 @@ class Instance extends \yii\db\ActiveRecord
             'thumb' => '实例头像，取值微信小程序图标',
             'certificate_flag' => '是否认证，0：未认证，1：已认证',
             'level' => '实例级别，如：初级版',
+            'is_bind' => '是否绑定，0：未绑定，1：绑定',
             'expired_at' => '到期时间',
             'applet_appid' => '微信小程序id',
             'applet_appsecret' => '微信小程序密钥',
-            'is_bind' => '是否绑定，0：未绑定，1：绑定',
             'experience_qrcode' => '体验版二维码',
             'online_qrcode' => '上线小程序码',
-            'status' => '0:已关闭，1:正常',
+            'wx_mch_id' => '微信支付分配的商户号',
+            'wx_mch_key' => '商户平台设置的密钥key',
+            'ssl_cert_path' => 'cert证书地址',
+            'ssl_key_path' => 'key证书地址',
+            'status' => '0:试用，1:正常，-1:过期，-2:删除',
             'created_at' => '时间戳，创建时间',
             'updated_at' => '时间戳，修改时间',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getActionLogs()
+    {
+        return $this->hasMany(ActionLog::className(), ['sid' => 'sid']);
     }
 }

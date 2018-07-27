@@ -18,7 +18,7 @@ class m180612_054805_create_actionlog extends Migration
         }
         $this->createTable('{{%action_log}}', [
             'action_log_id'     => $this->primaryKey()->unsigned()->comment('主键'),
-            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
+            'sid'               => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
             'user_id'           => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('用户id'),
             'user_ip'           => $this->string(15)->notNull()->defaultValue('')->comment('IP'),
             'action'            => $this->string(100)->notNull()->defaultValue('')->comment('方法'),
@@ -36,7 +36,7 @@ class m180612_054805_create_actionlog extends Migration
         // 创建view ，方便查询，效果可看中台操作日志页面.  注意由于是多租户设计要添加最后的where条件，来区别sid
         $this->execute("create view action_log_view as select `action_log`.`message` AS `message`,`action_log`.`created_at` AS `created_at`,
             `user`.`name` AS `name`,`action_log`.`sid` AS `sid`,`action_log`.`status` AS `status`,`action_log`.`module` AS `module` from 
-            (`action_log` join `user`)  where (`action_log`.`sid` = `user`.`sid`)");
+            (`action_log` join `user`)  where (`action_log`.`sid` = `user`.`sid` and `action_log`.`user_id` = `user`.`id`)");
     }
 
     /**

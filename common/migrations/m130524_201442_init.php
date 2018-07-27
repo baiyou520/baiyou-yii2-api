@@ -14,7 +14,7 @@ class m130524_201442_init extends Migration
 
         $this->createTable('{{%user}}', [
             'id'                => $this->integer()->unsigned()->comment('id，来自总后台数据库'),
-            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
+            'sid'               => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
             'username'          => $this->string(30)->notNull()->comment('用户名(即百优账号)'),
             'name'              => $this->string(30)->notNull()->comment('姓名(昵称)'),
             'phone'             => $this->string(20)->notNull()->comment('联系方式(电话)'),

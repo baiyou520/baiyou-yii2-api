@@ -10,8 +10,8 @@ namespace baiyou\common\components;
 
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveQuery;
 use yii\db\ActiveQueryInterface;
 use yii\helpers\ArrayHelper;
 
@@ -23,51 +23,41 @@ class ActiveRecord extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
-            'actionlog' => [
-               'class' => 'baiyou\common\components\ActionLogBehavior',
-           ],
+            [
+                /**
+                 * TimestampBehavior：
+                 * 创建的时候，默认插入当前时间戳给created_at和updated_at字段
+                 * 更新的时候，默认更新当前时间戳给updated_at字段
+                 */
+                'class'              => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                // 'value'              => time(),
+            ],
+            [
+                /**
+                 * AttributeBehavior：
+                 * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，插入到数据库
+                 */
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'sid',
+                ],
+                'value' => function ($event) {
+                    return Helper::getSid();
+                },
+            ],
+            [
+                /**
+                 * ActionLogBehavior：
+                 * 操作日志
+                 */
+                'class' => 'baiyou\common\components\ActionLogBehavior',
+            ],
+
         ];
     }
 
-    /**
-     * 复写
-     * Inserts an ActiveRecord into DB without considering transaction.
-     * @param array $attributes list of attributes that need to be saved. Defaults to `null`,
-     * meaning all attributes that are loaded from DB will be saved.
-     * @return bool whether the record is inserted successfully.
-     */
-    protected function insertInternal($attributes = null)
-    {
-        if (!$this->beforeSave(true)) {
-            return false;
-        }
-        $values = $this->getDirtyAttributes($attributes);
-
-
-        /**
-         * 复写区域 sft@caiyoudata.com
-         * ——————————————————————————————————————————————————————————————————————————————
-         * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，插入到数据库
-         */
-        $values['sid'] = Helper::getSid();
-
-
-        if (($primaryKeys = static::getDb()->schema->insert(static::tableName(), $values)) === false) {
-            return false;
-        }
-        foreach ($primaryKeys as $name => $value) {
-            $id = static::getTableSchema()->columns[$name]->phpTypecast($value);
-            $this->setAttribute($name, $id);
-            $values[$name] = $id;
-        }
-//        $this->setAttribute('sid', 1);
-        $changedAttributes = array_fill_keys(array_keys($values), null);
-        $this->setOldAttributes($values);
-        $this->afterSave(true, $changedAttributes);
-
-        return true;
-    }
 
     /**
      * 复写
@@ -102,29 +92,28 @@ class ActiveRecord extends \yii\db\ActiveRecord
         /**
          * 复写区域 sft@caiyoudata.com
          * ——————————————————————————————————————————————————————————————————————————————
-         * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，插入到数据库
+         * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，加入筛选条件
          */
         $condition['sid'] = Helper::getSid();
 
         return $query->andWhere($condition);
     }
 
-    /**
-     * 复写
-     * {@inheritdoc}
-     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
-     */
-    public static function find()
-    {
-        /**
-         * 复写区域 sft@caiyoudata.com
-         * ——————————————————————————————————————————————————————————————————————————————
-         * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，插入到数据库
-         */
-        return Yii::createObject(ActiveQuery::className(), [get_called_class()])->andWhere(['sid' => Helper::getSid()]);
-
+//    /**
+//     * 复写 暂时不启用
+//     * {@inheritdoc}
+//     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
+//     */
+//    public static function find()
+//    {
+//        /**
+//         * 复写区域 sft@caiyoudata.com
+//         * ——————————————————————————————————————————————————————————————————————————————
+//         * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里调用增强的ActiveQuery
+//         */
+//
 //        return Yii::createObject(ActiveQuery::className(), [get_called_class()]);
-    }
+//    }
 
 
 }

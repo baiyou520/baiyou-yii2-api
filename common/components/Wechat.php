@@ -57,7 +57,7 @@ class Wechat
             "path"=> 'pages/home/home'
         ];
 
-        $result=Helper::https_request($url,$data,false);
+        $result=Helper::https_request($url,$data,false); // 第三个参数:小程序码等文件流直接返回数据即可
         if (isset($result['errcode'])){
             Yii::error($result,'获取小程序码失败');
             return '';
@@ -71,6 +71,30 @@ class Wechat
             fputs($file,$result);//写入文件
             fclose($file);
             return $destination;
+        }
+    }
+
+
+    /**
+     * 添加体验者
+     * @param $sid
+     * @return string
+     * @author sft@caiyoudata.com
+     * @time   2018/7/24 下午2:34
+     */
+    public static function addExpMember($sid,$wechat_id){
+        $wx_access_token = Wechat::getWechatAccessToken($sid);
+        $url="https://api.weixin.qq.com/wxa/bind_tester?access_token=".$wx_access_token;
+        $data=[
+            "wechatid"=> $wechat_id
+        ];
+
+        $result=Helper::https_request($url,$data);
+        if ($result['errcode'] === 0){
+            return $result['userstr'];
+        }else{
+            Yii::error($result,'添加体验者失败');
+            return false;
         }
     }
 }

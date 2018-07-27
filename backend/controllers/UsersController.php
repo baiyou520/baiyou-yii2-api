@@ -96,43 +96,70 @@ class UsersController extends BaseController
         return $user;
     }
     /**
-     * 管理员创建角色
+     * 管理员添加员工
      * @return array
      * @throws HttpException
      * @author  billyshen 2018/5/29 下午1:36
      */
     public function actionCreate(){
         $request=Yii::$app->request;
-        if ($request->isPost){
-            $data=$request->post();
-            //验证账号是否在百优总后台中已经注册过了
-            $res=$this->checkExist($data,true);
-            if ($res['code']!=200){
-                return ["message"=>$res['message'],"code"=>$res['code'],'data' => []];
-            }
+        $data=$request->post();
+
+        //验证账号是否在百优总后台中已经注册过了
+        $results = $this->checkExist($data['username']);
+        if ($results['code'] != 1){
+            return ["code"=>BaseErrorCode::$OBJECT_NOT_FOUND, "message"=>'该用户还未注册为百优用户，请先让其注册！'];
+        }
+
+        // 新增用户表
+        $user_id = $results['data']['id']; //百优总后台返回的用户id
+        $user =  User::findOne(['id' => $user_id]);
+        if ($user)
+            return ["code"=>BaseErrorCode::$OBJECT_ALREADY_EXIST, "message"=>'该用户已经是员工了！'];
+        else{
             $user = new User();
-            $user->load($data, '');
-            if (!$user->validate($data)||!$res=$user->save()) {
-                return ["message"=>"参数错误","code"=>10002,"data"=>$user->errors];
+            $user->id = $user_id; // 这里的用户表的id不是自增的，而是来自百优总后台返回的用户id
+        }
+
+        if ($user->load($data, '') && $user->save()) {
+            // 分配权限表
+            $assignment = new AuthAssignment();
+            $assignment->item_name = $data['role'];
+            $assignment->user_id = $user_id;
+            if($assignment->save()){
+                $url = Yii::$app->params['admin_url'].'/v1/auth/add-employee';
+                $data_to_admin=[
+                    "user_id"=> $user_id,
+                    "instance_id"=> Helper::getSid(),
+                    "is_owner"=> 0,
+                ];
+                $result = Helper::https_request($url,$data_to_admin);
+                if ($result['code'] === 1){
+                    return ["code"=>1,"message"=>"添加员工成功！"];
+                }else{
+                    return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"具体应用添加员工成功，但总后台添加失败"];
+                }
+            }else{
+                return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"用户表添加成功，权限分配失败","data"=>$assignment->errors];
             }
-            $id=$user->id;
-            $assignment=new AuthAssignment();
-            $assignment->item_name=empty($data['role'])?"user":$data['role'];
-            $assignment->user_id=$id;
-            $assignment->created_at=time();
-            $code=$assignment->save();
-            if(!$code){
-                return ["message"=>"用户加色加载失败,请手动修改","code"=>10002];
-            }
-            return ["message"=>"注册成功","code"=>1];
+        }else{
+            return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$user->errors];
         }
     }
 
-    private function checkExist($data,$type=false){
-
-        //调用总后台提供的接口，检查该账号是否已经注册了
-
-        return ['code'=>200];
+    /**
+     * 调用总后台提供的接口，检查该账号是否已经注册了,只有已经注册了的用户才能添加为员工
+     * @param $username
+     * @return bool
+     * @author sft@caiyoudata.com
+     * @time   2018/7/25 下午5:59
+     */
+    private function checkExist($username){
+        $url = Yii::$app->params['admin_url'].'/v1/auth/check-account-exist';
+        $data_to_admin=[
+            "username"=> $username,
+        ];
+        return Helper::https_request($url,$data_to_admin);
     }
 
     /**
@@ -147,7 +174,7 @@ class UsersController extends BaseController
         $user=User::findOne($id);
         if($user->load($parms,'')){
             if(!$user->save()){
-                return ["message"=>"参数错误","code"=>10002,"data"=>$user->errors];
+                return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$user->errors];
             }
             if(isset($parms['role'])&&!empty($parms['role'])){
                 $assignment=AuthAssignment::find()->where(['user_id'=>$id])->one();
@@ -158,13 +185,13 @@ class UsersController extends BaseController
                 }
                 $assignment->item_name=$parms['role'];
                 if(!$assignment->save()){
-                    return ["message"=>"参数错误","code"=>10002,"data"=>$assignment->errors];
+                    return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$assignment->errors];
                 }
 
             }
             return ["message"=>"修改用户信息成功","code"=>1];
         }
-        return ["message"=>"参数错误","code"=>10002,"data"=>$user->errors];
+        return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$user->errors];
     }
 
     /**
@@ -177,19 +204,20 @@ class UsersController extends BaseController
     public function actionDelete($id){
         $model = User::findOne($id);
         if($model['username']=="sadmin"){
-            return ["message"=>"该用户不可删除","code"=>10008];
+            return ["message"=>"该用户不可删除","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
 
         $code=AuthAssignment::find()->where(['user_id'=>$id])->one()->delete();
         if (!$code) {
-            return ["message"=>"角色表信息未删除","code"=>10003];
+            return ["message"=>"角色表信息未删除","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
 
         $code=$model->delete();
         if (!$code) {
-            return ["message"=>"参数错误","code"=>10002,"data" => $model->errors];
+            return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data" => $model->errors];
         }
 
+        // 还差一个去服务器上面删除数据
         return ["message"=>"删除成功","code"=>1];
     }
 
@@ -199,7 +227,6 @@ class UsersController extends BaseController
      * @author  billyshen 2018/5/30 上午10:21
      */
     public function actionStartUp(){
-        \Yii::error('sss','ddd');
         $id = \Yii::$app->user->id;
         $query=New Query();
         //用户角色
@@ -300,38 +327,38 @@ class UsersController extends BaseController
         return  ['message' => '获取初始化信息成功','code' => 1,'data' => $responseData];
     }
 
-    /**
-     * 角色列表,辅助用于用户列表筛选
-     * @return array|\yii\db\ActiveRecord[]
-     * @author  billyshen 2018/5/30 上午10:26
-     */
-    public function actionRoles(){
-        $role=AuthItem::find()->select(['name','description'])->where(['type'=>1])->all();
-        return ['message' => '获取角色信息成功','code' => 1,'data' => $role];
-    }
+//    /**
+//     * 角色列表,辅助用于用户列表筛选
+//     * @return array|\yii\db\ActiveRecord[]
+//     * @author  billyshen 2018/5/30 上午10:26
+//     */
+//    public function actionRoles(){
+//        $role=AuthItem::find()->select(['name','description'])->where(['type'=>1])->all();
+//        return ['message' => '获取角色信息成功','code' => 1,'data' => $role];
+//    }
 
-    /**
-     * 批量启用/禁用
-     * @return array
-     * @throws HttpException
-     * @author  billyshen 2018/6/21 下午2:33
-     */
-    public function actionSetStatus(){
-        $request=Yii::$app->request;
-        $parms=$request->post();
-        foreach($parms['id'] as $val){
-            $user=User::findOne($val);
-            $item_name=AuthAssignment::find()->where(['user_id'=>$val])->one()['item_name'];
-            if($item_name=="super_admin"&&$parms['status'] == 0){ //super_admin为默认超级管理员角色名
-                return ['message'=>'超管不能禁用','code'=>10001];
-            }
-            $user->status=$parms['status'];
-            $code=$user->save();
-            if(!$code){
-                return ['message'=>'参数错误','code'=>10002,"data" => $user->errors];
-            }
-        }
-        $msg = $parms['status']===0 ? '禁用成功' : '启用成功';
-        return ['message'=>$msg,'code'=>1];
-    }
+//    /**
+//     * 批量启用/禁用
+//     * @return array
+//     * @throws HttpException
+//     * @author  billyshen 2018/6/21 下午2:33
+//     */
+//    public function actionSetStatus(){
+//        $request=Yii::$app->request;
+//        $parms=$request->post();
+//        foreach($parms['id'] as $val){
+//            $user=User::findOne($val);
+//            $item_name=AuthAssignment::find()->where(['user_id'=>$val])->one()['item_name'];
+//            if($item_name=="super_admin"&&$parms['status'] == 0){ //super_admin为默认超级管理员角色名
+//                return ['message'=>'超管不能禁用','code'=>10001];
+//            }
+//            $user->status=$parms['status'];
+//            $code=$user->save();
+//            if(!$code){
+//                return ['message'=>'参数错误','code'=>10002,"data" => $user->errors];
+//            }
+//        }
+//        $msg = $parms['status']===0 ? '禁用成功' : '启用成功';
+//        return ['message'=>$msg,'code'=>1];
+//    }
 }

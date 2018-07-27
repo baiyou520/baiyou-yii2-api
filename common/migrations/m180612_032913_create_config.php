@@ -20,7 +20,7 @@ class m180612_032913_create_config extends Migration
 
         $this->createTable('{{%config}}', [
             'config_id'     => $this->primaryKey()->unsigned()->comment('主键'),
-            'sid'               => $this->integer()->unsigned()->comment('sid，来自总后台数据库instance表中instance_id'),
+            'sid'               => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
             'symbol'        => $this->string(20)->notNull()->comment('标识'),
             'content'       => $this->text()->notNull()->comment('值'),
             'encode'        => $this->tinyInteger()->unsigned()->notNull()->defaultValue(1)->comment('值的编码形式1:string,2:json,3:int'),
@@ -28,42 +28,7 @@ class m180612_032913_create_config extends Migration
             'updated_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
         ], $tableOptions);
 
-        // 插入初始化数据
-        // 1.快捷菜单信息
-        $quick_start_menu = [];
-        array_push($quick_start_menu,
-            [
-                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-                'title' => '客户管理',
-                'desc' => '查看微信端客户信息',
-                'route' => '/customer/mgr'
-            ]);
-        array_push($quick_start_menu,
-            [
-                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-                'title' => '错误日志',
-                'desc' => '查看系统错误日志，仅系统开发人员可见',
-                'route' => '/setting/log'
-            ]);
-        array_push($quick_start_menu,
-            [
-                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-                'title' => '员工管理',
-                'desc' => '管理店铺员工，设置相关权限等',
-                'route' => '/setting/user'
-            ]);
-        array_push($quick_start_menu,
-            [
-                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-                'title' => '微信设置',
-                'desc' => '设置相关参数，包括店铺设置，微信设置，体验者设置等',
-                'route' => '/setting/wechat'
-            ]);
-        $this->batchInsert('{{%config}}',
-            ['symbol','content','encode','sid','created_at','updated_at'],
-            [
-                ['by_quick_start_menu', serialize($quick_start_menu), 2, 0, time(), time()],
-            ]);
+
     }
 
     /**

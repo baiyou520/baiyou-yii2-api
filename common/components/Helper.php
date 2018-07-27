@@ -50,7 +50,7 @@ class Helper
      * url请求的通用版本,当内容为空时,默认进行get请求,有内容时,进行post请求; 输入默认格式化，输出可选择
      * @param $url
      * @param null $data
-     * @param bool $is_decode
+     * @param bool $is_decode 小程序码等文件流直接返回数据即可
      * @return mixed
      * @author sft@caiyoudata.com
      * @time   2018/7/18 下午4:08

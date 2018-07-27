@@ -16,4 +16,5 @@ class BaseErrorCode
     public static $OBJECT_NOT_FOUND = 1001; // 对象未找到
     public static $SID_WRONG = 1002; // sid不对，跳回总控制台，重新点击进入控制台即可
     public static $OBJECT_ALREADY_EXIST = 1003; // 实例已经存在，比如name唯一
+    public static $SET_EXPERIENCER_FAILED = 1004; // 添加或绑定体验者失败
 }

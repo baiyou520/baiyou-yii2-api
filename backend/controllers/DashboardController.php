@@ -10,6 +10,7 @@ namespace baiyou\backend\controllers;
 use baiyou\backend\models\ActionLog;
 use baiyou\backend\models\ActionLogView;
 use baiyou\backend\models\Config;
+use baiyou\common\components\Helper;
 use baiyou\common\models\Customer;
 
 class DashboardController extends BaseController
@@ -36,7 +37,9 @@ class DashboardController extends BaseController
     public function actionIndex(){
 
         $user_total = Customer::find()->count();// 用户总数
-        $user_new_in_past_24hours = Customer::find()->where(['>', 'created_at', time()-60*60*24])->count();// 过去24小时新增用户数
+        $user_new_in_past_24hours = Customer::find()
+            ->where(['>', 'created_at', time()-60*60*24])
+            ->andWhere(['=', 'sid', Helper::getSid()])->count();// 过去24小时新增用户数
 
         // 统计
         $statistics = [];
@@ -49,8 +52,7 @@ class DashboardController extends BaseController
             $quick_start_menus_custom = unserialize($quick_start_menus_custom->content);
         else
             $quick_start_menus_custom = [];
-        $quick_start_menus_system = (new \yii\db\Query())
-            ->from('config')
+        $quick_start_menus_system = Config::find()
             ->where(['symbol' => 'by_quick_start_menu'])
             ->andWhere(['sid' => 0])
             ->one();
@@ -58,12 +60,16 @@ class DashboardController extends BaseController
         $quick_start_menus = array_merge($quick_start_menus_custom,$quick_start_menus_system);
 
         // 新增客户
-        $new_customers = Customer::find()->where(['>', 'created_at', time()-60*60*24])->all();
+        $new_customers =  Customer::find()
+            ->where(['>', 'created_at', time()-60*60*24])
+            ->andWhere(['=', 'sid', Helper::getSid()])->all();
 
+//        Helper::p( time()-60*60*24);
          // 动态
         $activities = ActionLogView::find()
             ->where(['>', 'created_at', time()-60*60*24*7])
-            ->andWhere(['=', 'status', 1])->orderBy('created_at desc')->all(); // 先取过去七天的重要操作日志，参考https://help.youzan.com/displaylist/detail_4_11697
+            ->andWhere(['=', 'status', 1])
+            ->andWhere(['=', 'sid', Helper::getSid()])->orderBy('created_at desc')->all(); // 先取过去七天的重要操作日志，参考https://help.youzan.com/displaylist/detail_4_11697
 
         $data = [
             'statistics' => $statistics,
