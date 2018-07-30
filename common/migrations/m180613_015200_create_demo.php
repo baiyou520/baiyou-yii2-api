@@ -82,7 +82,7 @@ class m180613_015200_create_demo extends Migration
          * 开发者需要创建1级菜单和2级菜单
          */
 
-        // 7. 创建1级菜单，注意：指定父级菜单parent为2,即属于L0-Application;主键id指定为一个数据库中没有的值（这块有待完善）
+        // 7. 创建1级菜单，注意：指定父级菜单parent为2,即属于L0-Application;主键id指定为一个数据库中没有的值，请设置1000以上（这块有待完善）
         $this->insert('{{%menu}}', [
             'id' => 11,
             'name' => 'L1-Demo',
@@ -91,7 +91,7 @@ class m180613_015200_create_demo extends Migration
             'data' => '{"icon":"icon-list","text":"Demo演示管理"}'
         ]);
 
-        // 8. 创建2级菜单，注意：指定父级菜单parent为11,即父级菜单的id;主键id指定为一个数据库中没有的值（这块有待完善）
+        // 8. 创建2级菜单，注意：指定父级菜单parent为11,即父级菜单的id;主键id指定为一个数据库中没有的值，请设置1000以上（这块有待完善）
         $this->insert('{{%menu}}', [
             'id' => 12,
             'name' => 'L2-DemoMgr',
@@ -105,6 +105,10 @@ class m180613_015200_create_demo extends Migration
         // 10. 去控制器中，完善个性化需求的接口
 
 
+        // 以下这步不用做,未测试
+        if(YII_ENV_PROD){
+            $this->delete('{{%menu}}',['id' => [11, 12]]);
+        }
     }
 
     /**
