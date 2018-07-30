@@ -8,6 +8,9 @@
 
 namespace baiyou\backend\controllers;
 use baiyou\common\components\BaseErrorCode;
+use baiyou\common\components\Helper;
+use function DeepCopy\deep_copy;
+use Prophecy\Doubler\ClassPatch\HhvmExceptionPatch;
 use yii;
 use yii\db\Query;
 use yii\data\ActiveDataProvider;
@@ -37,7 +40,7 @@ class AuthoritiesController extends BaseController
      */
     public function actionIndex(){
         //数据
-        $roles=AuthItem::find()->select(['name','description'])->where(['type'=>1])->andwhere(['!=','name','super_admin'])->all();
+        $roles=AuthItem::find()->select(['name','description'])->where(['type'=>1])->andwhere(['!=','name','root'])->all();
         //总条数
         $total=count($roles);
         $data=["list"=>$roles,'pagination'=>['total' => $total]];
@@ -57,28 +60,55 @@ class AuthoritiesController extends BaseController
         //角色验证
         $role_item=AuthItem::find()->select(['name','description'])
             ->where(['name'=>$id,'type'=>1])
-            ->andWhere(['not like','name','_admin'])
+//            ->andWhere(['not like','name','_admin'])
             ->one();
         if(empty($role_item)){
             return ["message"=>"角色名不正确","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
-        //找到角色的权限
-        $role_permission=AuthItemChild::find()->where(['parent'=>$id])->andWhere(['not like','child','/'])->all();
-        $role_perm=array_column($role_permission,'child');
 
         //找到所有权限
-        $permission=(new Query())->from('auth_item ai')
-            ->select(['ai.name','aic.child auth'])
-            ->where(['type'=>2])
-            ->leftJoin('auth_item_child aic','aic.parent=ai.name')
-            ->andWhere(['not like','child','/'])
-            ->all();
-        $all_permission=$this->genTree($permission,'name','auth');
 
-        //判断哪些是角色已经选择的权限
-        $role_permissions=$this->check_permission($all_permission,$role_perm,'auth',false,true);
-        $data=array_values($role_permissions);
-        return ["message"=>"OK","code"=>1,"data"=>$data];
+        $results=(new Query())->from('auth_item ai')
+            ->select(['ai.name pid' ,'aic.child id' ,'aic.child title'])
+            ->where(['type'=>2])
+            ->andWhere(['not like ','child','/'])
+//            ->andWhere(['= ','name',$id])
+//            ->andWhere(['=','name','系统'])
+            ->leftJoin('auth_item_child aic','aic.parent=ai.name')
+            ->all();
+        $all_permissions = $this->generateTree($results);
+
+
+        //找到角色的权限
+        $results=AuthItemChild::find()->where(['parent'=>$id])->andWhere(['not like','child','/'])->all();
+        $role_permissions=array_column($results,'child');
+
+
+//        //找到所有权限
+////        $permission=(new Query())->from('auth_item ai')
+////            ->select(['ai.name','aic.child auth'])
+////            ->where(['type'=>2])
+////            ->leftJoin('auth_item_child aic','aic.parent=ai.name')
+////            ->andWhere(['not like','child','/'])
+////            ->all();
+//        $permission=(new Query())->from('auth_item ai')
+//            ->select(['ai.name'])
+//            ->where(['type'=>2])
+////            ->leftJoin('auth_item_child aic','aic.parent=ai.name')
+//            ->andWhere(['not like','name','/'])
+//            ->all();
+
+
+//        Helper::p($all_roles);
+
+
+//        $all_permission=$this->genTree($permission,'name','auth');
+//
+//        //判断哪些是角色已经选择的权限
+        $permissions=$this->check_permission2($all_permissions,$role_permissions,'title',false,true);
+//        $data=array_values($role_permissions);
+//        Helper::p($permissions);//
+        return ["message"=>"OK","code"=>1,"data"=>$permissions];
 
 //        $parmas=Yii::$app->request->get();
 //        $name = $parmas['name'] ?? '';
@@ -112,6 +142,159 @@ class AuthoritiesController extends BaseController
 //        return ["message"=>"OK","code"=>1,"data"=>$data];
         //找到参数中角色权限
     }
+
+    private function check_permission2(&$all_permission,$role_perm,$s,$check=false,$select=false){
+        foreach($all_permission as $key => &$value){
+
+            // 保留原有结构，从根节点开始
+            $value['check']=$check;
+            if(in_array($value[$s],$role_perm)){
+                $value['check']=true;
+            }
+
+            // 处理子节点
+            if(isset($value['children'])&&!empty($value['children'])){
+                $this->check_permission2($value['children'],$role_perm,$s,$value['check'],$select);
+            }
+
+            // 去掉没有权限的节点
+            if (!$value['check'] && empty($value['children'])){
+                unset($all_permission[$key]);
+                $all_permission =  array_values($all_permission); // 使用 unset 并未改变数组的原有索引。如果打算重排索引（让索引从0开始，并且连续），可以使用 array_values
+            }
+        }
+        return $all_permission;
+    }
+
+
+    function generateTree($array){
+        //第一步 构造数据
+        $items = array();
+        foreach($array as $value){
+            $items[$value['id']] = $value;
+        }
+
+        //第二部 遍历数据 生成树状结构
+        $tree = array();
+        foreach($items as $key => $item){
+            if(isset($items[$item['pid']])){
+                if (strpos($item['title'],'/') === 0){ // 叶子节点
+                    $items[$item['pid']]['isLeaf'] = true;
+                }else{
+                    $items[$item['pid']]['children'][] = &$items[$key];
+                }
+            }else{
+                $tree[] = &$items[$key];
+            }
+        }
+        return $tree;
+    }
+
+//    private $tree = [];
+    private function getAllPermissionsTree(){
+//        // 1.找到所有权限
+//        $permissions=(new Query())->from('auth_item ai')
+//            ->select(['ai.name'])
+//            ->where(['type'=>2])
+//            ->andWhere(['not like','name','/'])
+//            ->all();
+//
+//        // 2.找到所有角色
+//        $results = AuthItem::find()->where(['type' => 1])->asArray()->all();
+//        $all_roles = [];
+//        foreach ($results as $role){
+//            array_push($all_roles,$role['name']);
+//        }
+//
+//        // 3.找到顶级节点
+//        $top_nodes = [];
+//        foreach ($permissions as $per){
+//            // 得到权限点的所有上级分配，因为一个权限点可能会直接分配给某个角色，所以这里要
+//            // 去掉这样的数据，从而明确权限的层级关系，这块用的数组的array_diff相差完成，待完善
+//            $results = AuthItem::findOne($per['name'])->authItemChildren0;
+//            $father_nodes = [];
+//            foreach ($results as $r){
+//                array_push($father_nodes,$r['parent']);
+//            }
+//            $diff = array_diff($father_nodes, $all_roles);
+//            if (!$diff){// 相差后不存在上级节点，意味着这个是根节点了
+//                array_push($top_nodes,$per['name']);
+//            }
+//        }
+
+        // 1.找到顶级节点, 创建顶级节点的时候，描述里面要以L0打头
+        $top_nodes = AuthItem::find()->where(['like','description','L0%',false ])->asArray()->all();
+//
+        // 2.找到所有权限点，即分配关系
+        $permissions=(new Query())->from('auth_item ai')
+            ->select(['ai.name pid' ,'aic.child id' ,'aic.child title'])
+            ->where(['type'=>2])
+            ->andWhere(['not like ','child','/'])
+//            ->andWhere(['=','name','系统'])
+            ->leftJoin('auth_item_child aic','aic.parent=ai.name')
+            ->all();
+//        Helper::p($permissions);
+        // 3.根据顶级节点，递归生成权限树
+        function list_to_tree($list, $pid)
+        {
+            $child = array();
+            if (!empty($list)) {
+                foreach ($list as $k => &$v) {
+//                    $v['key'] == $v['title'];
+                    if ($v['pid'] == $pid) {
+////
+//                        if (strpos($v['auth'],'/') === 0){ // 如果已经是叶子节点了，则停止递归
+//
+//                            $v['isLeaf'] = true;
+////
+//                        }else{
+//                            Helper::p($v);
+                        $v['children'] = list_to_tree($list, $v['id']);
+                        if (strpos($v['title'],'/') === 0){ // 叶子节点
+                            $v['isLeaf'] = true;
+                            //                            Helper::p($v);
+                        }
+                        $child[] = $v;
+//                        }
+
+                        //unset($list_to_tree[$k]);
+                    }
+                }
+            }
+            return $child;
+        }
+
+//        $permissions_tree = list_to_tree($permissions,'权限点');
+        $permissions_tree = $this->generateTree($permissions);
+//        foreach ($top_nodes as $node){
+//            Helper::p($node,false);
+//            $permissions_tree = array_merge($permissions_tree,);
+//        } Helper::p($permissions_tree,false);die();
+
+
+
+
+//        $leaf_node['title'] = '客户修改';
+//        Helper::p( $leaf_node);
+//        $this->getTree3($permissions,$leaf_node);
+//        Helper::p( $permissions_tree);
+//        Helper::p($permissions);
+//        $child=array_column($permissions,'auth');
+//        //父级 集合
+//        $parent=array_unique(array_column($permissions,'name'));
+//        Helper::p($parent);
+//        // 4.根据顶级节点递归生成tree
+//        foreach ($top_nodes as $node){
+//
+//            $asss = array_search($node['name'],$permissions,true);
+//
+//        }
+
+
+        return $permissions_tree;
+    }
+
+
     /**
      * 添加
      * @return array|bool
@@ -239,6 +422,7 @@ class AuthoritiesController extends BaseController
         $child=array_column($list,$s);
         //父级 集合
         $parent=array_unique(array_column($list,$p));
+        Helper::p($child);
         foreach ($list as $val){
             //父级可能会有子级部分内容,找到不在子集上的
             if(!in_array($val[$p],$child)){
@@ -300,10 +484,10 @@ class AuthoritiesController extends BaseController
             if(in_array($value[$s],$role_perm)){
                 $value['check']=true;
             }
-            if(isset($value['subset'])&&!empty($value['subset'])){
-                $value['subset']=$this->check_permission($value['subset'],$role_perm,$s,$value['check'],$select);
+            if(isset($value['children'])&&!empty($value['children'])){
+                $value['children']=$this->check_permission($value['children'],$role_perm,$s,$value['check'],$select);
             }
-            if($value['check']==false&&$select==true&&empty($value['subset'])){
+            if($value['check']==false&&$select==true&&empty($value['children'])){
                 unset($all_permission[$key]);
             }
             if($select){
