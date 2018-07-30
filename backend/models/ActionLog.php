@@ -2,10 +2,8 @@
 
 namespace baiyou\backend\models;
 
-use baiyou\common\components\ActiveRecord;
 use baiyou\common\models\Instance;
 use Yii;
-
 /**
  * This is the model class for table "action_log".
  *
@@ -13,6 +11,7 @@ use Yii;
  * @property int $sid sid，来自总后台数据库instance表中instance_id
  * @property int $user_id 用户id
  * @property string $user_ip IP
+ * @property int $trigger_from 日志来源:0,中台，1，微信
  * @property string $action 方法
  * @property string $controller 控制器
  * @property string $module 操作模块
@@ -22,10 +21,9 @@ use Yii;
  * @property int $created_at 创建时间戳
  * @property int $updated_at 修改时间戳
  *
- * @property User $user
  * @property Instance $s
  */
-class ActionLog extends ActiveRecord
+class ActionLog extends \baiyou\common\components\ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -41,13 +39,12 @@ class ActionLog extends ActiveRecord
     public function rules()
     {
         return [
-            [['sid', 'user_id', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['user_ip', 'action', 'controller', 'module'], 'required'],
+            [['sid'], 'required'],
+            [['sid', 'user_id', 'trigger_from', 'status', 'created_at', 'updated_at'], 'integer'],
             [['message', 'detail'], 'string'],
             [['user_ip'], 'string', 'max' => 15],
             [['action', 'controller'], 'string', 'max' => 100],
             [['module'], 'string', 'max' => 20],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['sid'], 'exist', 'skipOnError' => true, 'targetClass' => Instance::className(), 'targetAttribute' => ['sid' => 'sid']],
         ];
     }
@@ -62,6 +59,7 @@ class ActionLog extends ActiveRecord
             'sid' => 'sid，来自总后台数据库instance表中instance_id',
             'user_id' => '用户id',
             'user_ip' => 'IP',
+            'trigger_from' => '日志来源:0,中台，1，微信',
             'action' => '方法',
             'controller' => '控制器',
             'module' => '操作模块',
@@ -71,14 +69,6 @@ class ActionLog extends ActiveRecord
             'created_at' => '创建时间戳',
             'updated_at' => '修改时间戳',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
     /**
@@ -98,6 +88,14 @@ class ActionLog extends ActiveRecord
     public static function add($message = null, $module = null,$status = 1)
     {
         $model = Yii::createObject(__CLASS__);
+
+        // 判断操作来自微信端，还是中台
+        $controllerNamespace = Yii::$app->requestedAction->controller->module->controllerNamespace;
+        if (strpos($controllerNamespace,'backend') === 0){
+            $model->trigger_from = '0'; // 日志来源:0,中台，1，微信
+        }else{
+            $model->trigger_from = '1'; // 日志来源:0,中台，1，微信
+        }
         $model->user_id = Yii::$app->user->id;
         $model->user_ip = $_SERVER['REMOTE_ADDR'];
         $model->action = Yii::$app->requestedAction->id;

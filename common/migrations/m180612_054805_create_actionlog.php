@@ -21,6 +21,7 @@ class m180612_054805_create_actionlog extends Migration
             'sid'               => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
             'user_id'           => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('用户id'),
             'user_ip'           => $this->string(15)->notNull()->defaultValue('')->comment('IP'),
+            'trigger_from'      => $this->tinyInteger()->notNull()->defaultValue(0)->comment('日志来源:0,中台，1，微信'),
             'action'            => $this->string(100)->notNull()->defaultValue('')->comment('方法'),
             'controller'        => $this->string(100)->notNull()->defaultValue('')->comment('控制器'),
             'module'            => $this->string(20)->notNull()->defaultValue('')->comment('操作模块'),
@@ -29,7 +30,7 @@ class m180612_054805_create_actionlog extends Migration
             'detail'            => $this->text()->Null()->defaultValue(NULL)->comment('详情'),
             'created_at'        => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'        => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
-            'FOREIGN KEY ([[user_id]]) REFERENCES user ([[id]]) ON DELETE NO ACTION ON UPDATE NO ACTION' ,
+//            'FOREIGN KEY ([[user_id]]) REFERENCES user ([[id]]) ON DELETE NO ACTION ON UPDATE NO ACTION' ,
             'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION' ,
         ], $tableOptions);
 

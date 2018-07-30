@@ -156,7 +156,7 @@ class m180612_080952_init_data extends Migration
                 [7, 'L2-CustMgr', 5, '/by/customers/index', 1, '{"link":"/customer/mgr","text":"客户管理"}'],
                 [8, 'L2-UserMgr', 6, '/by/users/index', 1, '{"link":"/setting/user","text":"员工管理"}'],
                 [9, 'L2-LogMgr', 6, '/by/logs/index', 2,'{"link":"/setting/log","text":"错误日志"}'],
-                [10, 'L2-WechatMgr', 6, '/by/wecaht/index', 2,'{"link":"/setting/setting/wechat","text":"微信设置"}'],
+                [10, 'L2-WechatMgr', 6, '/by/configs/get-applet-setting', 2,'{"link":"/setting/setting/wechat","text":"微信设置"}'],
             ]);
 
         // 5.快捷菜单信息
