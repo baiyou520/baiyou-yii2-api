@@ -91,12 +91,13 @@ class ActionLog extends \baiyou\common\components\ActiveRecord
 
         // 判断操作来自微信端，还是中台
         $controllerNamespace = Yii::$app->requestedAction->controller->module->controllerNamespace;
-        if (strpos($controllerNamespace,'backend') === 0){
+        if (strpos($controllerNamespace,'backend') !== false){
             $model->trigger_from = '0'; // 日志来源:0,中台，1，微信
-        }else{
+        }
+        if (strpos($controllerNamespace,'frontend') !== false){
             $model->trigger_from = '1'; // 日志来源:0,中台，1，微信
         }
-        $model->user_id = Yii::$app->user->id;
+        $model->user_id = Yii::$app->user->id ?? 0;
         $model->user_ip = $_SERVER['REMOTE_ADDR'];
         $model->action = Yii::$app->requestedAction->id;
         $model->controller = Yii::$app->requestedAction->controller->id;
