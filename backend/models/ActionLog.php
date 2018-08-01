@@ -63,7 +63,7 @@ class ActionLog extends \baiyou\common\components\ActiveRecord
             'action' => '方法',
             'controller' => '控制器',
             'module' => '操作模块',
-            'status' => '状态:0,给开发人员看，1，给客户看',
+            'status' => '状态:0,给开发人员看，1，给客户看', // 比较重要的日志需要记录给客户看，参考https://help.youzan.com/displaylist/detail_4_11697
             'message' => '操作内容',
             'detail' => '详情',
             'created_at' => '创建时间戳',

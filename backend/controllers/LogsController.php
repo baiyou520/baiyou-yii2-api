@@ -12,6 +12,7 @@ namespace baiyou\backend\controllers;
 use baiyou\backend\models\ActionLog;
 use baiyou\backend\models\ActionLogView;
 use baiyou\backend\models\Log;
+use baiyou\common\components\CreateQueryHelper;
 use yii\data\ActiveDataProvider;
 
 class LogsController extends BaseController
@@ -27,7 +28,7 @@ class LogsController extends BaseController
     }
 
     /**
-     * 获取错误日志列表数据
+     * 获取错误日志列表数据,log表没有sid
      * @return array
      * @author  billyshen 2018/5/28 下午8:24
      */
@@ -74,9 +75,11 @@ class LogsController extends BaseController
      * @time   2018/7/27 上午11:10
      */
     public function actionGetActionLog(){
+        $query = CreateQueryHelper::createQuery('baiyou\backend\models\ActionLogView');
         $provider = new ActiveDataProvider([
-            'query' => ActionLogView::find()
+            'query' => $query->andFilterWhere(['=','status',1])
         ]);
+
         // 获取分页和排序数据
         $models = $provider->getModels();
 

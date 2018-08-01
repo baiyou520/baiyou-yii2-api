@@ -23,8 +23,6 @@ class m180612_080952_init_data extends Migration
                 ['/by/customers/view', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/dashboard/index', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/dashboard/notice', 0, 2, NULL, NULL, NULL, time(), time()],
-                ['/by/logs/index', 0, 2, NULL, NULL, NULL, time(), time()],
-                ['/by/logs/view', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/logs/get-action-log', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/users/create', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/users/delete', 0, 2, NULL, NULL, NULL, time(), time()],
@@ -59,8 +57,8 @@ class m180612_080952_init_data extends Migration
 
                 ['系统', 0, 2, 'L0系统组', NULL, NULL, time(), time()],
                 ['设置', 0, 2, 'L1设置管理', NULL, NULL, time(), time()],
-                ['错误日志', 0, 2, 'L2错误日志管理', NULL, NULL, time(), time()],
-                //                ['操作日志', 0, 2, '操作日志管理', NULL, NULL, time(), time()],
+                ['操作日志', 0, 2, '操作日志管理', NULL, NULL, time(), time()],
+
                 ['员工管理', 0, 2, 'L2整个员工管理模块权限点集合', NULL, NULL, time(), time()],
                 ['员工修改', 0, 2, 'L3修改某个员工', NULL, NULL, time(), time()],
                 ['员工删除', 0, 2, 'L3删除某个员工', NULL, NULL, time(), time()],
@@ -84,10 +82,10 @@ class m180612_080952_init_data extends Migration
                 ['首页', '/by/users/start-up'],
 
                 ['系统', '设置'],
-                ['设置', '错误日志'],
-                ['错误日志', '/by/logs/index'],
-                ['错误日志', '/by/logs/view'],
-                //                ['操作日志', '/by/logs/get-action-log'],
+
+                ['设置', '操作日志'],
+                ['操作日志', '/by/logs/get-action-log'],
+
                 ['设置', '员工管理'],
                 ['员工管理', '员工查看'],
                 ['员工管理', '员工修改'],
@@ -156,35 +154,36 @@ class m180612_080952_init_data extends Migration
                 [7, 'L2-CustMgr', 5, '/by/customers/index', 1, '{"link":"/customer/mgr","text":"客户管理"}'],
                 [8, 'L2-UserMgr', 6, '/by/users/index', 1, '{"link":"/setting/user","text":"员工管理"}'],
                 [9, 'L2-LogMgr', 6, '/by/logs/index', 2,'{"link":"/setting/log","text":"错误日志"}'],
-                [10, 'L2-WechatMgr', 6, '/by/configs/get-applet-setting', 2,'{"link":"/setting/setting/wechat","text":"微信设置"}'],
+                [10, 'L2-WechatMgr', 6, '/by/configs/get-applet-setting', 3,'{"link":"/setting/setting/wechat","text":"微信设置"}'],
+                [13, 'L2-ActionLogMgr', 6, '/by/logs/get-action-log', 4,'{"link":"/setting/action-log","text":"操作日志"}'],
             ]);
 
         // 5.快捷菜单信息
         $quick_start_menu = [];
         array_push($quick_start_menu,
             [
-                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+                'avatar' => 'anticon anticon-wechat',
                 'title' => '客户管理',
                 'desc' => '查看微信端客户信息',
                 'route' => '/customer/mgr'
             ]);
         array_push($quick_start_menu,
             [
-                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
-                'title' => '错误日志',
-                'desc' => '查看系统错误日志，仅系统开发人员可见',
-                'route' => '/setting/log'
+                'avatar' => 'anticon anticon-file',
+                'title' => '操作日志',
+                'desc' => '查看重要操作日志',
+                'route' => '/setting/action-log'
             ]);
         array_push($quick_start_menu,
             [
-                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+                'avatar' => 'anticon anticon-user',
                 'title' => '员工管理',
                 'desc' => '管理店铺员工，设置相关权限等',
                 'route' => '/setting/user'
             ]);
         array_push($quick_start_menu,
             [
-                'avatar' => 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+                'avatar' => 'anticon anticon-setting',
                 'title' => '微信设置',
                 'desc' => '设置相关参数，包括店铺设置，微信设置，体验者设置等',
                 'route' => '/setting/setting/wechat'

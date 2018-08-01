@@ -59,7 +59,6 @@ class UsersController extends BaseController
                     ->leftJoin('auth_item ai','ai.name=aa.item_name')
                     ->andWhere(['=','aa.sid',Helper::getSid()]) ////这里由于没有设计外键，必须手动加sid
                     ->andFilterWhere(['like','user.name',$keyword])
-                    ->orFilterWhere(['like','user.email',$keyword])
                     ->orFilterWhere(['like','user.username',$keyword])
                     ->andFilterWhere(['>=','user.created_at',$begin])
                     ->andFilterWhere(['<=','user.created_at',$end])

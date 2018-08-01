@@ -82,7 +82,7 @@ class CreateQueryHelper {
         $query->orderBy($order);
     }
 
-    private static function getQueryParams($ignore)
+    public static function getQueryParams($ignore)
     {
         $pairs = explode("&", urldecode(Yii::$app->getRequest()->queryString));
         $ranges = [];
@@ -94,7 +94,7 @@ class CreateQueryHelper {
             $name = urldecode($nv[0]);
             $value = urldecode($nv[1]);
 
-            // 处理类似LIKE_name，把筛选关键词放属性前面的是问题，方便于前端ng-alain调用
+            // 处理类似LIKE_name，把筛选关键词放属性前面的问题，方便于前端ng-alain调用
             $condition_transform_functions = self::conditionTransformFunctions();
             foreach ($condition_transform_functions as $key => $fun) {
                 $param = $key.'_';

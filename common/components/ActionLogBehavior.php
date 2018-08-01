@@ -6,7 +6,7 @@ namespace baiyou\common\components;
 
 use baiyou\backend\models\ActionLog;
 use Yii;
-use yii\db\ActiveRecord;
+//use yii\db\ActiveRecord;
 use yii\base\Behavior;
 
 /**
