@@ -309,6 +309,7 @@ class UsersController extends BaseController
             'app_name' => Yii::$app->params['app-name'],
             'sid' => $instance->sid,
             'instance_name' => $instance->name,
+            'status' => $instance->status,
             'license' => $license, // 版本
             'expired_at' => $expired_at, // 多久过期
             'sub_title' => $sub_title,
