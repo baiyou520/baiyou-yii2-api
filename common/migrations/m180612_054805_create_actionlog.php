@@ -34,10 +34,11 @@ class m180612_054805_create_actionlog extends Migration
             'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION' ,
         ], $tableOptions);
 
-        // 创建view ，方便查询，效果可看中台操作日志页面.  注意由于是多租户设计要添加最后的where条件，来区别sid
-        $this->execute("create view action_log_view as select `action_log`.`message` AS `message`,`action_log`.`created_at` AS `created_at`,
-            `user`.`name` AS `name`,`action_log`.`sid` AS `sid`,`action_log`.`status` AS `status`,`action_log`.`module` AS `module` from 
-            (`action_log` join `user`)  where (`action_log`.`sid` = `user`.`sid` and `action_log`.`user_id` = `user`.`id`)");
+//        // 创建view ，方便查询，效果可看中台操作日志页面.  注意由于是多租户设计要添加最后的where条件，来区别sid
+        // 2018-8-2,已经用fields解决
+//        $this->execute("create view action_log_view as select `action_log`.`message` AS `message`,`action_log`.`created_at` AS `created_at`,
+//            `user`.`name` AS `name`,`action_log`.`sid` AS `sid`,`action_log`.`status` AS `status`,`action_log`.`module` AS `module` from
+//            (`action_log` join `user`)  where (`action_log`.`sid` = `user`.`sid` and `action_log`.`user_id` = `user`.`id`)");
     }
 
     /**
@@ -46,7 +47,7 @@ class m180612_054805_create_actionlog extends Migration
     public function safeDown()
     {
         $this->dropTable('{{%actionlog}}');
-        $this->execute("drop view if exists action_log_view");
+//        $this->execute("drop view if exists action_log_view");
     }
 
     /*

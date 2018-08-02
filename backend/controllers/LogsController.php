@@ -75,7 +75,7 @@ class LogsController extends BaseController
      * @time   2018/7/27 上午11:10
      */
     public function actionGetActionLog(){
-        $query = CreateQueryHelper::createQuery('baiyou\backend\models\ActionLogView');
+        $query = CreateQueryHelper::createQuery('baiyou\backend\models\ActionLog');
         $provider = new ActiveDataProvider([
             'query' => $query->andFilterWhere(['=','status',1])
         ]);

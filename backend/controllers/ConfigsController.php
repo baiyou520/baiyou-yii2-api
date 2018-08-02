@@ -110,7 +110,7 @@ class ConfigsController extends BaseController
                 return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"保存失败","data" => $exp->errors];
             }
         }else{
-            return ["code"=>BaseErrorCode::$SET_EXPERIENCER_FAILED,"message"=>"添加体验者失败","data"=>$results];
+            return ["code"=>BaseErrorCode::$SET_EXPERIENCER_FAILED,"message"=>"添加体验者失败，请核实该用户是否已经是体验者了","data"=>$results];
         }
 
     }
@@ -142,5 +142,53 @@ class ConfigsController extends BaseController
             return ["code"=>BaseErrorCode::$SET_EXPERIENCER_FAILED,"message"=>"解绑体验者失败","data"=>$results];
         }
 
+    }
+
+    /**
+     * 上传支付商户p12证书
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/8/2 下午2:30
+     */
+    public function actionUploadCert(){
+        if(empty($_FILES)){
+            return ["message"=>"文件未上传","code"=>BaseErrorCode::$PARAMS_ERROR];
+        }
+        $dir = 'uploads/cert/'.Helper::getSid().'/';
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $app=Instance::findOne(Helper::getSid());
+        if(empty($app)){
+            Yii::error("当前用户id:".Yii::$app->user->id."所属实例查不到内容","应用id:".Helper::getSid()."找不到记录");
+            return ["message"=>"所属应用不正确,联系管理员查证","code"=>BaseErrorCode::$PARAMS_ERROR];
+        }
+        if(empty($app['wx_mch_id'])){
+            return ["message"=>"商户号id未提交","code"=>BaseErrorCode::$PARAMS_ERROR];
+        }elseif(empty($app['wx_mch_key'])){
+            return ["message"=>"商户号秘钥未提交","code"=>BaseErrorCode::$PARAMS_ERROR];
+        }
+        $import_password=$app['wx_mch_id'];
+        if(move_uploaded_file($_FILES['cert']['tmp_name'],$dir.$_FILES['cert']['name'])){
+            $res['host_info']=Yii::$app->request->hostInfo;
+            $res['img_path']='/'. $dir.$_FILES['cert']['name'];
+
+            //导出证书pem格式
+            system("openssl pkcs12 -clcerts -nokeys -in ".$dir."apiclient_cert.p12 -out ".$dir."apiclient_cert.pem -passin pass:".$import_password,$res_cert);//已完成
+            //导出证书密钥pem格式
+            system("openssl pkcs12 -nocerts -in ".$dir."apiclient_cert.p12 -out ".$dir."apiclient_key.pem -nodes -passin pass:".$import_password,$res_key);
+            if($res_cert!=0||$res_key!=0){
+                return ["message"=>"上传失败了","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>"文件导出失败"];
+            }
+            //路径保存到数据表
+            $app->ssl_cert_path=$dir."apiclient_cert.pem";
+            $app->ssl_key_path=$dir."apiclient_key.pem";
+            if(!$app->save()){
+                return ["message"=>"保存失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$app->errors];
+            }
+            return ["message"=>"上传成功","code"=>1];
+        }else{
+            return ["message"=>"文件上传失败","code"=>BaseErrorCode::$FAILED,"data"=>"错误号 ".$_FILES['cert']['error']."p12证书上传失败"];
+        }
     }
 }

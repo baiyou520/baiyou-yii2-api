@@ -2,6 +2,7 @@
 
 namespace baiyou\backend\models;
 
+use baiyou\common\models\Customer;
 use baiyou\common\models\Instance;
 use Yii;
 /**
@@ -110,5 +111,45 @@ class ActionLog extends \baiyou\common\components\ActiveRecord
             \Yii::error($model->errors,'操作日志插入失败！');
             return false;
         }
+    }
+
+    /**
+     * 复写，将其他关联表的字段加入进来，实现
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/8/2 下午4:50
+     */
+    public function fields()
+    {
+        $fields = parent::fields();
+
+        // remove fields that contain sensitive information
+        unset($fields['sid']);
+        $fields_from_other_tables = [
+            'name' => function($model) { // 因为action_log表中的user_id，来着于用户表和客户表，故要做判断
+                if ($model->trigger_from === 0)
+                    return $model->user->name;
+                else
+                    return $model->customer->name;
+            },
+        ];
+
+        return array_merge($fields,$fields_from_other_tables);
+    }
+
+    /**
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCustomer()
+    {
+        return $this->hasOne(Customer::className(), ['id' => 'user_id']);
     }
 }

@@ -49,6 +49,32 @@ class ActiveRecord extends \yii\db\ActiveRecord
             ],
             [
                 /**
+                 * AttributeBehavior：
+                 * 由于前端框架处理10位时间戳比较麻烦，故在此乘以1000
+                 */
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_AFTER_FIND => 'created_at',
+                ],
+                'value' => function ($event) {
+                    return $this->created_at * 1000;
+                },
+            ],
+            [
+                /**
+                 * AttributeBehavior：
+                 * 由于前端框架处理10位时间戳比较麻烦，故在此乘以1000
+                 */
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_AFTER_FIND => 'updated_at',
+                ],
+                'value' => function ($event) {
+                    return $this->updated_at * 1000;
+                },
+            ],
+            [
+                /**
                  * ActionLogBehavior：
                  * 操作日志
                  */

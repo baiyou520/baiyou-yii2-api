@@ -35,6 +35,7 @@ class m180612_080952_init_data extends Migration
                 ['/by/configs/get-exp-members', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/add-exp-member', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/unbind-exp-member', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/configs/upload-cert', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/get-permissions-of-role', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/index', 0, 2, NULL, NULL, NULL, time(), time()],
 
@@ -104,6 +105,7 @@ class m180612_080952_init_data extends Migration
                 ['微信设置', '/by/configs/get-exp-members'],
                 ['微信设置', '/by/configs/add-exp-member'],
                 ['微信设置', '/by/configs/unbind-exp-member'],
+                ['微信设置', '/by/configs/upload-cert'],
                 ['系统', '客户管理'],
                 ['客户管理', '客户修改'],
                 ['客户管理', '客户查看'],
