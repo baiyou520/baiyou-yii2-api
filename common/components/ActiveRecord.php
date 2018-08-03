@@ -32,7 +32,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
                 'class'              => TimestampBehavior::className(),
                 'createdAtAttribute' => 'created_at',
                 'updatedAtAttribute' => 'updated_at',
-                // 'value'              => time(),
+                'value'              => time(),
             ],
             [
                 /**
@@ -45,6 +45,19 @@ class ActiveRecord extends \yii\db\ActiveRecord
                 ],
                 'value' => function ($event) {
                     return Helper::getSid();
+                },
+            ],
+            [
+                /**
+                 * AttributeBehavior：
+                 * 由于返回乘以了1000，修改的时候又不会复写crated_at，而前端又可能会传过来,故在此再除以1000
+                 */
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'created_at',
+                ],
+                'value' => function ($event) {
+                    return $this->created_at / 1000;
                 },
             ],
             [
