@@ -7,6 +7,8 @@
  */
 
 namespace baiyou\backend\controllers;
+use backend\modules\v1\controllers\InitController;
+use baiyou\backend\models\Config;
 use baiyou\common\components\ActiveDataProvider;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
@@ -226,13 +228,21 @@ class UsersController extends BaseController
      * @author  billyshen 2018/5/30 上午10:21
      */
     public function actionStartUp(){
+        $sid = Helper::getSid();
+
+        // 判断店铺有没有初始化
+        $init_config = Config::findOne(['symbol' => 'init']);
+        if (empty($init_config)){
+            InitController::init();
+        }
         $id = \Yii::$app->user->id;
         $query=New Query();
         //用户角色
         $item_name=$query->select('aa.item_name as role,ai.description as role_alias')
             ->from('auth_assignment aa')
             ->leftJoin('auth_item ai','ai.name=aa.item_name')
-            ->where("aa.user_id=$id")->one()
+            ->where("aa.user_id=$id")
+            ->where("aa.sid=$sid")->one()
         ;
         //菜单
         $menu="";
@@ -274,7 +284,7 @@ class UsersController extends BaseController
 //        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.Helper::getSid();
 //        $instance = Helper::https_request($url);
 //        return $result;
-        $instance = Instance::findOne(Helper::getSid());
+        $instance = Instance::findOne($sid);
         $sub_title = '';
         $license = '';
         $expired_at = '';

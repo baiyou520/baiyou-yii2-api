@@ -103,7 +103,7 @@ class ActionLog extends \baiyou\common\components\ActiveRecord
         $model->action = Yii::$app->requestedAction->id;
         $model->controller = Yii::$app->requestedAction->controller->id;
         $model->module = ($module !== null) ? $module : Yii::$app->requestedAction->controller->id;
-        $model->status = $status;
+        $model->status = $status; // 状态:0,给开发人员看，1，给客户看
         $model->message = ($message !== null) ? $message : null;
         if ($model->save()){
             return true;

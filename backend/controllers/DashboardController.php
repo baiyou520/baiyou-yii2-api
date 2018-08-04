@@ -66,9 +66,9 @@ class DashboardController extends BaseController
 //        Helper::p( time()-60*60*24);
          // 动态
         $activities = ActionLog::find()
-            ->where(['>', 'created_at', time()-60*60*24*7])
+            ->andWhere(['>', 'created_at', time()-60*60*24*7])
             ->andWhere(['=', 'status', 1])
-            ->andWhere(['=', 'sid', Helper::getSid()])->orderBy('created_at desc')->all(); // 先取过去七天的重要操作日志，参考https://help.youzan.com/displaylist/detail_4_11697
+            ->orderBy('created_at desc')->all(); // 先取过去七天的重要操作日志，参考https://help.youzan.com/displaylist/detail_4_11697
 
         $data = [
             'statistics' => $statistics,

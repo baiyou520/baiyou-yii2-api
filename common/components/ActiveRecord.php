@@ -138,21 +138,22 @@ class ActiveRecord extends \yii\db\ActiveRecord
         return $query->andWhere($condition);
     }
 
-//    /**
-//     * 复写 暂时不启用
-//     * {@inheritdoc}
-//     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
-//     */
-//    public static function find()
-//    {
-//        /**
-//         * 复写区域 sft@caiyoudata.com
-//         * ——————————————————————————————————————————————————————————————————————————————
-//         * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里调用增强的ActiveQuery
-//         */
-//
-//        return Yii::createObject(ActiveQuery::className(), [get_called_class()]);
-//    }
+    /**
+     * 复写 暂时不启用
+     * {@inheritdoc}
+     * @return ActiveQuery the newly created [[ActiveQuery]] instance.
+     */
+    public static function find()
+    {
+        /**
+         * 复写区域 sft@caiyoudata.com
+         * ——————————————————————————————————————————————————————————————————————————————
+         * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，加入筛选条件，
+         * 但外部调用后面不能用where，而要用andWhere,即find()->andWhere 否则这里的筛选条件会失效，待完善
+         */
+
+        return parent::find()->where(['=', 'sid', Helper::getSid()]);
+    }
 
 
 }
