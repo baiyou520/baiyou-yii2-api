@@ -38,6 +38,7 @@ class m180612_080952_init_data extends Migration
                 ['/by/configs/upload-cert', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/get-permissions-of-role', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/index', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/common/upload-img', 0, 2, NULL, NULL, NULL, time(), time()],
 
             ]);
 
@@ -81,6 +82,7 @@ class m180612_080952_init_data extends Migration
                 ['首页', '/by/dashboard/index'],
                 ['首页', '/by/dashboard/notice'],
                 ['首页', '/by/users/start-up'],
+                ['首页', '/by/common/upload-img'],
 
                 ['系统', '设置'],
 
@@ -160,41 +162,7 @@ class m180612_080952_init_data extends Migration
                 [13, 'L2-ActionLogMgr', 6, '/by/logs/get-action-log', 4,'{"link":"/setting/action-log","text":"操作日志"}'],
             ]);
 
-        // 5.快捷菜单信息
-        $quick_start_menu = [];
-        array_push($quick_start_menu,
-            [
-                'avatar' => 'anticon anticon-wechat',
-                'title' => '客户管理',
-                'desc' => '查看微信端客户信息',
-                'route' => '/customer/mgr'
-            ]);
-        array_push($quick_start_menu,
-            [
-                'avatar' => 'anticon anticon-file',
-                'title' => '操作日志',
-                'desc' => '查看重要操作日志',
-                'route' => '/setting/action-log'
-            ]);
-        array_push($quick_start_menu,
-            [
-                'avatar' => 'anticon anticon-user',
-                'title' => '员工管理',
-                'desc' => '管理店铺员工，设置相关权限等',
-                'route' => '/setting/user'
-            ]);
-        array_push($quick_start_menu,
-            [
-                'avatar' => 'anticon anticon-setting',
-                'title' => '微信设置',
-                'desc' => '设置相关参数，包括店铺设置，微信设置，体验者设置等',
-                'route' => '/setting/setting/wechat'
-            ]);
-        $this->batchInsert('{{%config}}',
-            ['symbol','content','encode','sid','created_at','updated_at'],
-            [
-                ['by_quick_start_menu', serialize($quick_start_menu), 2, 0, time(), time()],
-            ]);
+
     }
 
     /**

@@ -8,63 +8,86 @@
 
 namespace baiyou\backend\controllers;
 
-use yii\db\Query;
-use yii\data\ActiveDataProvider;
+use baiyou\backend\models\Category;
+use baiyou\backend\models\Media;
+use baiyou\common\components\BaseErrorCode;
 use yii;
-use yii\web\HttpException;
 class CommonController extends BaseController
 {
     public $modelClass = '';
 
     /**
-     * 头像上传接口
+     * 图片上传接口,将图片统一上传至图片服务器，并在应用服务器的media表中记录，未来再迁移到七牛云
      * @return array|string
      * @author  billyshen 2018/5/30 下午5:21
      */
-    public function actionUploadAvatar(){
-        $dir = 'uploads/img/avatar/';
-        if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
+    public function actionUploadImg(){
+//        $dir = 'uploads/img/test/';
+//        if (!file_exists($dir)) {
+//            mkdir($dir, 0777, true);
+//        }
+
+        // 本地保存
+        $picname = uniqid().".jpg";
+        move_uploaded_file($_FILES['image']['tmp_name'],$picname);
+
+        // 连接图片服务器
+        $ftp_server = Yii::$app->params['img_server']; //要连接的服务器域名
+        $conn=ftp_connect($ftp_server['domain']); //连接FTP服务器
+        ftp_login($conn,$ftp_server['ftpuser_name'],$ftp_server['ftpuser_passwd']); //发送用户名和密码
+
+        // 创建以年月日为区分的文件夹，便于日后分服务器
+        $dir = date('Y').'/'.date('m').'/'.date('d');
+        function ftp_mksubdirs($ftpcon, $ftpath) // 解决ftp_mkdir不支持多级创建文件夹问题
+        {
+            $parts = explode('/', $ftpath);
+            foreach ($parts as $part) {
+                if (!@ftp_chdir($ftpcon, $part)) {
+                    ftp_mkdir($ftpcon, $part);
+                    ftp_chdir($ftpcon, $part);
+                }
+            }
         }
-        if(move_uploaded_file($_FILES['image']['tmp_name'],$dir.$_FILES['image']['name'])){
-            $img_path='https://'.$_SERVER['HTTP_HOST'].Yii::getAlias('@web') .'/'. $dir.$_FILES['image']['name'];
-            $type=$_FILES['image']['type'];
-            $size_src32=$this->imgZoom($img_path,[400, 80],$type);//第二个参数,由大到小
-            return $size_src32;
+        ftp_mksubdirs($conn,$dir);
+
+        // 上传到图片服务器相应文件夹
+        $tempstate=ftp_put($conn,$picname,$picname,FTP_BINARY); //以二进制方式上传文件
+        ftp_quit($conn);// 关闭联接,不然会一直开着占用资源
+
+        if($tempstate){
+            // 删除应用服务器上的图片
+            unlink($picname);
+
+            // 保存本地对应记录
+            $media = new Media();
+            $media->name = $picname;
+            $media->url = $dir.'/'.$picname;
+            $media->type = 1;
+            $media->group_id = $this->group_id();
+            if(!$media->save()){
+                \Yii::error($media->errors,'保存本地对应记录失败');
+            }
+            return ["code"=>1,"message"=>"上传成功",'data' => $media];
         }else{
-            return ["message"=>"错误号 ".$_FILES['image']['error']."图片上传失败","code"=>10017];
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"上传失败，请检查配置"];
         }
     }
 
     /**
-     * 图片缩放
-     * @param $img_path
-     * @param $width
-     * @param $type
-     * @return string
-     * @author  billyshen 2018/5/30 下午5:21
+     * 获得默认分组id
+     * @return int
+     * @author sft@caiyoudata.com
+     * @time   2018/8/6 下午4:54
      */
-    function imgZoom($img_path,$width,$type){//64/32/128/256
-//        $width = [256, 128, 64, 32];//设置需要的图片宽度,
-        switch($type){
-            case 'image/jpeg':$src = imagecreatefromjpeg($img_path);break;//创建新图片资源
-            case 'image/png':$src = imagecreatefromPNG($img_path);break;
-            case 'image/gif':$src = imagecreatefromgif($img_path);break;
+    private function group_id(){
+        $pic_group=Category::find()->andWhere(['symbol'=>'pic_group'])->one();
+        if(empty($pic_group)){
+            $pic_group = new Category();
+            $pic_group->symbol = 'pic_group';
+            $pic_group->name = '无分组';
+            $pic_group->sort = 1;
+            $pic_group->save();
         }
-        $size_src = getimagesize($img_path);//获取图片信息
-        foreach ($width as $item) {
-            $image = imagecreatetruecolor($item, $item);//设置新图片宽高
-            imagecopyresampled($image, $src, 0, 0, 0, 0, $item, $item, $size_src['0'], $size_src['1']);//从原图片哪里开始缩放
-            $time = time();
-            $image_name= 'uploads/img/avatar/'.$time.'_'.$item;//缩放图片重命名
-            switch($type){
-                case 'image/jpeg':imagejpeg($image, $image_name.".jpg");$image_name='https://'.$_SERVER['HTTP_HOST'].'/'.$image_name.".jpg";break;
-                case 'image/png':imagepng($image, $image_name.".png");$image_name='https://'.$_SERVER['HTTP_HOST'].'/'.$image_name.".png";break;
-                case 'image/gif':imagegif($image, $image_name.".gif");$image_name='https://'.$_SERVER['HTTP_HOST'].'/'.$image_name.".gif";break;
-            }
-            imagedestroy($image);
-        }
-        imagedestroy($src);
-        return $image_name;
+        return $pic_group->category_id;
     }
 }

@@ -26,6 +26,7 @@ class m180612_032913_create_config extends Migration
             'encode'        => $this->tinyInteger()->unsigned()->notNull()->defaultValue(1)->comment('值的编码形式1:string,2:json,3:int'),
             'created_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'    => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
+            'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION',
         ], $tableOptions);
 
 

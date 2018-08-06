@@ -46,17 +46,17 @@ class DashboardController extends BaseController
         array_push($statistics,['title' => '用户总数','count' => $user_total,'class' => 'bg-primary']);
 
         // 快捷菜单
-        $quick_start_menus_custom = Config::findOne(['symbol' => 'by_quick_start_menu']);
-        if ($quick_start_menus_custom)
-            $quick_start_menus_custom = unserialize($quick_start_menus_custom->content);
+        $quick_start_menus = Config::findOne(['symbol' => 'by_quick_start_menu']);
+        if ($quick_start_menus)
+            $quick_start_menus = unserialize($quick_start_menus->content);
         else
-            $quick_start_menus_custom = [];
-        $quick_start_menus_system = Config::find()
-            ->where(['symbol' => 'by_quick_start_menu'])
-            ->andWhere(['sid' => 0])
-            ->one();
-        $quick_start_menus_system = unserialize($quick_start_menus_system['content']);
-        $quick_start_menus = array_merge($quick_start_menus_custom,$quick_start_menus_system);
+            $quick_start_menus = [];
+//        $quick_start_menus_system = Config::find()
+//            ->where(['symbol' => 'by_quick_start_menu'])
+//            ->andWhere(['sid' => 0])
+//            ->one();
+//        $quick_start_menus_system = unserialize($quick_start_menus_system['content']);
+//        $quick_start_menus = array_merge($quick_start_menus_custom,$quick_start_menus_system);
 
         // 新增客户
         $new_customers =  Customer::find()

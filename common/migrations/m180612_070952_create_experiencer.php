@@ -24,7 +24,8 @@ class m180612_070952_create_experiencer extends Migration
             'name'              => $this->string(10)->notNull()->defaultValue('')->comment('真实姓名'),
             'status'            => $this->tinyInteger()->unsigned()->notNull()->comment('状态:0.解绑，1.绑定'),
             'created_at'        => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
-            'updated_at'        => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳')
+            'updated_at'        => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
+            'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION',
         ], $tableOptions);
     }
 

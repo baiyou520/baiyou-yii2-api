@@ -2,9 +2,6 @@
 
 namespace baiyou\backend\models;
 
-use baiyou\common\components\ActiveRecord;
-use Yii;
-
 /**
  * This is the model class for table "config".
  *
@@ -16,7 +13,7 @@ use Yii;
  * @property int $updated_at 修改时间戳
  * @property int $sid
  */
-class Config extends ActiveRecord
+class Config extends \baiyou\common\components\ActiveRecord
 {
     /**
      * {@inheritdoc}

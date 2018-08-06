@@ -22,12 +22,13 @@ class m180613_015200_create_demo extends Migration
             'demo_id'       => $this->primaryKey()->unsigned()->comment('主键'),
             'sid'               => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
             'name'              => $this->string(30)->notNull()->comment('名称'),
-            'avatar'            => $this->string(200)->notNull()->defaultValue('https://img.zcool.cn/community/01786557e4a6fa0000018c1bf080ca.png@2o.png')->comment('头像地址'),
+            'avatar'            => $this->integer()->unsigned()->notNull()->comment('头像地址,来自media表media_id'),
             'call_no'           => $this->integer()->notNull()->comment('调用次数'),
             'status'            => $this->tinyInteger(1)->notNull()->defaultValue(1)->comment('0:已关闭，1:正常'),
             'created_at'        => $this->integer()->notNull()->defaultValue(0)->comment('时间戳，创建时间'),
             'updated_at'        => $this->integer()->notNull()->defaultValue(0)->comment('时间戳，修改时间'),
-            'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION'
+            'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION',
+            'FOREIGN KEY ([[avatar]]) REFERENCES media ([[media_id]]) ON DELETE NO ACTION ON UPDATE NO ACTION'
         ],$tableOptions);
 
         // 2.gii生成模型（前后端（backend，和frontend）都用的model，放到common->models下面，参考Demo.php）
