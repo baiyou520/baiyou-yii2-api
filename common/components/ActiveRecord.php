@@ -57,7 +57,10 @@ class ActiveRecord extends \yii\db\ActiveRecord
                     ActiveRecord::EVENT_BEFORE_UPDATE => 'created_at',
                 ],
                 'value' => function ($event) {
-                    return $this->created_at / 1000;
+                    if (strlen($this->created_at) === 13)
+                        return $this->created_at / 1000;
+                    else
+                        return $this->created_at;
                 },
             ],
             [

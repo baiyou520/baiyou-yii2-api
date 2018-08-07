@@ -49,22 +49,20 @@ class BaseInitController
                 'desc' => '设置相关参数，包括店铺设置，微信设置，体验者设置等',
                 'route' => '/setting/setting/wechat'
             ]);
-        $config = new Config();
-        $config->symbol = 'by_quick_start_menu';
-        $config->content = serialize($quick_start_menu); // 1:初始化完成
-        $config->encode = 2;
-        if(!$config->save()){
-            \Yii::error($config->errors,'快捷菜单初始化数据失败');
+        $quick_start_menu_config = new Config();
+        $quick_start_menu_config->symbol = 'by_quick_start_menu';
+        $quick_start_menu_config->content = serialize($quick_start_menu); // 1:初始化完成
+        $quick_start_menu_config->encode = 2;
+        if(!$quick_start_menu_config->save()){
+            \Yii::error($quick_start_menu_config->errors,'快捷菜单初始化数据失败');
         }
 
-//        $config = new Config();
-        $config->symbol = 'init';
-        $config->content = '1'; // 1:初始化完成
-        $config->encode = 3;
-        if(!$config->save()){
-            \Yii::error($config->errors,'初始化数据失败');
+        $init_config = new Config();
+        $init_config->symbol = 'init';
+        $init_config->content = '1'; // 1:初始化完成
+        $init_config->encode = 3;
+        if(!$init_config->save()){
+            \Yii::error($init_config->errors,'初始化数据失败');
         }
-
-
     }
 }
