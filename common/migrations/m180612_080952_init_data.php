@@ -38,7 +38,7 @@ class m180612_080952_init_data extends Migration
                 ['/by/configs/upload-cert', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/get-permissions-of-role', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/index', 0, 2, NULL, NULL, NULL, time(), time()],
-                ['/by/common/upload-img', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/common/upload-imgs', 0, 2, NULL, NULL, NULL, time(), time()],
 
             ]);
 
@@ -82,7 +82,7 @@ class m180612_080952_init_data extends Migration
                 ['首页', '/by/dashboard/index'],
                 ['首页', '/by/dashboard/notice'],
                 ['首页', '/by/users/start-up'],
-                ['首页', '/by/common/upload-img'],
+                ['首页', '/by/common/upload-imgs'],
 
                 ['系统', '设置'],
 

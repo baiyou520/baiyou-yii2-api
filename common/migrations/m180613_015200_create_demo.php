@@ -23,6 +23,7 @@ class m180613_015200_create_demo extends Migration
             'sid'               => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
             'name'              => $this->string(30)->notNull()->comment('名称'),
             'avatar'            => $this->integer()->unsigned()->notNull()->comment('头像地址,来自media表media_id'),
+            'pics'              => $this->string(255)->notNull()->defaultValue('')->comment('图片集合，json格式，来自media表media_id，如[1,2,3]'),
             'call_no'           => $this->integer()->notNull()->comment('调用次数'),
             'status'            => $this->tinyInteger(1)->notNull()->defaultValue(1)->comment('0:已关闭，1:正常'),
             'created_at'        => $this->integer()->notNull()->defaultValue(0)->comment('时间戳，创建时间'),

@@ -11,6 +11,7 @@ namespace baiyou\backend\controllers;
 use baiyou\backend\models\Category;
 use baiyou\backend\models\Media;
 use baiyou\common\components\BaseErrorCode;
+use baiyou\common\components\Helper;
 use yii;
 class CommonController extends BaseController
 {
@@ -21,15 +22,66 @@ class CommonController extends BaseController
      * @return array|string
      * @author  billyshen 2018/5/30 下午5:21
      */
-    public function actionUploadImg(){
-//        $dir = 'uploads/img/test/';
-//        if (!file_exists($dir)) {
-//            mkdir($dir, 0777, true);
+//    public function actionUploadImg(){
+////        $dir = 'uploads/img/test/';
+////        if (!file_exists($dir)) {
+////            mkdir($dir, 0777, true);
+////        }
+//
+//        // 本地保存
+//        $picname = uniqid().".jpg";
+//        move_uploaded_file($_FILES['image']['tmp_name'],$picname);
+//
+//        // 连接图片服务器
+//        $ftp_server = Yii::$app->params['img_server']; //要连接的服务器域名
+//        $conn=ftp_connect($ftp_server['domain']); //连接FTP服务器
+//        ftp_login($conn,$ftp_server['ftpuser_name'],$ftp_server['ftpuser_passwd']); //发送用户名和密码
+//
+//        // 创建以年月日为区分的文件夹，便于日后分服务器
+//        $dir = date('Y').'/'.date('m').'/'.date('d');
+//        function ftp_mksubdirs($ftpcon, $ftpath) // 解决ftp_mkdir不支持多级创建文件夹问题
+//        {
+//            $parts = explode('/', $ftpath);
+//            foreach ($parts as $part) {
+//                if (!@ftp_chdir($ftpcon, $part)) {
+//                    ftp_mkdir($ftpcon, $part);
+//                    ftp_chdir($ftpcon, $part);
+//                }
+//            }
 //        }
+//        ftp_mksubdirs($conn,$dir);
+//
+//        // 上传到图片服务器相应文件夹
+//        $tempstate=ftp_put($conn,$picname,$picname,FTP_BINARY); //以二进制方式上传文件
+//        ftp_quit($conn);// 关闭联接,不然会一直开着占用资源
+//
+//        if($tempstate){
+//            // 删除应用服务器上的图片
+//            unlink($picname);
+//
+//            // 保存本地对应记录
+//            $media = new Media();
+//            $media->name = $picname;
+//            $media->url = $dir.'/'.$picname;
+//            $media->type = 1;
+//            $media->group_id = $this->group_id();
+//            if(!$media->save()){
+//                \Yii::error($media->errors,'保存本地对应记录失败');
+//            }
+//            return ["code"=>1,"message"=>"上传成功",'data' => $media];
+//        }else{
+//            return ["code"=>BaseErrorCode::$FAILED,"message"=>"上传失败，请检查配置"];
+//        }
+//    }
 
-        // 本地保存
-        $picname = uniqid().".jpg";
-        move_uploaded_file($_FILES['image']['tmp_name'],$picname);
+    /**
+     * 图片上传接口,将图片统一上传至图片服务器，并在应用服务器的media表中记录，未来再迁移到七牛云
+     * 单图和多图上传使用同一个接口
+     * @return array|string
+     * @author  billyshen 2018/5/30 下午5:21
+     */
+
+    public function actionUploadImgs(){
 
         // 连接图片服务器
         $ftp_server = Yii::$app->params['img_server']; //要连接的服务器域名
@@ -50,11 +102,25 @@ class CommonController extends BaseController
         }
         ftp_mksubdirs($conn,$dir);
 
-        // 上传到图片服务器相应文件夹
-        $tempstate=ftp_put($conn,$picname,$picname,FTP_BINARY); //以二进制方式上传文件
-        ftp_quit($conn);// 关闭联接,不然会一直开着占用资源
 
-        if($tempstate){
+        // 处理图片
+        $medias = [];
+        for($i=0; $i<count($_FILES['image']['tmp_name']); $i++)
+        {
+            // 本地保存
+            $picname = uniqid().".jpg";
+            if (count($_FILES['image']['tmp_name']) === 1){ // 单图上传单独处理
+                move_uploaded_file($_FILES['image']['tmp_name'],$picname);
+            }else{
+                move_uploaded_file($_FILES['image']['tmp_name'][$i],$picname);
+            }
+
+            // 上传到图片服务器相应文件夹
+            $tempstate=ftp_put($conn,$picname,$picname,FTP_BINARY); //以二进制方式上传文件
+            if(!$tempstate){
+                return ["code"=>BaseErrorCode::$FAILED,"message"=>"上传失败，请检查配置"];
+            }
+
             // 删除应用服务器上的图片
             unlink($picname);
 
@@ -67,10 +133,13 @@ class CommonController extends BaseController
             if(!$media->save()){
                 \Yii::error($media->errors,'保存本地对应记录失败');
             }
-            return ["code"=>1,"message"=>"上传成功",'data' => $media];
-        }else{
-            return ["code"=>BaseErrorCode::$FAILED,"message"=>"上传失败，请检查配置"];
+            $medias[]= $media;
         }
+
+        ftp_quit($conn);// 关闭联接,不然会一直开着占用资源
+        if (count($_FILES['image']['tmp_name']) === 1) // 单图上传单独处理
+            $medias = $medias[0];
+        return ["code"=>1,"message"=>"上传成功",'data' => $medias];
     }
 
     /**
