@@ -86,7 +86,9 @@ class CommonController extends BaseController
         // 连接图片服务器
         $ftp_server = Yii::$app->params['img_server']; //要连接的服务器域名
         $conn=ftp_connect($ftp_server['domain']); //连接FTP服务器
-        ftp_login($conn,$ftp_server['ftpuser_name'],$ftp_server['ftpuser_passwd']); //发送用户名和密码
+        ftp_login($conn,$ftp_server['ftpuser_name'],$ftp_server['ftpuser_passwd']) or die("Cannot login");; //发送用户名和密码
+        ftp_set_option($conn, FTP_USEPASVADDRESS, false); // 解决路由无法到达的问题 https://stackoverflow.com/questions/38982901/php-ftp-passive-ftp-server-behind-nat
+        ftp_pasv($conn, true); // 切换为被动模式
 
         // 创建以年月日为区分的文件夹，便于日后分服务器
         $dir = date('Y').'/'.date('m').'/'.date('d');
