@@ -53,7 +53,7 @@ class CommonController extends BaseController
         {
             // 本地保存
             $pic_name = '';
-            $pic_rename = uniqid().".jpg"; // 文件唯一名
+            $pic_rename = Helper::hex10to64(Yii::$app->user->id). Helper::hex16to64(uniqid(rand())).".jpg"; // 文件唯一名
             if (count($_FILES['image']['tmp_name']) === 1){ // 单图上传单独处理
                 $pic_name = $_FILES['image']['name']; // 原始上传文件名
                 move_uploaded_file($_FILES['image']['tmp_name'],$pic_rename);
@@ -106,4 +106,6 @@ class CommonController extends BaseController
         }
         return $pic_group->category_id;
     }
+
+
 }
