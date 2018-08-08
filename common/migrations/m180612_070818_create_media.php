@@ -17,12 +17,15 @@ class m180612_070818_create_media extends Migration
             $tableOptions = 'CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB COMMENT="媒体资源表"';
         }
         $this->createTable('{{%media}}', [
-            'media_id'        => $this->primaryKey(11)->unsigned()->comment('主键'),
-            'name'            => $this->string(100)->notNull()->comment('资源名称'),
-            'url'             => $this->string(100)->notNull()->comment('地址'),
-            'type'            => $this->tinyInteger()->unsigned()->notNull()->comment('类型：1.图片2.音频3.视频'),
+            'media_id'       => $this->primaryKey(11)->unsigned()->comment('主键'),
+            'name'           => $this->string(100)->notNull()->comment('资源名称'),
+            'url'            => $this->string(100)->notNull()->comment('地址'),
+            'type'           => $this->tinyInteger()->unsigned()->notNull()->comment('类型：1.图片2.音频3.视频'),
             'group_id'       => $this->integer()->unsigned()->notNull()->comment('分组id,CG表S=pic_group/S=audio_group/S=video_group'),
-            'sid'             => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
+            'sid'            => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
+            'key'            => $this->string(512)->notNull()->defaultValue('')->comment('文件对应到云存储服务中的唯一标识,未来扩展七牛云备用'),
+            'description'    => $this->string(1024)->notNull()->defaultValue('')->comment('文件的描述内容'),
+            'status'         => $this->tinyInteger()->notNull()->defaultValue(1)->comment('状态:0,软删除，1，正常'),
             'created_at'     => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'     => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
             'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION',
