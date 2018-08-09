@@ -52,7 +52,6 @@ class CommonController extends BaseController
         for($i=0; $i<count($_FILES['image']['tmp_name']); $i++)
         {
             // 本地保存
-            $pic_name = '';
             $pic_rename = Helper::hex10to64(Yii::$app->user->id). Helper::hex16to64(uniqid(rand())).".jpg"; // 文件唯一名
             if (count($_FILES['image']['tmp_name']) === 1){ // 单图上传单独处理
                 $pic_name = $_FILES['image']['name']; // 原始上传文件名
@@ -80,7 +79,11 @@ class CommonController extends BaseController
             if(!$media->save()){
                 \Yii::error($media->errors,'保存本地对应记录失败');
             }
-            $medias[]= $media;
+            $uploaded_media['url'] = 'https://'.Yii::$app->params['img_server']['domain'].'/'.$media->url;
+            $uploaded_media['thumb_url'] = 'https://'.Yii::$app->params['img_server']['domain'].'/'.$media->url;
+            $uploaded_media['media_id'] = $media->media_id;
+            $uploaded_media['name'] = $media->name;
+            $medias[]= $uploaded_media;
         }
 
         ftp_quit($conn);// 关闭联接,不然会一直开着占用资源
