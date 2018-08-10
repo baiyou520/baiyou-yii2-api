@@ -80,9 +80,11 @@ class CommonController extends BaseController
                 \Yii::error($media->errors,'保存本地对应记录失败');
             }
             $uploaded_media['url'] = 'https://'.Yii::$app->params['img_server']['domain'].'/'.$media->url;
-            $uploaded_media['thumb_url'] = 'https://'.Yii::$app->params['img_server']['domain'].'/'.$media->url;
+            $uploaded_media['thumb_url'] = 'https://'.Yii::$app->params['img_server']['domain'].'/'.$media->url.
+                Yii::$app->params['img_server']['default_thumb_size'];
             $uploaded_media['media_id'] = $media->media_id;
             $uploaded_media['name'] = $media->name;
+            $uploaded_media['group_id'] = $media->group_id;
             $medias[]= $uploaded_media;
         }
 
