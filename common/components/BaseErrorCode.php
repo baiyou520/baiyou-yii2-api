@@ -20,5 +20,6 @@ class BaseErrorCode
     public static $OBJECT_ALREADY_EXIST = 1003; // 实例已经存在，比如name唯一
     public static $SET_EXPERIENCER_FAILED = 1004; // 添加或绑定体验者失败
     public static $SAVE_DB_ERROR = 1005; // 数据库保存失败
+    public static $NEVER_SUBMIT_AUDIT = 1006; // 从未提交审核
 
 }

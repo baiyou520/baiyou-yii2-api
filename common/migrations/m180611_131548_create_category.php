@@ -27,8 +27,7 @@ class m180611_131548_create_category extends Migration
             'sort'        => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0)->comment('排序'),
             'data'        => $this->text()->comment('其他配置项JSON编码'),
             'created_at'  => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
-            'updated_at'  => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
-            'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION'
+            'updated_at'  => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳')
         ], $tableOptions);
     }
 

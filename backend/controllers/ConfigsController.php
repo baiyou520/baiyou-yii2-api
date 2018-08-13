@@ -191,4 +191,163 @@ class ConfigsController extends BaseController
             return ["message"=>"文件上传失败","code"=>BaseErrorCode::$FAILED,"data"=>"错误号 ".$_FILES['cert']['error']."p12证书上传失败"];
         }
     }
+
+    /**
+     * 获取小程序的第三方提交代码的页面配置
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/7/24 下午7:39
+     */
+    public function actionGetPages(){
+        $sid = Helper::getSid();
+        $url = Yii::$app->params['admin_url'].'/v1/open/getPages/'.$sid;
+        $results = Helper::https_request($url);
+        if ($results['code'] == 1){
+            return ["code"=>1,"message"=>"获取小程序的第三方提交代码的页面配置成功","data"=>$results['data']['page_list']];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+        }
+    }
+
+    /**
+     * 获取授权小程序帐号的可选类目
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/8/10 下午4:59
+     */
+    public function actionGetCategories(){
+        $sid = Helper::getSid();
+        $url = Yii::$app->params['admin_url'].'/v1/open/getCategories/'.$sid;
+        $results = Helper::https_request($url);
+
+
+        // 递归listtotree
+        function generateTree($array){
+            //第一步 构造数据
+            $items = array();
+            foreach($array as $value){
+                $items[$value['value']] = $value;
+            }
+            //第二部 遍历数据 生成树状结构
+            $tree = array();
+            foreach($items as $key => $item){
+
+                if(isset($items[$item['parent']])){
+                    $items[$item['parent']]['children'][] = &$items[$key];
+                }else{
+                    $tree[] = &$items[$key];
+                }
+            }
+            return $tree;
+        }
+        $data = [];
+        foreach ($results['data']['category_list'] as $cat){
+            $temp1 = [ // 填充根节点
+                'first_class' => 'top',
+                'label' => $cat['first_class'],
+                'parent' => 0,
+                'value' => $cat['first_id'],
+            ];
+            $temp2 = [ // 格式化各个节点，方便前端调用
+                'first_class' => $cat['first_class'],
+                'label' => $cat['second_class'],
+                'parent' => $cat['first_id'],
+                'value' => $cat['second_id'],
+                'isLeaf' => true,
+            ];
+            array_push($data,$temp1);
+            array_push($data,$temp2);
+
+        }
+
+        $tree = generateTree($data);
+        if ($results['code'] == 1){
+            return ["code"=>1,"message"=>"获取授权小程序帐号的可选类目成功","data"=>$tree];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+        }
+    }
+
+    /**
+     * 将第三方提交的代码包提交审核
+     * @param $id
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/8/10 下午6:48
+     */
+    public function actionSubmitAudit(){
+        $sid = Helper::getSid();
+        $data=Yii::$app->request->post();
+        $url = Yii::$app->params['admin_url'].'/v1/open/getCategories/'.$sid;
+        $categories = Helper::https_request($url);
+        $items = array();
+        foreach($categories['data']['category_list'] as $value){
+            $items[$value['second_id']] = $value;
+        }
+
+        // 格式化数据，以满足微信开发平台要求
+        $formated_data =[];
+        foreach ($data['item_list'] as $item){
+            $formated_data[] = [
+                'address' => $item['address'],
+                'tag' => $item['tag'],
+                'first_class' => $items[$item['category'][1]]['first_class'],
+                'second_class' => $items[$item['category'][1]]['second_class'],
+                'first_id' => $items[$item['category'][1]]['first_id'],
+                'second_id' => $items[$item['category'][1]]['second_id'],
+                'title' => $item['title'],
+            ];
+        }
+//        Helper::p($formated_data);
+        $url = Yii::$app->params['admin_url'].'/v1/open/submitAudit/'.$sid;
+        $data=[
+            "item_list"=> $formated_data,
+        ];
+        $results = Helper::https_request($url,$data);
+        if ($results['code'] == 1){
+            return ["code"=>1,"message"=>"提交审核成功","data"=>$results];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+        }
+    }
+
+    /**
+     * 查询最新一次提交的审核状态
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/8/13 下午1:47
+     */
+
+    public function actionGetLatestAuditStatus(){
+        $sid = Helper::getSid();
+        $url = Yii::$app->params['admin_url'].'/v1/open/getLatestAuditStatus/'.$sid;
+        $results = Helper::https_request($url);
+        if ($results['code'] == 1){
+            return ["code"=>1,"message"=>"查询最新一次提交的审核状态成功","data"=>$results['data']];
+        }else{
+            if (strpos($results['data'],'no valid audit_id exist hint') !== false){
+                return ["code"=>BaseErrorCode::$NEVER_SUBMIT_AUDIT,"message"=>"从未提交审核","data"=>$results];
+            }else{
+                return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+            }
+
+        }
+    }
+
+    /**
+     * 发布已通过审核的小程序
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/8/13 下午4:45
+     */
+    public function actionRelease(){
+        $sid = Helper::getSid();
+        $url = Yii::$app->params['admin_url'].'/v1/open/release/'.$sid;
+        $results = Helper::https_request($url);
+        if ($results['code'] == 1){
+            return ["code"=>1,"message"=>"发布已通过审核的小程序成功","data"=>$results['data']];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+        }
+    }
 }

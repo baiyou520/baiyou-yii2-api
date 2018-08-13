@@ -74,27 +74,27 @@ class Wechat
         }
     }
 
-
-    /**
-     * 添加体验者
-     * @param $sid
-     * @return string
-     * @author sft@caiyoudata.com
-     * @time   2018/7/24 下午2:34
-     */
-    public static function addExpMember($sid,$wechat_id){
-        $wx_access_token = Wechat::getWechatAccessToken($sid);
-        $url="https://api.weixin.qq.com/wxa/bind_tester?access_token=".$wx_access_token;
-        $data=[
-            "wechatid"=> $wechat_id
-        ];
-
-        $result=Helper::https_request($url,$data);
-        if ($result['errcode'] === 0){
-            return $result['userstr'];
-        }else{
-            Yii::error($result,'添加体验者失败');
-            return false;
-        }
-    }
+//
+//    /**
+//     * 添加体验者
+//     * @param $sid
+//     * @return string
+//     * @author sft@caiyoudata.com
+//     * @time   2018/7/24 下午2:34
+//     */
+//    public static function addExpMember($sid,$wechat_id){
+//        $wx_access_token = Wechat::getWechatAccessToken($sid);
+//        $url="https://api.weixin.qq.com/wxa/bind_tester?access_token=".$wx_access_token;
+//        $data=[
+//            "wechatid"=> $wechat_id
+//        ];
+//
+//        $result=Helper::https_request($url,$data);
+//        if ($result['errcode'] === 0){
+//            return $result['userstr'];
+//        }else{
+//            Yii::error($result,'添加体验者失败');
+//            return false;
+//        }
+//    }
 }

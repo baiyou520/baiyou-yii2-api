@@ -229,13 +229,18 @@ class UsersController extends BaseController
      */
     public function actionStartUp(){
         $sid = Helper::getSid();
-
+        $id = \Yii::$app->user->id;
+        $userObj = User::findOne($id);
+        // 如果找不到用户信息，意味着当前用户并没有这个实例的权限，一般发生在跨应用访问，让程序跳回总控制台即可
+        if (!$userObj){
+            throw new \yii\web\HttpException(401, 'sid不对，跳回总控制台.');
+//            return  ['message' => 'sid不对，跳回总控制台，重新点击进入控制台即可','code' => BaseErrorCode::$SID_WRONG];
+        }
         // 判断店铺有没有初始化
         $init_config = Config::findOne(['symbol' => 'init']);
         if (empty($init_config)){
             InitController::init();
         }
-        $id = \Yii::$app->user->id;
         $query=New Query();
         //用户角色
         $item_name=$query->select('aa.item_name as role,ai.description as role_alias')
@@ -267,11 +272,6 @@ class UsersController extends BaseController
             return $return;
         };
         $menu = MenuHelper::getAssignedMenu($id,null,$callback,true);
-        $userObj = User::findOne($id);
-        // 如果找不到用户信息，意味着当前用户并没有这个实例的权限，一般发生在跨应用访问，让程序跳回总控制台即可
-        if (!$userObj){
-            return  ['message' => 'sid不对，跳回总控制台，重新点击进入控制台即可','code' => BaseErrorCode::$SID_WRONG];
-        }
         $user = [
             'user_id' => $userObj->id,
             'username' => $userObj->username,
