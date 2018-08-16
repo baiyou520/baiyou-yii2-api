@@ -10,6 +10,7 @@
 namespace baiyou\backend\controllers;
 
 
+use baiyou\backend\models\Config;
 use baiyou\backend\models\Experiencer;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
@@ -20,6 +21,12 @@ use Yii;
 class ConfigsController extends BaseController
 {
     public $modelClass = 'baiyou\backend\models\Config';
+
+    // 0.未提交审核;1.审核中；2.已发布,且在上架状态；3.已发布，但已经下架了
+    const RELEASE_FLAG_INIT = 0;
+    const RELEASE_FLAG_PROCESSING = 1;
+    const RELEASE_FLAG_RELEASED = 2;
+    const RELEASE_FLAG_INVISIBLE = 3;
 
     public function actions()
     {
@@ -305,6 +312,13 @@ class ConfigsController extends BaseController
         ];
         $results = Helper::https_request($url,$data);
         if ($results['code'] == 1){
+            $model = Config::findOne(['symbol' => 'version_related']);
+            $released_conf = json_decode($model->content);
+            $released_conf['released_flag'] = 1;
+            $model->content = json_encode($released_conf);
+            if(!$model->save()){
+                return ["message"=>"审核已经提交，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
+            };
             return ["code"=>1,"message"=>"提交审核成功","data"=>$results];
         }else{
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
@@ -319,19 +333,54 @@ class ConfigsController extends BaseController
      */
 
     public function actionGetLatestAuditStatus(){
-        $sid = Helper::getSid();
-        $url = Yii::$app->params['admin_url'].'/v1/open/getLatestAuditStatus/'.$sid;
-        $results = Helper::https_request($url);
-        if ($results['code'] == 1){
-            return ["code"=>1,"message"=>"查询最新一次提交的审核状态成功","data"=>$results['data']];
-        }else{
-            if (strpos($results['data'],'no valid audit_id exist hint') !== false){
-                return ["code"=>BaseErrorCode::$NEVER_SUBMIT_AUDIT,"message"=>"从未提交审核","data"=>$results];
+        $model = Config::findOne(['symbol' => 'version_related']);
+        $released_conf = json_decode($model->content);
+        if($released_conf->released_flag === self::RELEASE_FLAG_INIT){ // 0.未提交审核;1.审核中；2.已发布
+            $data['status'] = -1;
+            return ["code"=>1,"message"=>"未提交审核","data"=>$data];
+        }
+
+        if($released_conf->released_flag === self::RELEASE_FLAG_PROCESSING){ // 审核中，查询具体审核状态
+            $sid = Helper::getSid();
+            $url = Yii::$app->params['admin_url'].'/v1/open/getLatestAuditStatus/'.$sid;
+            $results = Helper::https_request($url);
+            if ($results['code'] == 1){
+                return ["code"=>1,"message"=>"查询版本状态成功","data"=>$results['data']];
             }else{
                 return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
             }
-
         }
+
+        if($released_conf->released_flag === self::RELEASE_FLAG_RELEASED || $released_conf->released_flag === self::RELEASE_FLAG_INVISIBLE){ // 已经成功发布过了，检查是否新版本可以升级
+            $sid = Helper::getSid();
+            $url = Yii::$app->params['admin_url'].'/v1/open/getTemplateInfo/'.$sid;
+            $results = Helper::https_request($url);
+            if ($results['code'] == 1){
+//                Helper::p($released_conf['tpl_version']);
+                if ($results['data']['template_id'] > $released_conf->tpl_version){
+                    $data['status'] = 10;
+                    $data['template_id'] = $results['data']['template_id'];
+                    $data['user_desc'] = $results['data']['user_desc'];
+                    return ["code"=>1,"message"=>"有新的版本","data"=>$data];
+                }else{
+                    if ($released_conf->released_flag === self::RELEASE_FLAG_RELEASED){
+                        $data['status'] = 11;
+                    }else{
+                        $data['status'] = 12;
+                    }
+
+                    return ["code"=>1,"message"=>"当前版本已经是最新版本了","data"=>$data];
+                }
+            }else{
+//            if (strpos($results['data'],'no valid audit_id exist hint') !== false){
+//                return ["code"=>BaseErrorCode::$NEVER_SUBMIT_AUDIT,"message"=>"从未提交审核","data"=>$results];
+//            }else{
+                return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+//            }
+            }
+        }
+
+
     }
 
     /**
@@ -345,7 +394,51 @@ class ConfigsController extends BaseController
         $url = Yii::$app->params['admin_url'].'/v1/open/release/'.$sid;
         $results = Helper::https_request($url);
         if ($results['code'] == 1){
+            $model = Config::findOne(['symbol' => 'version_related']);
+            $released_conf = json_decode($model->content);
+            $released_conf->released_flag = self::RELEASE_FLAG_RELEASED;
+            $model->content = json_encode($released_conf);
+            if(!$model->save()){
+                return ["message"=>"小程序已经发布成功，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
+            };
             return ["code"=>1,"message"=>"发布已通过审核的小程序成功","data"=>$results['data']];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+        }
+    }
+
+    /**
+     * 修改小程序线上代码的可见状态
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/8/16 下午4:55
+     */
+    public function actionChangeVisitStatus(){
+        $sid = Helper::getSid();
+        $model = Config::findOne(['symbol' => 'version_related']);
+        $released_conf = json_decode($model->content);
+        if ($released_conf->released_flag === self::RELEASE_FLAG_RELEASED){
+            $action = 'close';
+        }else{
+            $action = 'open';
+        }
+
+        $url = Yii::$app->params['admin_url'].'/v1/open/changeVisitStatus/'.$sid.'?action='.$action;
+        $results = Helper::https_request($url);
+        if ($results['code'] == 1){
+            if ($released_conf->released_flag === self::RELEASE_FLAG_RELEASED){
+                $released_conf->released_flag = self::RELEASE_FLAG_INVISIBLE;
+                $data['status'] = 12;
+            }else{
+                $released_conf->released_flag = self::RELEASE_FLAG_RELEASED;
+                $data['status'] = 11;
+            }
+
+            $model->content = json_encode($released_conf);
+            if(!$model->save()){
+                return ["message"=>"修改小程序线上代码的可见状态成功，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
+            };
+            return ["code"=>1,"message"=>"修改小程序线上代码的可见状态成功","data"=>$data];
         }else{
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
         }

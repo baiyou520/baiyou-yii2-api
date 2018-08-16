@@ -12,6 +12,7 @@ class m180613_015200_create_demo extends Migration
      */
     public function safeUp()
     {
+        ob_start();
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
             $tableOptions = "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE=InnoDB COMMENT 'Demo示例表'";

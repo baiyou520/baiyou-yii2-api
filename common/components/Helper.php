@@ -234,4 +234,31 @@ class Helper
         $return = array(substr($str, 0, $headlen));
         return array_merge($return, str_split(substr($str, $headlen), $len));
     }
+
+    /**
+     * 分类查找,子类以子级显示
+     * @param $list array
+     * @param int $root $root:初始父id,比如0
+     * @param string $pid 父类的字段名
+     * @param string $pk 字段名
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2018/6/29 17:39
+     */
+    public static function generateTree($list,$root = 0,$pid='pid',$pk = 'id')
+    {
+        $tree = array();
+        $packData = array();
+        foreach ($list as $data) {
+            $packData[$data[$pk]] = $data;
+        }
+        foreach ($packData as $key => $val) {
+            if ($val[$pid] == $root) {
+                $tree[] = &$packData[$key];
+            } else {
+                $packData[$val[$pid]]['son'][] = &$packData[(int)$key];
+            }
+        }
+        return $tree;
+    }
 }

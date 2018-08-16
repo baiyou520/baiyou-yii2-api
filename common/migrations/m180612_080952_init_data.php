@@ -30,6 +30,7 @@ class m180612_080952_init_data extends Migration
                 ['/by/users/start-up', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/users/update', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/users/view', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/configs/index', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/set-applet-secret', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/get-applet-setting', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/get-exp-members', 0, 2, NULL, NULL, NULL, time(), time()],
@@ -41,10 +42,26 @@ class m180612_080952_init_data extends Migration
                 ['/by/configs/submit-audit', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/get-latest-audit-status', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/release', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/configs/change-visit-status', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/get-permissions-of-role', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/index', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/authorities/update-role', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/authorities/create', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/authorities/delete-role', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/authorities/view-role', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/common/upload-imgs', 0, 2, NULL, NULL, NULL, time(), time()],
-
+                ['/by/categories/create', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/categories/index', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/categories/view', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/index', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/view', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/create', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/update', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/delete', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/batch-set-group', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/batch-delete', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/update-category', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/medias/delete-category', 0, 2, NULL, NULL, NULL, time(), time()],
             ]);
 
         /** 2.添加权限点,sid设置为0表示权限点为系统默认,权限点跟着菜单走
@@ -71,10 +88,16 @@ class m180612_080952_init_data extends Migration
                 ['员工删除', 0, 2, 'L3删除某个员工', NULL, NULL, time(), time()],
                 ['员工新增', 0, 2, 'L3后台直接新增一个员工', NULL, NULL, time(), time()],
                 ['员工查看', 0, 2, 'L3查看中台管理端的员工', NULL, NULL, time(), time()],
+                ['角色管理', 0, 2, 'L2整个角色管理模块权限点集合', NULL, NULL, time(), time()],
+                ['角色修改', 0, 2, 'L3修改某个角色工', NULL, NULL, time(), time()],
+                ['角色删除', 0, 2, 'L3删除某个角色', NULL, NULL, time(), time()],
+                ['角色新增', 0, 2, 'L3后台新增一个角色', NULL, NULL, time(), time()],
+                ['角色查看', 0, 2, 'L3查看中台管理端的角色', NULL, NULL, time(), time()],
                 ['微信设置', 0, 2, 'L2设置微信小程序相关信息', NULL, NULL, time(), time()],
                 ['客户管理', 0, 2, 'L2整个微信端客户管理权限', NULL, NULL, time(), time()],
                 ['客户修改', 0, 2, 'L3修改微信端客户资料', NULL, NULL, time(), time()],
                 ['客户查看', 0, 2, 'L3查看客户列表页及详情页', NULL, NULL, time(), time()],
+                ['我的文件', 0, 2, 'L2我的文件管理权限', NULL, NULL, time(), time()],
             ]);
         // 2.1 设计权限点，安装菜单的层级关系设置
         $this->batchInsert('{{%auth_item_child}}',
@@ -88,11 +111,14 @@ class m180612_080952_init_data extends Migration
                 ['首页', '/by/dashboard/notice'],
                 ['首页', '/by/users/start-up'],
                 ['首页', '/by/common/upload-imgs'],
+                ['首页', '/by/categories/index'],
+                ['首页', '/by/medias/index'],
 
                 ['系统', '设置'],
 
                 ['设置', '操作日志'],
                 ['操作日志', '/by/logs/get-action-log'],
+                ['操作日志', '/by/configs/index'],
 
                 ['设置', '员工管理'],
                 ['员工管理', '员工查看'],
@@ -102,10 +128,37 @@ class m180612_080952_init_data extends Migration
                 ['员工查看', '/by/users/index'],
                 ['员工查看', '/by/users/view'],
                 ['员工查看', '/by/authorities/index'],
+                ['员工查看', '/by/configs/index'],
                 ['员工查看', '/by/authorities/get-permissions-of-role'],
                 ['员工修改', '/by/users/update'],
                 ['员工新增', '/by/users/create'],
                 ['员工删除', '/by/users/delete'],
+
+                ['设置', '角色管理'],
+                ['角色管理', '角色查看'],
+                ['角色管理', '角色修改'],
+                ['角色管理', '角色删除'],
+                ['角色管理', '角色新增'],
+                ['角色查看', '/by/authorities/index'],
+                ['角色查看', '/by/authorities/view-role'],
+                ['角色查看', '/by/configs/index'],
+                ['角色修改', '/by/authorities/update-role'],
+                ['角色新增', '/by/authorities/create'],
+                ['角色删除', '/by/authorities/delete-role'],
+
+                ['设置', '我的文件'],
+                ['我的文件', '/by/categories/create'],
+                ['我的文件', '/by/categories/view'],
+                ['我的文件', '/by/configs/index'],
+                ['我的文件', '/by/medias/view'],
+                ['我的文件', '/by/medias/update'],
+                ['我的文件', '/by/medias/create'],
+                ['我的文件', '/by/medias/delete'],
+                ['我的文件', '/by/medias/batch-set-group'],
+                ['我的文件', '/by/medias/batch-delete'],
+                ['我的文件', '/by/medias/update-category'],
+                ['我的文件', '/by/medias/delete-category'],
+
                 ['设置', '微信设置'],
                 ['微信设置', '/by/configs/set-applet-secret'],
                 ['微信设置', '/by/configs/get-applet-setting'],
@@ -118,6 +171,8 @@ class m180612_080952_init_data extends Migration
                 ['微信设置', '/by/configs/submit-audit'],
                 ['微信设置', '/by/configs/get-latest-audit-status'],
                 ['微信设置', '/by/configs/release'],
+                ['微信设置', '/by/configs/change-visit-status'],
+                ['微信设置', '/by/configs/index'],
                 ['系统', '客户管理'],
                 ['客户管理', '客户修改'],
                 ['客户管理', '客户查看'],
@@ -127,12 +182,12 @@ class m180612_080952_init_data extends Migration
             ]);
         // 3.添加角色,sid设置为0表示这4个角色为系统默认
         $this->batchInsert('{{%auth_item}}',
-            ['name','sid','type','description','rule_name','data','created_at','updated_at'],
+            ['name','sid','type','title','description','rule_name','data','created_at','updated_at'],
             [
-                ['admin', 0, 1, '普通管理员', NULL, NULL, time(), time()],
-                ['super_admin', 0, 1, '高级管理员', NULL, NULL, time(), time()],
-                ['root', 0, 1, '开发人员', NULL, NULL, time(), time()],
-                ['user', 0, 1, '普通用户', NULL, NULL, time(), time()],
+                ['admin', 0, 1, '普通管理员', '除操作日志，添加员工以外的全部权限',NULL, NULL, time(), time()],
+                ['super_admin', 0, 1, '高级管理员','几乎全部权限', NULL, NULL, time(), time()],
+                ['root', 0, 1, '开发人员', '全部权限',NULL, NULL, time(), time()],
+                ['user', 0, 1, '普通用户', '仅应用相关权限',NULL, NULL, time(), time()],
             ]);
         // 3.1 为角色添加权限
         $this->batchInsert('{{%auth_item_child}}',
@@ -162,16 +217,16 @@ class m180612_080952_init_data extends Migration
                 [2, 'L0-Application', NULL, '/by/dashboard/index', 2, '{"text":"应用","group":"true"}'],
                 [3, 'L0-System', NULL, '/by/dashboard/index', 3, '{"text":"系统","group":"true"}'],
                 [4, 'L1-Dashboard', 1, '/by/dashboard/index', 1, '{"text":"首页","icon":"icon-speedometer","link":"/dashboard/index"}'],
-                [5, 'L1-Customer', 3, '/by/dashboard/index', 1, '{"icon":"icon-user","text":"客户管理"}'],
-                [6, 'L1-Setting', 3, '/by/dashboard/index', 2, '{"icon":"anticon anticon-setting","text":"设置管理"}'],
+                [5, 'L1-Customer', 3, '/by/customers/index', 1, '{"icon":"icon-user","text":"客户管理"}'],
+                [6, 'L1-Setting', 3, '/by/configs/index', 2, '{"icon":"anticon anticon-setting","text":"设置管理"}'],
                 [7, 'L2-CustMgr', 5, '/by/customers/index', 1, '{"link":"/customer/mgr","text":"客户管理"}'],
                 [8, 'L2-UserMgr', 6, '/by/users/index', 1, '{"link":"/setting/user","text":"员工管理"}'],
                 [9, 'L2-LogMgr', 6, '/by/logs/index', 2,'{"link":"/setting/log","text":"错误日志"}'],
                 [10, 'L2-WechatMgr', 6, '/by/configs/get-applet-setting', 3,'{"link":"/setting/setting/wechat","text":"微信设置"}'],
                 [13, 'L2-ActionLogMgr', 6, '/by/logs/get-action-log', 4,'{"link":"/setting/action-log","text":"操作日志"}'],
+                [14, 'L2-AuthMgr', 6, '/by/authorities/index', 1, '{"link":"/setting/auth","text":"权限管理"}'],
+                [15, 'L2-MediaMgr', 6, '/by/medias/index', 1, '{"link":"/setting/media","text":"我的文件"}'],
             ]);
-
-
     }
 
     /**
@@ -182,7 +237,6 @@ class m180612_080952_init_data extends Migration
         $this->delete('{{%auth_item}}');
         $this->delete('{{%auth_item_child}}');
         $this->delete('{{%menu}}');
-        $this->delete('{{%config}}');
     }
 
     /*

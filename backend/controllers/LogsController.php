@@ -80,12 +80,7 @@ class LogsController extends BaseController
             'query' => $query->andFilterWhere(['=','status',1])
         ]);
 
-        // 获取分页和排序数据
-        $models = $provider->getModels();
-
-        // 获取所有页面的数据项的总数
-        $totalCount = $provider->getTotalCount();
-        $data = ['list' => $models,'pagination'=>['total' => $totalCount]];
+        $data = ['list' => $provider->getModels(),'pagination'=>['total' => $provider->getTotalCount()]];
         return  ['message' => '获得操作日志列表成功','code' => 1,'data' => $data];
     }
 }

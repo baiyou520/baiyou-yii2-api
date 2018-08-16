@@ -51,11 +51,12 @@ class BaseInitController
             ]);
         $quick_start_menu_config = new Config();
         $quick_start_menu_config->symbol = 'by_quick_start_menu';
-        $quick_start_menu_config->content = serialize($quick_start_menu); // 1:初始化完成
+        $quick_start_menu_config->content = json_encode($quick_start_menu,JSON_UNESCAPED_UNICODE);
         $quick_start_menu_config->encode = 2;
         if(!$quick_start_menu_config->save()){
             \Yii::error($quick_start_menu_config->errors,'快捷菜单初始化数据失败');
         }
+
 
         $init_config = new Config();
         $init_config->symbol = 'init';

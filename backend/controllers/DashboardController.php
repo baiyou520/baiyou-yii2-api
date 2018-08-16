@@ -47,10 +47,10 @@ class DashboardController extends BaseController
 
         // 快捷菜单
         $quick_start_menus = Config::findOne(['symbol' => 'by_quick_start_menu']);
-        if ($quick_start_menus)
-            $quick_start_menus = unserialize($quick_start_menus->content);
-        else
-            $quick_start_menus = [];
+//        if ($quick_start_menus)
+            $quick_start_menus = json_decode($quick_start_menus->content);
+//        else
+//            $quick_start_menus = [];
 //        $quick_start_menus_system = Config::find()
 //            ->where(['symbol' => 'by_quick_start_menu'])
 //            ->andWhere(['sid' => 0])
@@ -63,34 +63,47 @@ class DashboardController extends BaseController
             ->where(['>', 'created_at', time()-60*60*24])
             ->andWhere(['=', 'sid', Helper::getSid()])->all();
 
-//        Helper::p( time()-60*60*24);
          // 动态
         $activities = ActionLog::find()
             ->andWhere(['>', 'created_at', time()-60*60*24*7])
             ->andWhere(['=', 'status', 1])
             ->orderBy('created_at desc')->all(); // 先取过去七天的重要操作日志，参考https://help.youzan.com/displaylist/detail_4_11697
-
+//
         $data = [
             'statistics' => $statistics,
             'quick_start_menus' => $quick_start_menus,
             'new_customers' => $new_customers,
             'activities' => $activities,
         ];
+//        Helper::p($data);
         return  ['message' => 'ok','code' => 1,'data' => $data];
     }
 
     // 通知 消息 代办
     public function actionNotice(){
+        $activities = ActionLog::find()
+            ->andWhere(['>', 'created_at', time()-60*60*24*7])
+            ->andWhere(['=', 'status', 1])
+            ->orderBy('created_at desc')->limit(10)->all();
 
-        // 统计
+        $activities = \yii\helpers\ArrayHelper::toArray($activities);
+//        Helper::p($activities);
         $data = [];
-        array_push($data,['id' => '000000001','avatar' =>  'https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png',
-            'title' => 'bg-primary','datetime' => '2017-08-09','type' => '通知']);
-        array_push($data,['id' => '000000002','avatar' =>  'https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png',
-            'title' => 'bg-primary','datetime' => '2017-08-09','type' => '待办']);
-        array_push($data,['id' => '000000002','avatar' =>  'https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png',
-            'title' => 'bg-primary','description' => '22222','datetime' => '2017-08-09','type' => '消息']);
+//        array_push($data,['id' => '000000001','avatar' =>  'https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png',
+//            'title' => 'bg-primary','datetime' => '2017-08-09','type' => '通知']);
+//        array_push($data,['id' => '000000002','avatar' =>  'https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png',
+//            'title' => 'bg-primary','datetime' => '2017-08-09','type' => '待办']);
+        foreach ($activities as $item){
+            $act['type'] = '消息';
+            $act['title'] = $item['name'];
+            $act['description'] = $item['message'];
+            $act['datetime'] = $item['created_at'];
 
+            $data[] = $act;
+        }
+//        array_push($data,['id' => '000000002','avatar' =>  'https://gw.alipayobjects.com/zos/rmsportal/ThXAXghbEsBCCSDihZxY.png',
+//            'title' => 'bg-primary','description' => '22222','datetime' => '2017-08-09','type' => '消息']);
+        $data = ['list' => $data,'total'=>count($data)];
         return  ['message' => 'ok','code' => 1,'data' => $data];
     }
 }

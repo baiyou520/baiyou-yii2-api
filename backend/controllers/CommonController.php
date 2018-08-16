@@ -105,7 +105,7 @@ class CommonController extends BaseController
         if(empty($pic_group)){
             $pic_group = new Category();
             $pic_group->symbol = 'pic_group';
-            $pic_group->name = '无分组';
+            $pic_group->name = '未分组';
             $pic_group->sort = 1;
             $pic_group->save();
         }

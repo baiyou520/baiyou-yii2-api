@@ -58,22 +58,23 @@ class m140506_102106_rbac_init extends \yii\db\Migration
         }
 
         $this->createTable($authManager->ruleTable, [
-            'name' => $this->string(64)->notNull(),
-            'data' => $this->binary(),
-            'created_at' => $this->integer(),
-            'updated_at' => $this->integer(),
+            'name' => $this->string(64)->notNull()->comment('规则配置'),
+            'data' => $this->binary()->comment('其他json配置参数'),
+            'created_at' => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
+            'updated_at' => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
             'PRIMARY KEY ([[name]])',
         ], $tableOptions);
 
         $this->createTable($authManager->itemTable, [
-            'name' => $this->string(64)->notNull(),
-            'sid' => $this->integer()->unsigned()->notNull(),
-            'type' => $this->smallInteger()->notNull(),
-            'description' => $this->text(),
-            'rule_name' => $this->string(64),
-            'data' => $this->binary(),
-            'created_at' => $this->integer(),
-            'updated_at' => $this->integer(),
+            'name' => $this->string(64)->notNull()->comment('英文名'),
+            'sid' => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
+            'type' => $this->smallInteger()->notNull()->comment('类型：1.角色，2.路由/权限点'),
+            'title' => $this->string(30)->comment('中文名'),
+            'description' => $this->text()->comment('描述'),
+            'rule_name' => $this->string(64)->comment('规则配置'),
+            'data' => $this->binary()->comment('其他json配置参数'),
+            'created_at' => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
+            'updated_at' => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
             'PRIMARY KEY ([[name]], [[sid]])',
             'FOREIGN KEY ([[rule_name]]) REFERENCES ' . $authManager->ruleTable . ' ([[name]])' .
             $this->buildFkClause('ON DELETE SET NULL', 'ON UPDATE CASCADE'),
@@ -92,11 +93,11 @@ class m140506_102106_rbac_init extends \yii\db\Migration
 
 
         $this->createTable($authManager->assignmentTable, [
-            'item_name' => $this->string(64)->notNull(),
-            'sid' => $this->integer()->unsigned()->notNull(),
-            'user_id' => $this->integer()->unsigned()->notNull(),
-            'created_at' => $this->integer(),
-            'updated_at' => $this->integer(),
+            'item_name' => $this->string(64)->notNull()->comment('角色名称'),
+            'sid' => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
+            'user_id' => $this->integer()->unsigned()->notNull()->comment('用户id'),
+            'created_at' => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
+            'updated_at' => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
             'PRIMARY KEY ([[item_name]], [[user_id]], [[sid]])',
             'FOREIGN KEY ([[item_name]]) REFERENCES ' . $authManager->itemTable . ' ([[name]])' .
             $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
@@ -104,43 +105,6 @@ class m140506_102106_rbac_init extends \yii\db\Migration
             $this->buildFkClause('ON DELETE NO ACTION', 'ON UPDATE NO ACTION'),
         ], $tableOptions);
 
-
-        if ($this->isMSSQL()) {
-            $this->execute("CREATE TRIGGER dbo.trigger_auth_item_child
-            ON dbo.{$authManager->itemTable}
-            INSTEAD OF DELETE, UPDATE
-            AS
-            DECLARE @old_name VARCHAR (64) = (SELECT name FROM deleted)
-            DECLARE @new_name VARCHAR (64) = (SELECT name FROM inserted)
-            BEGIN
-            IF COLUMNS_UPDATED() > 0
-                BEGIN
-                    IF @old_name <> @new_name
-                    BEGIN
-                        ALTER TABLE {$authManager->itemChildTable} NOCHECK CONSTRAINT FK__auth_item__child;
-                        UPDATE {$authManager->itemChildTable} SET child = @new_name WHERE child = @old_name;
-                    END
-                UPDATE {$authManager->itemTable}
-                SET name = (SELECT name FROM inserted),
-                type = (SELECT type FROM inserted),
-                description = (SELECT description FROM inserted),
-                rule_name = (SELECT rule_name FROM inserted),
-                data = (SELECT data FROM inserted),
-                created_at = (SELECT created_at FROM inserted),
-                updated_at = (SELECT updated_at FROM inserted)
-                WHERE name IN (SELECT name FROM deleted)
-                IF @old_name <> @new_name
-                    BEGIN
-                        ALTER TABLE {$authManager->itemChildTable} CHECK CONSTRAINT FK__auth_item__child;
-                    END
-                END
-                ELSE
-                    BEGIN
-                        DELETE FROM dbo.{$authManager->itemChildTable} WHERE parent IN (SELECT name FROM deleted) OR child IN (SELECT name FROM deleted);
-                        DELETE FROM dbo.{$authManager->itemTable} WHERE name IN (SELECT name FROM deleted);
-                    END
-            END;");
-        }
     }
 
     /**

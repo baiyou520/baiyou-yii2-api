@@ -55,7 +55,7 @@ class UsersController extends BaseController
 
         $provider = new ActiveDataProvider([
             'query' =>
-                $query->select(['id','username','user.name','user.created_at','user.updated_at','user.status','aa.item_name as role','ai.description as role_alias'])
+                $query->select(['id','username','user.name','user.created_at','user.updated_at','user.status','aa.item_name as role','ai.title as role_alias'])
                     ->from('user')
                     ->leftJoin("auth_assignment aa","aa.user_id=user.id")
                     ->leftJoin('auth_item ai','ai.name=aa.item_name')
@@ -208,7 +208,7 @@ class UsersController extends BaseController
             return ["message"=>"该用户不可删除","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
 
-        $code=AuthAssignment::find()->where(['user_id'=>$id])->one()->delete();
+        $code=AuthAssignment::findOne(['user_id'=>$id])->delete();
         if (!$code) {
             return ["message"=>"角色表信息未删除","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
@@ -230,6 +230,7 @@ class UsersController extends BaseController
     public function actionStartUp(){
         $sid = Helper::getSid();
         $id = \Yii::$app->user->id;
+//        Helper::p($id);
         $userObj = User::findOne($id);
         // 如果找不到用户信息，意味着当前用户并没有这个实例的权限，一般发生在跨应用访问，让程序跳回总控制台即可
         if (!$userObj){
@@ -241,14 +242,10 @@ class UsersController extends BaseController
         if (empty($init_config)){
             InitController::init();
         }
-        $query=New Query();
+
         //用户角色
-        $item_name=$query->select('aa.item_name as role,ai.description as role_alias')
-            ->from('auth_assignment aa')
-            ->leftJoin('auth_item ai','ai.name=aa.item_name')
-            ->where("aa.user_id=$id")
-            ->where("aa.sid=$sid")->one()
-        ;
+        $role_item = $userObj->authAssignments[0]->itemName;
+
         //菜单
         $menu="";
         $callback = function($menu){
@@ -276,8 +273,8 @@ class UsersController extends BaseController
             'user_id' => $userObj->id,
             'username' => $userObj->username,
             'name' => $userObj->name,
-            'role' => $item_name['role'],
-            'role_alias' => $item_name['role_alias'],
+            'role' => $role_item->name,
+            'role_alias' => $role_item->title,
         ];
 
 //        // 调用总后台提供的获取实例信息的接口，这块权限方面有待完善，目前是无需认证的

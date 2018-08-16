@@ -76,4 +76,21 @@ class Media extends \baiyou\common\components\ActiveRecord
     {
         return $this->hasOne(Category::className(), ['category_id' => 'group_id']);
     }
+
+    public function fields()
+    {
+        $fields = parent::fields();
+
+        // remove fields that contain sensitive information
+        unset($fields['sid']);
+        $fields_from_other_tables = [
+            'url' => function($model) {
+                return 'https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url;
+            },
+            'thumb_url' => function($model) {
+                return 'https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url.'_240x240';
+            },
+        ];
+        return array_merge($fields,$fields_from_other_tables);
+    }
 }

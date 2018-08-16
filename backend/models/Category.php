@@ -70,4 +70,22 @@ class Category extends \baiyou\common\components\ActiveRecord
     {
         return $this->hasMany(Media::className(), ['group_id' => 'category_id']);
     }
+
+    public function fields()
+    {
+        $fields = parent::fields();
+
+        // remove fields that contain sensitive information
+        unset($fields['sid']);
+        $fields_from_other_tables = [
+            'counts' => function($model) {
+                if($model->symbol === 'pic_group') {
+                    return count($model->media);
+                }else{
+                    return 0;
+                }
+            }
+        ];
+        return array_merge($fields,$fields_from_other_tables);
+    }
 }

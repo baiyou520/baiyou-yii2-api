@@ -17,7 +17,7 @@ use baiyou\common\models\JwtModel;
  * @property int $updated_at 修改时间戳
  *
  * @property ActionLog[] $actionLogs
- * @property AuthAssignment[] $authAssignment
+ * @property AuthAssignment[] $authAssignments
  */
 class User  extends JwtModel
 {

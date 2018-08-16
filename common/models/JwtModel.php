@@ -9,6 +9,7 @@
 namespace baiyou\common\models;
 
 use baiyou\common\components\ActiveRecord;
+use baiyou\common\components\Helper;
 use Yii;
 use yii\db\Expression;
 use Firebase\JWT\JWT;
@@ -164,10 +165,12 @@ class JwtModel extends ActiveRecord implements IdentityInterface
         if (self::tableName() == '{{%user}}'){ // 中台SSO，不需要access_token_expired_at
             $user = static::find()->where([
                 '=', 'id', $id
+            ])->andWhere([
+                '=', 'sid',  Helper::getSid()
             ])
-                ->andWhere([
-                    '=', 'status',  self::STATUS_ACTIVE
-                ])->one();
+            ->andWhere([
+                '=', 'status',  self::STATUS_ACTIVE
+            ])->one();
         }else{ // 微信端仍旧需要
             $user = static::find()->where([
                 '=', 'id', $id

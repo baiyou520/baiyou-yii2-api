@@ -21,5 +21,6 @@ class BaseErrorCode
     public static $SET_EXPERIENCER_FAILED = 1004; // 添加或绑定体验者失败
     public static $SAVE_DB_ERROR = 1005; // 数据库保存失败
     public static $NEVER_SUBMIT_AUDIT = 1006; // 从未提交审核
+    public static $DELETE_DB_ERROR = 1007; // 数据库删除失败,
 
 }

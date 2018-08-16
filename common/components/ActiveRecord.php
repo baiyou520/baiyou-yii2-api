@@ -110,39 +110,49 @@ class ActiveRecord extends \yii\db\ActiveRecord
      * @throws InvalidConfigException if there is no primary key defined.
      * @internal
      */
+//    protected static function findByCondition($condition)
+//    {
+//        $query = static::find();
+//
+//        if (!ArrayHelper::isAssociative($condition)) {
+//            // query by primary key
+//            $primaryKey = static::primaryKey();
+//            if (isset($primaryKey[0])) {
+//                $pk = $primaryKey[0];
+//                if (!empty($query->join) || !empty($query->joinWith)) {
+//                    $pk = static::tableName() . '.' . $pk;
+//                }
+//                // if condition is scalar, search for a single primary key, if it is array, search for multiple primary key values
+//                $condition = [$pk => is_array($condition) ? array_values($condition) : $condition];
+//            } else {
+//                throw new InvalidConfigException('"' . get_called_class() . '" must have a primary key.');
+//            }
+//        } elseif (is_array($condition)) {
+//            $condition = static::filterCondition($condition);
+//        }
+//
+//        /**
+//         * 复写区域 sft@caiyoudata.com
+//         * ——————————————————————————————————————————————————————————————————————————————
+//         * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，加入筛选条件
+//         */
+//        $condition['sid'] = Helper::getSid();
+//
+//        return $query->andWhere($condition);
+//    }
+
     protected static function findByCondition($condition)
     {
-        $query = static::find();
-
-        if (!ArrayHelper::isAssociative($condition)) {
-            // query by primary key
-            $primaryKey = static::primaryKey();
-            if (isset($primaryKey[0])) {
-                $pk = $primaryKey[0];
-                if (!empty($query->join) || !empty($query->joinWith)) {
-                    $pk = static::tableName() . '.' . $pk;
-                }
-                // if condition is scalar, search for a single primary key, if it is array, search for multiple primary key values
-                $condition = [$pk => is_array($condition) ? array_values($condition) : $condition];
-            } else {
-                throw new InvalidConfigException('"' . get_called_class() . '" must have a primary key.');
-            }
-        } elseif (is_array($condition)) {
-            $condition = static::filterCondition($condition);
-        }
-
         /**
          * 复写区域 sft@caiyoudata.com
          * ——————————————————————————————————————————————————————————————————————————————
          * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，加入筛选条件
          */
-        $condition['sid'] = Helper::getSid();
-
-        return $query->andWhere($condition);
+        return parent::findByCondition($condition)->andWhere(['in', 'sid', [Helper::getSid(),0]]);
     }
 
     /**
-     * 复写 暂时不启用
+     * 复写
      * {@inheritdoc}
      * @return ActiveQuery the newly created [[ActiveQuery]] instance.
      */
@@ -155,7 +165,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
          * 但外部调用后面不能用where，而要用andWhere,即find()->andWhere 否则这里的筛选条件会失效，待完善
          */
 
-        return parent::find()->where(['=', 'sid', Helper::getSid()]);
+        return parent::find()->where(['in', 'sid', [Helper::getSid(),0]]);
     }
 
 
