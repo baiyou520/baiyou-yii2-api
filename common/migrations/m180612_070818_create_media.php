@@ -28,7 +28,7 @@ class m180612_070818_create_media extends Migration
             'status'         => $this->tinyInteger()->notNull()->defaultValue(1)->comment('状态:0,软删除，1，正常'),
             'created_at'     => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'     => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),
-//            'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION',
+            'FOREIGN KEY ([[sid]]) REFERENCES instance ([[sid]]) ON DELETE NO ACTION ON UPDATE NO ACTION',
             'FOREIGN KEY ([[group_id]]) REFERENCES category ([[category_id]]) ON DELETE NO ACTION ON UPDATE NO ACTION',
         ], $tableOptions);
     }

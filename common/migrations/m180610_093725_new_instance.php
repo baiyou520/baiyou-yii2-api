@@ -20,7 +20,7 @@ class m180610_093725_new_instance extends Migration
             'certificate_flag'  => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0)->comment('是否认证，0：未认证，1：已认证'),
             'level'             => $this->string(20)->notNull()->defaultValue('')->comment('实例级别，如：初级版'),
             'is_bind'           => $this->tinyInteger()->notNull()->defaultValue(0)->comment('是否绑定，0：未绑定，1：绑定'),
-            'expired_at'        => $this->integer()->unsigned()->notNull()->comment('到期时间'),
+            'expired_at'        => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('到期时间'),
             'applet_appid'      => $this->string(18)->defaultValue('')->comment('微信小程序id'),
             'applet_appsecret'  => $this->string(32)->defaultValue('')->comment('微信小程序密钥'),
             'wx_mch_id'         => $this->string(10)->defaultValue('')->comment('微信支付分配的商户号'),
@@ -34,6 +34,12 @@ class m180610_093725_new_instance extends Migration
             'updated_at'        => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('时间戳，修改时间'),
             'PRIMARY KEY ([[sid]])',
         ],$tableOptions);
+
+        // 插入sid 为0的实例，仅为了实现外键，因为有些表中含有sid为0的数据
+        $this->insert('{{%instance}}', [
+            'sid' => 0,
+            'user_id' => 1
+        ]);
     }
 
     public function safeDown(){

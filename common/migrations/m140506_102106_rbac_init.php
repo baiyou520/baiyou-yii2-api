@@ -69,7 +69,7 @@ class m140506_102106_rbac_init extends \yii\db\Migration
             'name' => $this->string(64)->notNull()->comment('英文名'),
             'sid' => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
             'type' => $this->smallInteger()->notNull()->comment('类型：1.角色，2.路由/权限点'),
-            'title' => $this->string(30)->comment('中文名'),
+            'title' => $this->string(30)->defaultValue('')->comment('中文名'),
             'description' => $this->text()->comment('描述'),
             'rule_name' => $this->string(64)->comment('规则配置'),
             'data' => $this->binary()->comment('其他json配置参数'),

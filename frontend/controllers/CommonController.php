@@ -1,12 +1,14 @@
 <?php
 /**
- * 通用控制器，用于图片上传等通用接口
+ * 微信端通用控制器
+ * Created by PhpStorm.
  * User: billyshen
- * Date: 2018/5/30
- * Time: 下午5:20
+ * Date: 2018/8/17
+ * Time: 下午2:02
  */
 
-namespace baiyou\backend\controllers;
+namespace baiyou\frontend\controllers;
+
 
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
