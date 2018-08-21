@@ -312,9 +312,14 @@ class ConfigsController extends BaseController
         ];
         $results = Helper::https_request($url,$data);
         if ($results['code'] == 1){
+
+            $url = Yii::$app->params['admin_url'].'/v1/open/getTemplateInfo/'.$sid;
+            $tpl_info = Helper::https_request($url);
+
             $model = Config::findOne(['symbol' => 'version_related']);
             $released_conf = json_decode($model->content);
-            $released_conf['released_flag'] = 1;
+            $released_conf->released_flag = self::RELEASE_FLAG_PROCESSING;
+            $released_conf->tpl_version = $tpl_info['data']['template_id'];
             $model->content = json_encode($released_conf);
             if(!$model->save()){
                 return ["message"=>"审核已经提交，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
