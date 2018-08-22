@@ -135,7 +135,7 @@ class Helper
 
     /*****************图片上传相关*******************/
 
-    public static function uploadImgs(){
+    public static function uploadImgs($id){
         // 连接图片服务器
         $ftp_server = Yii::$app->params['img_server']; //要连接的服务器域名
         $conn=ftp_connect($ftp_server['domain']); //连接FTP服务器
@@ -185,7 +185,7 @@ class Helper
             $media->name = $pic_name;
             $media->url = $dir.'/'.$pic_rename;
             $media->type = 1;
-            $media->group_id = self::group_id();
+            $media->group_id = $id;
             if(!$media->save()){
                 \Yii::error($media->errors,'保存本地对应记录失败');
             }
@@ -204,23 +204,6 @@ class Helper
         return $medias;
     }
 
-    /**
-     * 获得默认分组id
-     * @return int
-     * @author sft@caiyoudata.com
-     * @time   2018/8/6 下午4:54
-     */
-    private static function group_id(){
-        $pic_group=Category::find()->andWhere(['symbol'=>'pic_group'])->one();
-        if(empty($pic_group)){
-            $pic_group = new Category();
-            $pic_group->symbol = 'pic_group';
-            $pic_group->name = '未分组';
-            $pic_group->sort = 1;
-            $pic_group->save();
-        }
-        return $pic_group->category_id;
-    }
     /**
      * 将10进制的数字字符串转为64进制的数字字符串
      * @param $m string 10进制的数字字符串

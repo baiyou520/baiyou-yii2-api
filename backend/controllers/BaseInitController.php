@@ -10,7 +10,9 @@ namespace baiyou\backend\controllers;
 
 
 use baiyou\backend\models\ActionLog;
+use baiyou\backend\models\Category;
 use baiyou\backend\models\Config;
+use baiyou\common\components\Helper;
 
 class BaseInitController
 {
@@ -57,7 +59,17 @@ class BaseInitController
             \Yii::error($quick_start_menu_config->errors,'快捷菜单初始化数据失败');
         }
 
+        //添加图片默认未分组
+        $sid=Helper::getSid();
+        $catgory_pic=new Category();
+        $catgory_pic->sid=$sid;
+        $catgory_pic->symbol='pic_group';
+        $catgory_pic->name='未分组';
+        if(!$catgory_pic->save()){
+            \Yii::error("默认图片分组失败,sid:".json_encode($catgory_pic->errors,JSON_UNESCAPED_UNICODE).$sid,"店铺初始化");
+        }
 
+        // 初始化完成
         $init_config = new Config();
         $init_config->symbol = 'init';
         $init_config->content = '1'; // 1:初始化完成

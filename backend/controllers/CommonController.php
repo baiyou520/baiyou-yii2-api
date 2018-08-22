@@ -21,8 +21,8 @@ class CommonController extends BaseController
      * @author  billyshen 2018/5/30 下午5:21
      */
 
-    public function actionUploadImgs(){
-        $medias = Helper::uploadImgs();
+    public function actionUploadImgs($id){
+        $medias = Helper::uploadImgs($id);
         if (empty($medias)){
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"上传失败"];
         }else{
