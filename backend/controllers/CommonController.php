@@ -17,7 +17,7 @@ class CommonController extends BaseController
 
     /**
      * 图片上传接口,将图片统一上传至图片服务器，并在应用服务器的media表中记录，未来再迁移到七牛云
-     * 单图和多图上传使用同一个接口
+     * 单图和多图上传使用同一个接口 需要提供分组编号
      * @return array|string
      * @author  billyshen 2018/5/30 下午5:21
      */
