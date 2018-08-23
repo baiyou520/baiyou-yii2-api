@@ -130,7 +130,7 @@ class MediasController extends BaseController
      * @time 2018/7/16 19:27
      */
     public function actionDeleteCategory($group_id){
-        $category=Category::find()->where(['category_id'=>$group_id])->one();
+        $category=Category::find()->andWhere(['category_id'=>$group_id])->one();
         if(empty($category)){
             return ["message"=>"分组id错误,请检查","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
@@ -141,18 +141,17 @@ class MediasController extends BaseController
         $medias=Media::find()->where(['group_id'=>$group_id])->andWhere(['sid'=>Helper::getSid()])->all();
         //文件id收集
         $media_id=array_column($medias,'media_id');
+        //修改文件里的该分组到其他分组里
+        $code=Media::updateAll(['group_id'=>$this->group_id()],['in','media_id',$media_id]);
+        if($code===false){
+            return ["message"=>"删除失败","code"=>BaseErrorCode::$DELETE_DB_ERROR,"data"=>"批量删除出错"];
+        }
         //删除分类表里的文件分组
         $code_c=$category->delete();
         if($code_c===false){
             return ["message"=>"删除失败","code"=>BaseErrorCode::$DELETE_DB_ERROR];
-        }
-        //修改文件里的该分组到其他分组里
-        $code=Media::updateAll(['group_id'=>$this->group_id()],['in','media_id',$media_id]);
-        if($code===false){
-            return ["message"=>"删除失败","code"=>BaseErrorCode::$DELETE_DB_ERROR
-            ];
         }else{
-            return ["message"=>"操作成功","code"=>1];
+            return ["message"=>"删除成功","code"=>1];
         }
     }
     /**
