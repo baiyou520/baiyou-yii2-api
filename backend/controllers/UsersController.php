@@ -55,7 +55,7 @@ class UsersController extends BaseController
 
         $provider = new ActiveDataProvider([
             'query' =>
-                $query->select(['id','username','user.name','user.created_at','user.updated_at','user.status','aa.item_name as role','ai.title as role_alias'])
+                $query->select(['id','username','phone','user.name','user.created_at','user.updated_at','user.status','aa.item_name as role','ai.title as role_alias'])
                     ->from('user')
                     ->leftJoin("auth_assignment aa","aa.user_id=user.id")
                     ->leftJoin('auth_item ai','ai.name=aa.item_name')
