@@ -10,6 +10,7 @@
 namespace baiyou\frontend\controllers;
 
 
+use baiyou\backend\models\Category;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 class CommonController extends BaseController
@@ -23,8 +24,13 @@ class CommonController extends BaseController
      * @author  billyshen 2018/5/30 下午5:21
      */
 
-    public function actionUploadImgs(){
-        $medias = Helper::uploadImgs();
+    public function actionUploadImgs($id){
+        $pic_group=Category::findOne($id);
+        if(empty($pic_group)){
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"分组不存在"];
+        }
+
+        $medias = Helper::uploadImgs($id);
         if (empty($medias)){
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"上传失败"];
         }else{
