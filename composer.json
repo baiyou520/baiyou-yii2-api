@@ -2,7 +2,7 @@
     "name": "baiyou/yii2-api",
     "type": "yii2-extension",
     "require": {
-        "mdmsoft/yii2-admin": "dev-master#e9cc1d8adc as 2.8-p1",
+        "mdmsoft/yii2-admin": "2.x-dev",
         "firebase/php-jwt": "^4.0"
     },
     "license": "MIT",
