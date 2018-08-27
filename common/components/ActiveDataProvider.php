@@ -44,6 +44,8 @@ class ActiveDataProvider extends \yii\data\ActiveDataProvider
         $table=$tab[count($tab)-1];
         $query->andWhere([$table.'.sid' => Helper::getSid()]);
 
+        $this->setPagination(['pageSizeLimit' => [0, 50]]); // 实现per-page给0的时候，得到全部数据 参考：https://stackoverflow.com/questions/27421798/yii2-how-do-change-pagination-per-page-into-restful-web-service-api
+
         return $query->all($this->db);
     }
 
