@@ -182,7 +182,8 @@ class MediasController extends BaseController
      */
     public function actionBatchDelete(){
         $params=Yii::$app->request->post();
-        $code=Media::deleteAll(['in','media_id',$params['media_id']]);
+        $code=Media::updateAll(['status'=>0],['in','media_id',$params['media_id']]);
+//        $code=Media::deleteAll(['in','media_id',$params['media_id']]);
         if($code>0){
             return ["message"=>"操作成功",'code'=>1];
         }else{
