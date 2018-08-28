@@ -44,7 +44,7 @@ class MediasController extends BaseController
         $provider = new ActiveDataProvider([
             "query"=>Media::find()
                 ->select(['media_id','name','url','group_id'])
-                ->Where(['type'=>$type])
+                ->Where(['type'=>$type,'status'=>1])
                 ->andFilterWhere(['group_id'=>$group_id])
                 ->andFilterWhere(['like','name',$keyword])
                 ->orderBy('created_at desc')
