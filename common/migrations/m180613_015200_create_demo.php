@@ -108,7 +108,7 @@ class m180613_015200_create_demo extends Migration
         // 10. 去控制器中，完善个性化需求的接口
 
 
-        // 以下这步不用做,未测试
+        // 正式环境去掉demo菜单
         if(YII_ENV_PROD){
             $this->delete('{{%menu}}',['id' => [11, 12]]);
         }

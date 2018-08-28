@@ -159,11 +159,12 @@ class Helper
 
         // 处理图片
         $medias = [];
-        for($i=0; $i<count($_FILES['image']['tmp_name']); $i++)
+        $image_length = is_array($_FILES['image']['tmp_name'])? count($_FILES['image']['tmp_name']):1; // php7.2升级问题https://blog.csdn.net/w670328683/article/details/79402373
+        for($i=0; $i<$image_length; $i++)
         {
             // 本地保存
             $pic_rename = Helper::hex10to64(Yii::$app->user->id). Helper::hex16to64(uniqid(rand())).".jpg"; // 文件唯一名
-            if (count($_FILES['image']['tmp_name']) === 1){ // 单图上传单独处理
+            if ($image_length === 1){ // 单图上传单独处理
                 $pic_name = $_FILES['image']['name']; // 原始上传文件名
                 move_uploaded_file($_FILES['image']['tmp_name'],$pic_rename);
             }else{
@@ -199,7 +200,7 @@ class Helper
         }
 
         ftp_quit($conn);// 关闭联接,不然会一直开着占用资源
-        if (count($_FILES['image']['tmp_name']) === 1) // 单图上传单独处理
+        if ($image_length === 1) // 单图上传单独处理
             $medias = $medias[0];
         return $medias;
     }
