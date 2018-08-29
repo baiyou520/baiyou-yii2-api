@@ -64,11 +64,11 @@ class Category extends \baiyou\common\components\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return mixed
      */
     public function getMedia()
     {
-        return $this->hasMany(Media::className(), ['group_id' => 'category_id']);
+        return $this->hasMany(Media::className(), ['group_id' => 'category_id'])->onCondition(['media.status' => 1]);
     }
 
     public function fields()
