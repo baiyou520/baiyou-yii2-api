@@ -81,6 +81,10 @@ class CategoriesController extends BaseController
         }else{
             $params['category_pid']=0;
         }
+        $category_have=Category::find()->andWhere(['symbol'=>$params['symbol'],'name'=>$params['name']])->one();
+        if(!empty($category_have)){
+            return ["message"=>"该内容已创建,请检查","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>"新增内容重复"];
+        }
         $category=new Category();
         //补充sid
         $params['sid']=Helper::getSid();
