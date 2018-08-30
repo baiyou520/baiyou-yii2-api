@@ -299,8 +299,8 @@ class UsersController extends BaseController
                 break;
             case -1:
                 $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
-                $license = '已打样';
-                $expired_at = '已打样，请及时续费！';
+                $license = '已打烊';
+                $expired_at = '已打烊，请及时续费！';
                 break;
             default:
                 break;
