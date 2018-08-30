@@ -110,8 +110,8 @@ class AuthoritiesController extends BaseController
             // 默认全部展开
             $value['expanded']=true;
 
-            // 概况和首页必选
-            if ($value['key'] === '概况' || $value['key'] === '首页'){
+            // 概况和首页必选 ,当然仅查看情况下，可以不禁用，前端会处理
+            if (($value['key'] === '概况' || $value['key'] === '首页') && !$view){
                 $value['disabled']=true;
             }else{
                 $value['disabled']=false;
