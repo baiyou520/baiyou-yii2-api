@@ -46,7 +46,7 @@ class Helper
         if(empty($sid)){
             $sid=\Yii::$app->request->get('sid');
         }
-        return $sid;
+        return (int)$sid;
     }
 
     /**

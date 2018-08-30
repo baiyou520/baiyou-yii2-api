@@ -112,7 +112,6 @@ class m180612_080952_init_data extends Migration
                 ['首页', '/by/users/start-up'],
                 ['首页', '/by/common/upload-imgs'],
                 ['首页', '/by/categories/index'],
-                ['首页', '/by/medias/index'],
 
                 ['系统', '设置'],
 
@@ -150,6 +149,7 @@ class m180612_080952_init_data extends Migration
                 ['我的文件', '/by/categories/create'],
                 ['我的文件', '/by/categories/view'],
                 ['我的文件', '/by/configs/index'],
+                ['我的文件', '/by/medias/index'],
                 ['我的文件', '/by/medias/view'],
                 ['我的文件', '/by/medias/update'],
                 ['我的文件', '/by/medias/create'],
@@ -195,7 +195,8 @@ class m180612_080952_init_data extends Migration
             [
                 ['root', '/*'], // root用户，即本应用开发人员，拥有全部权限
 
-                ['user', '概况'], // user用户，即普通用户，拥有基础权限
+                ['user', '概况'],
+                ['user', '应用'], // user用户，即普通用户，拥有基础权限
 
                 ['admin', '概况'],
                 ['admin', '应用'],

@@ -71,8 +71,10 @@ class m180613_015200_create_demo extends Migration
                         ['Demo演示查看', '/v1/demo/index'], // L2
                         ['Demo演示查看', '/v1/demo/view'], // L2
                             ['Demo演示新增', '/v1/demo/create'], // L3
+                            ['Demo演示新增', '/by/medias/index'],
                             ['Demo演示删除', '/v1/demo/delete'], // L3
                             ['Demo演示修改', '/v1/demo/update'], // L3
+                            ['Demo演示修改', '/by/medias/index']
             ]);
         // 6.1 分配权限给角色
         $this->batchInsert('{{%auth_item_child}}',
