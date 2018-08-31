@@ -181,7 +181,9 @@ class CreateQueryHelper {
 //                     }
                  $range = unserialize($value);
                  $begin = strlen($range[0]) === 13 ? $range[0]/1000 : $range[0];   // ng-alain 1.1.2暂时只支持13位时间戳，我们数据库存的是10位
+                 $begin = strtotime(date('Y-m-d', $begin)); // 得到当天0点
                  $end = strlen($range[1]) === 13 ? $range[1]/1000 : $range[1];
+                 $end = strtotime(date('Y-m-d', $end)) + 24 * 60 * 60;// 得到当天24点
                  return ['and', "$field>='".$begin."' and $field<='".$end."'"];
              }
         ];
