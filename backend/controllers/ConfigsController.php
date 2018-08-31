@@ -341,7 +341,9 @@ class ConfigsController extends BaseController
         $model = Config::findOne(['symbol' => 'version_related']);
         $released_conf = json_decode($model->content);
         if($released_conf->released_flag === self::RELEASE_FLAG_INIT){ // 0.未提交审核;1.审核中；2.已发布
+            $instance=Instance::findOne(Helper::getSid());
             $data['status'] = -1;
+            $data['instance'] = $instance;
             return ["code"=>1,"message"=>"未提交审核","data"=>$data];
         }
 

@@ -230,13 +230,12 @@ class UsersController extends BaseController
     public function actionStartUp(){
         $sid = Helper::getSid();
         $id = \Yii::$app->user->id;
-//        Helper::p($id);
         $userObj = User::findOne($id);
         // 如果找不到用户信息，意味着当前用户并没有这个实例的权限，一般发生在跨应用访问，让程序跳回总控制台即可
         if (!$userObj){
             throw new \yii\web\HttpException(401, 'sid不对，跳回总控制台.');
-//            return  ['message' => 'sid不对，跳回总控制台，重新点击进入控制台即可','code' => BaseErrorCode::$SID_WRONG];
         }
+
         // 判断店铺有没有初始化
         $init_config = Config::findOne(['symbol' => 'init']);
         if (empty($init_config)){
@@ -277,10 +276,7 @@ class UsersController extends BaseController
             'role_alias' => $role_item->title,
         ];
 
-//        // 调用总后台提供的获取实例信息的接口，这块权限方面有待完善，目前是无需认证的
-//        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.Helper::getSid();
-//        $instance = Helper::https_request($url);
-//        return $result;
+
         $instance = Instance::findOne($sid);
         $sub_title = '';
         $license = '';

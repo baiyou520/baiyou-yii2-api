@@ -13,6 +13,8 @@ use baiyou\backend\models\Notice;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 use baiyou\common\models\Customer;
+use baiyou\common\models\Instance;
+use yii;
 
 class DashboardController extends BaseController
 {
@@ -36,11 +38,11 @@ class DashboardController extends BaseController
      * @time  adt
      */
     public function actionIndex(){
-
+        $sid = Helper::getSid();
         $user_total = Customer::find()->count();// 用户总数
         $user_new_in_past_24hours = Customer::find()
             ->where(['>', 'created_at', time()-60*60*24])
-            ->andWhere(['=', 'sid', Helper::getSid()])->count();// 过去24小时新增用户数
+            ->andWhere(['=', 'sid', $sid])->count();// 过去24小时新增用户数
 
         // 统计
         $statistics = [];
@@ -55,7 +57,7 @@ class DashboardController extends BaseController
         // 新增客户
         $new_customers =  Customer::find()
             ->where(['>', 'created_at', time()-60*60*24])
-            ->andWhere(['=', 'sid', Helper::getSid()])->all();
+            ->andWhere(['=', 'sid', $sid])->all();
 
          // 动态
         $activities = ActionLog::find()
@@ -63,13 +65,63 @@ class DashboardController extends BaseController
             ->andWhere(['=', 'status', 1])
             ->orderBy('created_at desc')->all(); // 先取过去七天的重要操作日志，参考https://help.youzan.com/displaylist/detail_4_11697
 //
+
+
+        // app 相关信息
+        $instance = Instance::findOne($sid);
+        $sub_title = '';
+        $license = '';
+        $expired_at = '';
+        switch ($instance->status)
+        {
+            case 0:
+                $sub_title = '欢迎使用'.Yii::$app->params['app-name'].',您的店铺为试用版，为不影响使用，请及时购买正式版！';
+                $license = '试用版';
+                $expired_at =  (int)(($instance->expired_at - time()) / 86400)  .'天后过期，请及时续费！';
+                break;
+            case 1:
+                $sub_title = '欢迎回来，祝您生意欣荣！';
+                $license = '正式版';
+                $expired_at =  (int)(($instance->expired_at - time()) / 86400) .'天后过期，请及时续费！';
+                break;
+            case -1:
+                $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
+                $license = '已打烊';
+                $expired_at = '已打烊，请及时续费！';
+                break;
+            default:
+                break;
+        }
+        $qr_code_status = 0; // 出现立即绑定按钮
+        if ($instance->is_bind == 1){
+            $qr_code_status = 1; // 出现设置秘钥按钮
+        }
+        if ($instance->online_qrcode !== ''){
+            $qr_code_status = 2; // 出现2个二维码
+        }
+        $app = [
+            'app_name' => Yii::$app->params['app-name'],
+            'sid' => $instance->sid,
+            'instance_name' => $instance->name,
+            'status' => $instance->status,
+            'license' => $license, // 版本
+            'expired_at' => $expired_at, // 多久过期
+            'sub_title' => $sub_title,
+            'instance_thumb' => $instance->thumb,
+            'experience_qrcode' => Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode, // 体验版二维码，存在总后台的后端
+            'online_qrcode' => Yii::$app->request->hostInfo.'/'.$instance->online_qrcode,// 上线后二维码,存在具体应用的后端
+            'qr_code_status' => $qr_code_status,// 如何显示微信小程序二维码区域
+            'level' => $instance->level, // 购买版本，暂定
+        ];
+
+//        Helper::p($data);
         $data = [
             'statistics' => $statistics,
             'quick_start_menus' => $quick_start_menus,
             'new_customers' => $new_customers,
             'activities' => $activities,
+            'app' => $app
         ];
-//        Helper::p($data);
         return  ['message' => 'ok','code' => 1,'data' => $data];
     }
 
