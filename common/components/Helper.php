@@ -166,9 +166,11 @@ class Helper
             $pic_rename = Helper::hex10to64(Yii::$app->user->id). Helper::hex16to64(uniqid(rand())).".jpg"; // 文件唯一名
             if ($image_length === 1){ // 单图上传单独处理
                 $pic_name = $_FILES['image']['name']; // 原始上传文件名
+                $size = getimagesize($_FILES['image']['tmp_name']); // 得到图片宽高
                 move_uploaded_file($_FILES['image']['tmp_name'],$pic_rename);
             }else{
                 $pic_name = $_FILES['image']['name'][$i];
+                $size = getimagesize($_FILES['image']['tmp_name'][$i]); // 得到图片宽高
                 move_uploaded_file($_FILES['image']['tmp_name'][$i],$pic_rename);
             }
 
@@ -183,10 +185,13 @@ class Helper
 
             // 保存本地对应记录
             $media = new Media();
+
             $media->name = $pic_name;
             $media->url = $dir.'/'.$pic_rename;
             $media->type = 1;
             $media->group_id = $id;
+            $media->height = $size[1];
+            $media->width = $size[0];
             if(!$media->save()){
                 \Yii::error($media->errors,'保存本地对应记录失败');
             }
@@ -196,6 +201,8 @@ class Helper
             $uploaded_media['media_id'] = $media->media_id;
             $uploaded_media['name'] = $media->name;
             $uploaded_media['group_id'] = $media->group_id;
+            $uploaded_media['height'] = $media->height;
+            $uploaded_media['width'] = $media->width;
             $medias[]= $uploaded_media;
         }
 

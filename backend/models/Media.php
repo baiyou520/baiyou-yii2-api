@@ -14,6 +14,11 @@ use Yii;
  * @property int $type 类型：1.图片2.音频3.视频
  * @property int $group_id 分组id,CG表S=pic_group/S=audio_group/S=video_group
  * @property int $sid sid，来自总后台数据库instance表中instance_id
+ * @property string $key 文件对应到云存储服务中的唯一标识,未来扩展七牛云备用
+ * @property string $description 文件的描述内容
+ * @property int $height 高度
+ * @property int $width 宽度
+ * @property int $status 状态:0,软删除，1，正常
  * @property int $created_at 创建时间戳
  * @property int $updated_at 修改时间戳
  *
@@ -36,9 +41,11 @@ class Media extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'url', 'type', 'group_id', 'sid'], 'required'],
-            [['type', 'group_id', 'sid', 'created_at', 'updated_at'], 'integer'],
+            [['name', 'url', 'type', 'group_id', 'sid', 'height', 'width'], 'required'],
+            [['type', 'group_id', 'sid', 'height', 'width', 'status', 'created_at', 'updated_at'], 'integer'],
             [['name', 'url'], 'string', 'max' => 100],
+            [['key'], 'string', 'max' => 512],
+            [['description'], 'string', 'max' => 1024],
             [['sid'], 'exist', 'skipOnError' => true, 'targetClass' => Instance::className(), 'targetAttribute' => ['sid' => 'sid']],
             [['group_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['group_id' => 'category_id']],
         ];
@@ -91,8 +98,7 @@ class Media extends \baiyou\common\components\ActiveRecord
                 return 'https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url.'_240x240';
             },
             'image_size' => function($model) {//需求返回图片像素大小
-                $res=GetImageSize('https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url);
-                return $res[0].'*'.$res[1];
+                return $model->width.'*'.$model->height;
             },
         ];
         return array_merge($fields,$fields_from_other_tables);

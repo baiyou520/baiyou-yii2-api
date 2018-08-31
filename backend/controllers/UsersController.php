@@ -277,50 +277,50 @@ class UsersController extends BaseController
         ];
 
 
-        $instance = Instance::findOne($sid);
-        $sub_title = '';
-        $license = '';
-        $expired_at = '';
-        switch ($instance->status)
-        {
-            case 0:
-                $sub_title = '欢迎使用'.Yii::$app->params['app-name'].',您的店铺为试用版，为不影响使用，请及时购买正式版！';
-                $license = '试用版';
-                $expired_at =  (int)(($instance->expired_at - time()) / 86400)  .'天后过期，请及时续费！';
-                break;
-            case 1:
-                $sub_title = '欢迎回来，祝您生意欣荣！';
-                $license = '正式版';
-                $expired_at =  (int)(($instance->expired_at - time()) / 86400) .'天后过期，请及时续费！';
-                break;
-            case -1:
-                $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
-                $license = '已打烊';
-                $expired_at = '已打烊，请及时续费！';
-                break;
-            default:
-                break;
-        }
-        $qr_code_status = 0; // 出现立即绑定按钮
-        if ($instance->is_bind == 1){
-            $qr_code_status = 1; // 出现设置秘钥按钮
-        }
-        if ($instance->online_qrcode !== ''){
-            $qr_code_status = 2; // 出现2个二维码
-        }
+//        $instance = Instance::findOne($sid);
+//        $sub_title = '';
+//        $license = '';
+//        $expired_at = '';
+//        switch ($instance->status)
+//        {
+//            case 0:
+//                $sub_title = '欢迎使用'.Yii::$app->params['app-name'].',您的店铺为试用版，为不影响使用，请及时购买正式版！';
+//                $license = '试用版';
+//                $expired_at =  (int)(($instance->expired_at - time()) / 86400)  .'天后过期，请及时续费！';
+//                break;
+//            case 1:
+//                $sub_title = '欢迎回来，祝您生意欣荣！';
+//                $license = '正式版';
+//                $expired_at =  (int)(($instance->expired_at - time()) / 86400) .'天后过期，请及时续费！';
+//                break;
+//            case -1:
+//                $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
+//                $license = '已打烊';
+//                $expired_at = '已打烊，请及时续费！';
+//                break;
+//            default:
+//                break;
+//        }
+//        $qr_code_status = 0; // 出现立即绑定按钮
+//        if ($instance->is_bind == 1){
+//            $qr_code_status = 1; // 出现设置秘钥按钮
+//        }
+//        if ($instance->online_qrcode !== ''){
+//            $qr_code_status = 2; // 出现2个二维码
+//        }
         $app = [
             'app_name' => Yii::$app->params['app-name'],
-            'sid' => $instance->sid,
-            'instance_name' => $instance->name,
-            'status' => $instance->status,
-            'license' => $license, // 版本
-            'expired_at' => $expired_at, // 多久过期
-            'sub_title' => $sub_title,
-            'instance_thumb' => $instance->thumb,
-            'experience_qrcode' => Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode, // 体验版二维码，存在总后台的后端
-            'online_qrcode' => Yii::$app->request->hostInfo.'/'.$instance->online_qrcode,// 上线后二维码,存在具体应用的后端
-            'qr_code_status' => $qr_code_status,// 如何显示微信小程序二维码区域
-            'level' => $instance->level, // 购买版本，暂定
+//            'sid' => $instance->sid,
+//            'instance_name' => $instance->name,
+//            'status' => $instance->status,
+//            'license' => $license, // 版本
+//            'expired_at' => $expired_at, // 多久过期
+//            'sub_title' => $sub_title,
+//            'instance_thumb' => $instance->thumb,
+//            'experience_qrcode' => Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode, // 体验版二维码，存在总后台的后端
+//            'online_qrcode' => Yii::$app->request->hostInfo.'/'.$instance->online_qrcode,// 上线后二维码,存在具体应用的后端
+//            'qr_code_status' => $qr_code_status,// 如何显示微信小程序二维码区域
+//            'level' => $instance->level, // 购买版本，暂定
         ];
         $responseData = [
             'menu'=>$menu,

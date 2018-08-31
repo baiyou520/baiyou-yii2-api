@@ -25,6 +25,8 @@ class m180612_070818_create_media extends Migration
             'sid'            => $this->integer()->unsigned()->notNull()->comment('sid，来自总后台数据库instance表中instance_id'),
             'key'            => $this->string(512)->notNull()->defaultValue('')->comment('文件对应到云存储服务中的唯一标识,未来扩展七牛云备用'),
             'description'    => $this->string(1024)->notNull()->defaultValue('')->comment('文件的描述内容'),
+            'height'         => $this->smallInteger()->unsigned()->notNull()->comment('高度'),
+            'width'          => $this->smallInteger()->unsigned()->notNull()->comment('宽度'),
             'status'         => $this->tinyInteger()->notNull()->defaultValue(1)->comment('状态:0,软删除，1，正常'),
             'created_at'     => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('创建时间戳'),
             'updated_at'     => $this->integer()->unsigned()->notNull()->defaultValue(0)->comment('修改时间戳'),

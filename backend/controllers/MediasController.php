@@ -16,46 +16,46 @@ use baiyou\common\components\ActiveDataProvider;
 use baiyou\common\components\Helper;
 class MediasController extends BaseController
 {
-    public $modelClass = 'baiyou\backend\models';
+    public $modelClass = 'baiyou\backend\models\Media';
     public function actions()
     {
         $actions = parent::actions();
 
         // 禁用动作
-        unset($actions['index']);
+//        unset($actions['index']);
         unset($actions['create']);
         unset($actions['update']);
         unset($actions['delete']);
         return $actions;
     }
 
-    /**
-     * 图片列表
-     * @return array
-     * @author nwh@caiyoudata.com
-     * @time 2018/7/9 17:51
-     */
-    public function actionIndex(){
-        $params=Yii::$app->request->get();
-        //文件类型,1图片(默认),2 语音,3视频
-        $type=isset($params['type'])?$params['type']:1;
-        $group_id=isset($params['group_id'])?$params['group_id']:Category::find()->where(['symbol'=>'pic_group','sid'=>Helper::getSid()])->one()->category_id;
-        $keyword=isset($params['keyword'])?$params['keyword']:'';
-        $provider = new ActiveDataProvider([
-            "query"=>Media::find()
-                ->select(['media_id','name','url','group_id'])
-                ->Where(['type'=>$type,'status'=>1])
-                ->andFilterWhere(['group_id'=>$group_id])
-                ->andFilterWhere(['like','name',$keyword])
-                ->orderBy('created_at desc')
-        ]);
-        // 获取分页和排序数据
-        $media = $provider->getModels();
-        // 获取所有页面的数据项的总数
-        $totalCount = $provider->getTotalCount();
-        $data = ['list' => $media,'pagination'=>['total' => $totalCount]];
-        return ["message"=>"成功","code"=>1,"data"=>$data];
-    }
+//    /**
+//     * 图片列表
+//     * @return array
+//     * @author nwh@caiyoudata.com
+//     * @time 2018/7/9 17:51
+//     */
+//    public function actionIndex(){
+//        $params=Yii::$app->request->get();
+//        //文件类型,1图片(默认),2 语音,3视频
+//        $type=isset($params['type'])?$params['type']:1;
+//        $group_id=isset($params['group_id'])?$params['group_id']:Category::find()->where(['symbol'=>'pic_group','sid'=>Helper::getSid()])->one()->category_id;
+//        $keyword=isset($params['keyword'])?$params['keyword']:'';
+//        $provider = new ActiveDataProvider([
+//            "query"=>Media::find()
+//                ->select(['media_id','name','url','group_id'])
+//                ->Where(['type'=>$type,'status'=>1])
+//                ->andFilterWhere(['group_id'=>$group_id])
+//                ->andFilterWhere(['like','name',$keyword])
+//                ->orderBy('created_at desc')
+//        ]);
+//        // 获取分页和排序数据
+//        $media = $provider->getModels();
+//        // 获取所有页面的数据项的总数
+//        $totalCount = $provider->getTotalCount();
+//        $data = ['list' => $media,'pagination'=>['total' => $totalCount]];
+//        return ["message"=>"成功","code"=>1,"data"=>$data];
+//    }
 
     /**
      * 修改
