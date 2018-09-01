@@ -41,7 +41,7 @@ class Wechat
     }
 
     /**
-     * 获取小程序码，有限次数版本
+     * 获取小程序码，有限次数版本  A接口，生成小程序码，可接受path参数较长，生成个数受限。
      * @param $sid
      * @return mixed
      * @author sft@caiyoudata.com
@@ -55,6 +55,40 @@ class Wechat
         $url="https://api.weixin.qq.com/wxa/getwxacode?access_token=".$wx_access_token;
         $data=[
             "path"=> 'pages/home/home'
+        ];
+
+        $result=Helper::https_request($url,$data,false); // 第三个参数:小程序码等文件流直接返回数据即可
+        if (isset($result['errcode'])){
+            Yii::error($result,'获取小程序码失败');
+            return '';
+        }else{
+            $dir = 'uploads/img/qrcode/';
+            if (!file_exists($dir)) {
+                mkdir($dir, 0777, true);
+            }
+            $destination = $dir.$instance->name.'(小程序码).png';
+            $file = fopen($destination,"w+");
+            fputs($file,$result);//写入文件
+            fclose($file);
+            return $destination;
+        }
+    }
+
+    /**
+     * 取小程序码，无限次数版本  B接口，生成小程序码，可接受页面参数较短，生成个数不受限。
+     * @param $sid
+     * @return string
+     * @author sft@caiyoudata.com
+     * @time   2018/8/31 下午7:35
+     */
+    public static function getWechatQrCodeUnlimited($sid,$path,$scene){
+
+        $instance = Instance::findOne($sid);
+        $wx_access_token = Wechat::getWechatAccessToken($sid);
+        $url="https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=".$wx_access_token;
+        $data=[
+            "path" => $path,
+            "scene"=> $scene
         ];
 
         $result=Helper::https_request($url,$data,false); // 第三个参数:小程序码等文件流直接返回数据即可

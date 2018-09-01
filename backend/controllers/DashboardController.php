@@ -10,6 +10,7 @@ namespace baiyou\backend\controllers;
 use baiyou\backend\models\ActionLog;
 use baiyou\backend\models\Config;
 use baiyou\backend\models\Notice;
+use baiyou\backend\models\NoticeUser;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 use baiyou\common\models\Customer;
@@ -149,12 +150,19 @@ class DashboardController extends BaseController
 //            $data[] = $act;
 //        }
 //
-        // 待办
-        $todos = Notice::find()
-            ->andWhere(['=', 'status', 0])
-            ->orderBy('created_at asc')->all();
+        // 通知
+        $notices = Notice::find()
+            ->joinWith('noticeUsers')
+            ->where(['notice_user.user_id' => Yii::$app->user->id])
+            ->andWhere(['notice_user.is_read' => 0])
+            ->all();
 
-        foreach ($todos as $item){
+//        Helper::p($customers);
+//        $todos = Notice::find()
+//            ->andWhere(['=', 'status', 0])
+//            ->orderBy('created_at asc')->all();
+
+        foreach ($notices as $item){
             $passed_hours = round((time()-$item['created_at']/1000)/3600,2);
             if ($passed_hours < 2){
                 $todo['status'] = 'processing';
@@ -200,7 +208,12 @@ class DashboardController extends BaseController
         $request=\Yii::$app->request;
         $params=$request->post();
 
-        $affected_rows = Notice::updateAll(['status' => 1],['in','notice_id',$params['notice_id']]);
+        $condition = [
+            'and' ,
+            ['in','notice_id',$params['notice_id']],
+            ['=','user_id',Yii::$app->user->id]
+        ];
+        $affected_rows = NoticeUser::updateAll(['is_read' => 1],$condition);
         if($affected_rows > 0){
             return ["message"=>"操作成功",'code'=>1];
         }else{

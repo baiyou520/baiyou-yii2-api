@@ -65,7 +65,7 @@ class LogsController extends BaseController
         $totalCount = $provider->getTotalCount();
         $data = ['list' => $models,'pagination'=>['total' => $totalCount]];
 
-        ActionLog::add('执行了一次查询错误日志数据库，得到了'.$totalCount.'条数据','设置模块'); // 测试操作日志，比较重要的日志需要记录，参考https://help.youzan.com/displaylist/detail_4_11697
+
         return  ['message' => '获取错误日志列表成功','code' => 1,'data' => $data];
     }
 

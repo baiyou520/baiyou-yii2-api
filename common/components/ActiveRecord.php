@@ -148,7 +148,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
          * ——————————————————————————————————————————————————————————————————————————————
          * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，加入筛选条件
          */
-        return parent::findByCondition($condition)->andWhere(['in', 'sid', [Helper::getSid(),0]]);
+        return parent::findByCondition($condition)->andWhere(['in', self::tableName().'.sid', [Helper::getSid(),0]]);
     }
 
     /**
@@ -165,7 +165,8 @@ class ActiveRecord extends \yii\db\ActiveRecord
          * 但外部调用后面不能用where，而要用andWhere,即find()->andWhere 否则这里的筛选条件会失效，待完善
          */
 
-        return parent::find()->where(['in', 'sid', [Helper::getSid(),0]]);
+//        Helper::p(self::tableName());
+        return parent::find()->where(['in', self::tableName().'.sid', [Helper::getSid(),0]]);
     }
 
 
