@@ -91,7 +91,7 @@ class Notice extends \baiyou\common\components\ActiveRecord
      * @author sft@caiyoudata.com
      * @time   2018/9/1 上午11:17
      */
-    public static function add($title,$content,$type,$related_route='',$related_id='')
+    public static function add($title,$content,$type,$related_route='',$related_id=0)
     {
         $model = new Notice();
         $model->title = $title;
