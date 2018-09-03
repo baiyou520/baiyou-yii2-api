@@ -73,17 +73,18 @@ class DashboardController extends BaseController
         $sub_title = '';
         $license = '';
         $expired_at = '';
+        $expired_days = (int)(($instance->expired_at - time()) / 86400);
         switch ($instance->status)
         {
             case 0:
                 $sub_title = '欢迎使用'.Yii::$app->params['app-name'].',您的店铺为试用版，为不影响使用，请及时购买正式版！';
                 $license = '试用版';
-                $expired_at =  (int)(($instance->expired_at - time()) / 86400)  .'天后过期，请及时续费！';
+                $expired_at =  $expired_days===0?'即将过期，请及时续费！' : $expired_days.'天后过期，请及时续费！';
                 break;
             case 1:
                 $sub_title = '欢迎回来，祝您生意欣荣！';
                 $license = '正式版';
-                $expired_at =  (int)(($instance->expired_at - time()) / 86400) .'天后过期，请及时续费！';
+                $expired_at =   $expired_days===0?'即将过期，请及时续费！' : $expired_days.'天后过期，请及时续费！';
                 break;
             case -1:
                 $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';

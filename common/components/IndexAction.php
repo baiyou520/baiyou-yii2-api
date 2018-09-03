@@ -148,7 +148,7 @@ class IndexAction extends Action
         CreateQueryHelper::addOrderSort($sort, $modelClass::tableName(), $query);
         return new ActiveDataProvider([
             'query' => $query->distinct(),
-            'pagination' => isset($_GET['page'])?[]:false
+//            'pagination' => isset($_GET['page'])?[]:false
         ]);
     }
 }
