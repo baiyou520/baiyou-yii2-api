@@ -5,7 +5,7 @@ use yii\db\Schema;
 /**
  * Class m180612_030312_create_notice
  */
-class m180612_030312_create_notice extends Migration
+class m180612_030412_create_notice_user extends Migration
 {
     /**
      * {@inheritdoc}
