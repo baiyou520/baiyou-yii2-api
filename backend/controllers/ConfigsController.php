@@ -295,9 +295,14 @@ class ConfigsController extends BaseController
         // 格式化数据，以满足微信开发平台要求
         $formated_data =[];
         foreach ($data['item_list'] as $item){
+            $tags = '';
+            foreach ($item['tag'] as $tag) {
+                $tags .= $tag.' ';
+            }
+            $tags = substr($tags,0,strlen($tags)-1);
             $formated_data[] = [
                 'address' => $item['address'],
-                'tag' => $item['tag'],
+                'tag' => $tags,
                 'first_class' => $items[$item['category'][1]]['first_class'],
                 'second_class' => $items[$item['category'][1]]['second_class'],
                 'first_id' => $items[$item['category'][1]]['first_id'],
@@ -448,6 +453,24 @@ class ConfigsController extends BaseController
             return ["code"=>1,"message"=>"修改小程序线上代码的可见状态成功","data"=>$data];
         }else{
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+        }
+    }
+
+
+    /**
+     * 获取指定小程序码，用于店铺推广，商品推广等
+     * @author sft@caiyoudata.com
+     * @time   2018/9/4 上午11:16
+     */
+    public function actionGetWechatQrCodeUnlimited(){
+        $sid = Helper::getSid();
+        $data = Yii::$app->request->post();
+        $qr = Wechat::getWechatQrCodeUnlimited($sid,$data['path'],$data['scene']);
+        $qr = base64_encode($qr);
+        if ($qr !== ''){
+            return ["code"=>1,"message"=>"获取指定小程序码成功","data"=>$qr];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"获取指定小程序码失败"];
         }
     }
 }

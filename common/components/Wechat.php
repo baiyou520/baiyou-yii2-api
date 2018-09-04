@@ -96,15 +96,15 @@ class Wechat
             Yii::error($result,'获取小程序码失败');
             return '';
         }else{
-            $dir = 'uploads/img/qrcode/';
-            if (!file_exists($dir)) {
-                mkdir($dir, 0777, true);
-            }
-            $destination = $dir.$instance->name.'(小程序码).png';
-            $file = fopen($destination,"w+");
-            fputs($file,$result);//写入文件
-            fclose($file);
-            return $destination;
+//            $dir = 'uploads/img/qrcode/';
+//            if (!file_exists($dir)) {
+//                mkdir($dir, 0777, true);
+//            }
+//            $destination = $dir.$instance->name.'(小程序码).png';
+//            $file = fopen($destination,"w+");
+//            fputs($file,$result);//写入文件
+//            fclose($file);
+            return $result;
         }
     }
 

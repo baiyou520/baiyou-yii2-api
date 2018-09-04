@@ -44,6 +44,7 @@ class m180612_080952_init_data extends Migration
                 ['/by/configs/get-latest-audit-status', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/release', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/configs/change-visit-status', 0, 2, NULL, NULL, NULL, time(), time()],
+                ['/by/configs/get-wechat-qr-code-unlimited', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/get-permissions-of-role', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/index', 0, 2, NULL, NULL, NULL, time(), time()],
                 ['/by/authorities/update-role', 0, 2, NULL, NULL, NULL, time(), time()],
@@ -114,6 +115,7 @@ class m180612_080952_init_data extends Migration
                 ['首页', '/by/users/start-up'],
                 ['首页', '/by/common/upload-imgs'],
                 ['首页', '/by/categories/index'],
+                ['首页', '/by/configs/get-wechat-qr-code-unlimited'],
 
                 ['系统', '设置'],
 
