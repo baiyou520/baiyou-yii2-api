@@ -465,29 +465,30 @@ class ConfigsController extends BaseController
     public function actionGetWechatQrCodeUnlimited(){
         $sid = Helper::getSid();
         $data = Yii::$app->request->post();
-        $qr = Wechat::getWechatQrCodeUnlimited($sid,$data['path'],$data['scene']);
+        $qr = Wechat::getWechatQrCodeUnlimited($sid,$data['page'],$data['scene']);
+        $qr = base64_encode($qr);
+        if ($qr !== ''){
+            return ["code"=>1,"message"=>"获取指定小程序码成功","data"=>$qr];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"获取指定小程序码失败"];
+        }
+    }
+
+//
+//    /**
+//     * 获取指定小程序码，测试
+//     * @author sft@caiyoudata.com
+//     * @time   2018/9/4 上午11:16
+//     */
+//    public function actionGetWechatCodeLimited(){
+//        $sid = Helper::getSid();
+//        $data = Yii::$app->request->post();
 //        $qr = Wechat::getWechatCodeLimited($sid,$data['path']);
-        $qr = base64_encode($qr);
-        if ($qr !== ''){
-            return ["code"=>1,"message"=>"获取指定小程序码成功","data"=>$qr];
-        }else{
-            return ["code"=>BaseErrorCode::$FAILED,"message"=>"获取指定小程序码失败"];
-        }
-    }
-    /**
-     * 获取指定小程序码，测试
-     * @author sft@caiyoudata.com
-     * @time   2018/9/4 上午11:16
-     */
-    public function actionGetWechatCodeLimited(){
-        $sid = Helper::getSid();
-        $data = Yii::$app->request->post();
-        $qr = Wechat::getWechatCodeLimited($sid,$data['path']);
-        $qr = base64_encode($qr);
-        if ($qr !== ''){
-            return ["code"=>1,"message"=>"获取指定小程序码成功","data"=>$qr];
-        }else{
-            return ["code"=>BaseErrorCode::$FAILED,"message"=>"获取指定小程序码失败"];
-        }
-    }
+//        $qr = base64_encode($qr);
+//        if ($qr !== ''){
+//            return ["code"=>1,"message"=>"获取指定小程序码成功","data"=>$qr];
+//        }else{
+//            return ["code"=>BaseErrorCode::$FAILED,"message"=>"获取指定小程序码失败"];
+//        }
+//    }
 }

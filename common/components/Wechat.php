@@ -81,12 +81,12 @@ class Wechat
      * @author sft@caiyoudata.com
      * @time   2018/8/31 下午7:35
      */
-    public static function getWechatQrCodeUnlimited($sid,$path,$scene){
+    public static function getWechatQrCodeUnlimited($sid,$page,$scene){
 
         $wx_access_token = Wechat::getWechatAccessToken($sid);
         $url="https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=".$wx_access_token;
         $data=[
-            "path" => $path,
+            "page" => $page,
             "scene"=> $scene
         ];
 
