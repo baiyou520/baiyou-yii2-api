@@ -50,17 +50,14 @@ class AuthController extends ActiveController
 
         // 获得实例信息
         $sid=Helper::getSid();
-//        $url = Yii::$app->params['admin_url'].'/v1/auth/getInstance/'.$sid;
         $instance = Instance::findOne($sid);
         $appid = $instance->applet_appid;
         $secret = $instance->applet_appsecret;
-        Yii::error($sid,'sid');
         $jscode=Yii::$app->request->get('jscode');
         $nickname=Yii::$app->request->get('nickname');
         $avatarUrl=Yii::$app->request->get('avatarUrl');
         $url='https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$secret.'&js_code='.$jscode.'&grant_type=authorization_code';
         $out=json_decode($this->wx_https_request($url));
-        Yii::error($out,'out');
         if(isset($out->errcode) && $out->errcode!=0){
             return ['message'=>'与微信服务器通信失败,请检查appid是否填写正确！','code'=>$out->errcode,'data'=>$out->errmsg];
         }
