@@ -83,7 +83,6 @@ class Wechat
      */
     public static function getWechatQrCodeUnlimited($sid,$path,$scene){
 
-        $instance = Instance::findOne($sid);
         $wx_access_token = Wechat::getWechatAccessToken($sid);
         $url="https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=".$wx_access_token;
         $data=[
@@ -96,18 +95,36 @@ class Wechat
             Yii::error($result,'获取小程序码失败');
             return '';
         }else{
-//            $dir = 'uploads/img/qrcode/';
-//            if (!file_exists($dir)) {
-//                mkdir($dir, 0777, true);
-//            }
-//            $destination = $dir.$instance->name.'(小程序码).png';
-//            $file = fopen($destination,"w+");
-//            fputs($file,$result);//写入文件
-//            fclose($file);
             return $result;
         }
     }
 
+    /**
+     * 获取小程序二维码 接口C：适用于需要的码数量较少的业务场景
+     * @param $sid
+     * @param $path
+     * @param $scene
+     * @return mixed|string
+     * @author sft@caiyoudata.com
+     * @time   2018/9/5 下午3:04
+     */
+    public static function getWechatCodeLimited($sid,$path){
+
+        $wx_access_token = Wechat::getWechatAccessToken($sid);
+        $url="https://api.weixin.qq.com/cgi-bin/wxaapp/createwxaqrcode?access_token=".$wx_access_token;
+        $data=[
+            "path" => $path,
+            "width"=> 430
+        ];
+
+        $result=Helper::https_request($url,$data,false); // 第三个参数:小程序码等文件流直接返回数据即可
+        if (isset($result['errcode'])){
+            Yii::error($result,'获取小程序二维码失败');
+            return '';
+        }else{
+            return $result;
+        }
+    }
 //
 //    /**
 //     * 添加体验者
