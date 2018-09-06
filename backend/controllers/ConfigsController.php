@@ -474,6 +474,25 @@ class ConfigsController extends BaseController
         }
     }
 
+    /**
+     * 更新模板
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/7/24 下午7:39
+     */
+    public function actionUpgrade(){
+        $sid = Helper::getSid();
+        $url = Yii::$app->params['admin_url'].'/v1/open/upgrade/'.$sid;
+        $results = Helper::https_request($url);
+        if ($results['code'] == 1){
+            $instance = Instance::findOne($sid);
+            $experience_qrcode = Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode; // 体验版二维码，存在总后台的后端
+            return ["code"=>1,"message"=>"更新模板成功","data"=>$experience_qrcode];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+        }
+    }
+
 //
 //    /**
 //     * 获取指定小程序码，测试
