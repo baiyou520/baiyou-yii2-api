@@ -52,6 +52,19 @@ class ConfigsController extends BaseController
             }
             $instance->experience_qrcode = Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode; // 体验版二维码，存在总后台的后端
             $instance->online_qrcode = Yii::$app->request->hostInfo.'/'.$instance->online_qrcode; // 上线后二维码,存在具体应用的后端
+
+            // 把小程序秘钥回填到总后台
+            $sid = Helper::getSid();
+            $data=Yii::$app->request->post();
+            $url = Yii::$app->params['admin_url'].'/v1/open/setAppSecret/'.$sid;
+            $data_to_admin=[
+                "applet_appsecret"=> $data['applet_appsecret'],
+            ];
+            $results = Helper::https_request($url,$data_to_admin);
+            if ($results['code'] !== 1){
+                Yii::error($results['message'],'把小程序秘钥回填到总后台失败');
+            }
+
             return ["code"=>1,"message"=>"设置小程序秘钥成功",'data' => $instance];
         }else{
             return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"参数错误","data"=>$instance->errors];
