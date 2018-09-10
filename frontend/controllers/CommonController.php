@@ -13,6 +13,9 @@ namespace baiyou\frontend\controllers;
 use baiyou\backend\models\Category;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
+use baiyou\common\components\Wechat;
+use baiyou\common\models\Customer;
+
 class CommonController extends BaseController
 {
     public $modelClass = '';
@@ -35,6 +38,29 @@ class CommonController extends BaseController
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"上传失败"];
         }else{
             return ["code"=>1,"message"=>"上传成功",'data' => $medias];
+        }
+    }
+
+    /**
+     * 获取我的推广码
+     * @param $id
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/9/10 下午2:13
+     */
+    public function actionGetMyDistributionCode($id){
+        $customer=Customer::findOne($id);
+        if(empty($customer)){
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"用户不存在"];
+        }
+        $sid = Helper::getSid();
+        $data = \Yii::$app->request->post();
+        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/my/my","parentId=".$id);
+        $qr = base64_encode($qr);
+        if ($qr !== ''){
+            return ["code"=>1,"message"=>"获取我的推广码成功","data"=>$qr];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"获取我的推广码失败"];
         }
     }
 }
