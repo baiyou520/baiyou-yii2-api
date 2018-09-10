@@ -48,15 +48,14 @@ class CommonController extends BaseController
      * @author sft@caiyoudata.com
      * @time   2018/9/10 下午2:13
      */
-    public function actionGetMyDistributionCode($id){
-        $customer=Customer::findOne($id);
+    public function actionGetMyDistributionCode(){
+        $customer_id=\Yii::$app->user->id;
+        $customer=Customer::findOne($customer_id);
         if(empty($customer)){
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"用户不存在"];
         }
         $sid = Helper::getSid();
-        $data = \Yii::$app->request->post();
-        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/my/my","parentId=".$id);
-        $qr = base64_encode($qr);
+        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/my/my","parentId=".$customer_id);
         if ($qr !== ''){
             return ["code"=>1,"message"=>"获取我的推广码成功","data"=>$qr];
         }else{
