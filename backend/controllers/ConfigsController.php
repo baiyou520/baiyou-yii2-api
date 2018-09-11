@@ -49,25 +49,47 @@ class ConfigsController extends BaseController
             if (isset($data['applet_appsecret'])){
                 $instance->online_qrcode = Wechat::getWechatQrCode($sid);
                 $instance->save(); // 更新小程序码，代码略有冗余
+
+                // 把小程序秘钥回填到总后台
+                $sid = Helper::getSid();
+                $data=Yii::$app->request->post();
+                $url = Yii::$app->params['admin_url'].'/v1/open/setAppSecret/'.$sid;
+                $data_to_admin=[
+                    "applet_appsecret"=> $data['applet_appsecret'],
+                ];
+                $results = Helper::https_request($url,$data_to_admin);
+                if ($results['code'] !== 1){
+                    Yii::error($results['message'],'把小程序秘钥回填到总后台失败');
+                }
+
             }
             $instance->experience_qrcode = Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode; // 体验版二维码，存在总后台的后端
             $instance->online_qrcode = Yii::$app->request->hostInfo.'/'.$instance->online_qrcode; // 上线后二维码,存在具体应用的后端
 
-            // 把小程序秘钥回填到总后台
-            $sid = Helper::getSid();
-            $data=Yii::$app->request->post();
-            $url = Yii::$app->params['admin_url'].'/v1/open/setAppSecret/'.$sid;
-            $data_to_admin=[
-                "applet_appsecret"=> $data['applet_appsecret'],
-            ];
-            $results = Helper::https_request($url,$data_to_admin);
-            if ($results['code'] !== 1){
-                Yii::error($results['message'],'把小程序秘钥回填到总后台失败');
-            }
-
             return ["code"=>1,"message"=>"设置小程序秘钥成功",'data' => $instance];
         }else{
             return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"参数错误","data"=>$instance->errors];
+        }
+    }
+
+    /**
+     * 设置商家手机号，用于接收系统短信通知，如买家下单付款通知等。
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/9/11 上午11:07
+     */
+    public function actionSetNoticePhone(){
+        $data=Yii::$app->request->post();
+        $config=Config::findOne(["symbol" => 'notice_phone']);
+        if (empty($config)){
+            $config = new Config();
+        }
+        $config->content = $data['notice_phone'];
+        $config->symbol ="notice_phone";
+        if($config->save()){
+            return ["code"=>1,"message"=>"设置商家手机号成功",'data' => $config];
+        } else {
+            return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"参数错误","data"=>$config->errors];
         }
     }
 
@@ -79,9 +101,13 @@ class ConfigsController extends BaseController
      */
     public function actionGetAppletSetting(){
         $sid = Helper::getSid();
-        $instance=Instance::findOne($sid);
-        $instance->experience_qrcode = Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode; // 体验版二维码，存在总后台的后端
-        $instance->online_qrcode = Yii::$app->request->hostInfo.'/'.$instance->online_qrcode;// 上线后二维码,存在具体应用的后端
+        $instance=Instance::findOne($sid)->toArray();
+        $instance['experience_qrcode'] = Yii::$app->params['admin_url'].'/'.$instance['experience_qrcode']; // 体验版二维码，存在总后台的后端
+        $instance['online_qrcode'] = Yii::$app->request->hostInfo.'/'.$instance['online_qrcode'];// 上线后二维码,存在具体应用的后端
+        $config=Config::findOne(["symbol" => 'notice_phone']);
+        if (!empty($config)){
+            $instance['notice_phone'] = $config->content;
+        }
         if($instance){
             return ["code"=>1,"message"=>"获得微信设置成功",'data' => $instance];
         }else{
