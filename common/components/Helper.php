@@ -8,6 +8,7 @@
 
 namespace baiyou\common\components;
 use baiyou\backend\models\Category;
+use baiyou\backend\models\Config;
 use baiyou\backend\models\Media;
 use yii;
 
@@ -86,6 +87,21 @@ class Helper
             return $output; // 小程序码等文件流直接返回数据即可
         }
 
+    }
+
+    /**
+     * 发送信息给商家手机号
+     * @param $phone
+     * @param $msg
+     * @author sft@caiyoudata.com
+     * @time   2018/9/11 上午11:51
+     */
+
+    public static function send_msg_to_notice_phone($msg){
+        $config=Config::findOne(["symbol" => 'notice_phone']);
+        if (!empty($config)){
+            self::send_msg($config->content,$msg);
+        }
     }
 
     /**发送验证码
