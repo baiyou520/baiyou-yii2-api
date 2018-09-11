@@ -56,7 +56,7 @@ class AuthController extends ActiveController
         $jscode=Yii::$app->request->get('jscode');
         $nickname=Yii::$app->request->get('nickname');
         $avatarUrl=Yii::$app->request->get('avatarUrl');
-        $parentId= Yii::$app->request->get('parentId') ?? 0;
+        $parentId= Yii::$app->request->get('parent_id') ?? 0;
         $url='https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$secret.'&js_code='.$jscode.'&grant_type=authorization_code';
         $out=json_decode($this->wx_https_request($url));
         if(isset($out->errcode) && $out->errcode!=0){
