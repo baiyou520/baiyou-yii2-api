@@ -55,7 +55,7 @@ class CommonController extends BaseController
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"用户不存在"];
         }
         $sid = Helper::getSid();
-        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/home/home","pt=hm&parentId=".$customer_id);
+        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/home/home","pt=hm&pId=".$customer_id);
         if ($qr !== ''){
             return ["code"=>1,"message"=>"获取我的推广码成功","data"=>$qr];
         }else{
