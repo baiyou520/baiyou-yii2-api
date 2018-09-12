@@ -75,4 +75,18 @@ class User  extends JwtModel
     {
         return $this->hasMany(AuthAssignment::className(), ['user_id' => 'id']);
     }
+
+    public function fields()
+    {
+        $fields = parent::fields();
+
+        // remove fields that contain sensitive information
+        unset($fields['sid']);
+        $fields_from_other_tables = [
+            'role' => function($model) {
+                return $model->authAssignments[0]->item_name;
+            }
+        ];
+        return array_merge($fields,$fields_from_other_tables);
+    }
 }

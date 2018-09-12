@@ -17,7 +17,7 @@ use yii\web\IdentityInterface;
 use yii\web\Request as WebRequest;
 use yii\behaviors\TimestampBehavior;
 
-class JwtModel extends ActiveRecord implements IdentityInterface
+class JwtModel extends \baiyou\common\components\ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;

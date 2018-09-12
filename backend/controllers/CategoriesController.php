@@ -72,8 +72,8 @@ class CategoriesController extends BaseController
         //判断是否存在父级id内容
         if(isset($params['category_pid'])){
             $p_category=Category::find()->where(['symbol'=>$params['symbol']])
-                ->where(['category_id'=>$params['category_pid']])
-                ->andWhere(['sid'=>Helper::getSid()])->one();
+                ->andWhere(['category_id'=>$params['category_pid']])
+                ->one();
             //父级id不为0时判断
             if($params['category_pid']!=0&&empty($p_category)){
                 return ["message"=>"父级id错误","code"=>BaseErrorCode::$PARAMS_ERROR];

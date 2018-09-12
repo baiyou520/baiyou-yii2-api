@@ -9,6 +9,7 @@
 namespace baiyou\backend\controllers;
 use backend\modules\v1\controllers\InitController;
 use baiyou\backend\models\Config;
+use baiyou\backend\models\NoticeUser;
 use baiyou\common\components\ActiveDataProvider;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
@@ -84,16 +85,22 @@ class UsersController extends BaseController
     /**
      * 详情添加角色
      * @param $id
-     * @return array|bool
+     * @return mixed
      * @author  billyshen 2018/5/30 下午3:35
      */
     public function actionView($id){
-        $user=(new Query())->from("user u")
-            ->select(["u.*","aa.item_name role","ai.description role_alias"])
-            ->leftJoin("auth_assignment aa","aa.user_id=u.id")
-            ->leftJoin("auth_item ai","ai.name=aa.item_name")
-            ->where(["u.id"=>$id])
-            ->one();
+
+//        $user = User::findOne(['and',['id' => $id],['sid' => Helper::getSid()]]);
+        $user = User::findOne($id);
+
+//        $user->authAssignments
+//        $user=(new Query())->from("user u")
+//            ->select(["u.*","aa.item_name role","ai.description role_alias"])
+//            ->leftJoin("auth_assignment aa","aa.user_id=u.id")
+//            ->leftJoin("auth_item ai","ai.name=aa.item_name")
+//            ->where(["u.id"=>$id])
+//            ->andWhere(["u.sid"=>Helper::getSid()])
+//            ->one();
         return $user;
     }
     /**
@@ -178,12 +185,12 @@ class UsersController extends BaseController
                 return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$user->errors];
             }
             if(isset($parms['role'])&&!empty($parms['role'])){
-                $assignment=AuthAssignment::find()->where(['user_id'=>$id])->one();
-                if(empty($assignment)){
-                    $assignment=new AuthAssignment();
-                    $assignment->user_id=$id;
-                    $assignment->created_at=time();
-                }
+                $assignment=AuthAssignment::findOne(['user_id'=>$id]);
+//                if(empty($assignment)){
+//                    $assignment=new AuthAssignment();
+//                    $assignment->user_id=$id;
+//                    $assignment->created_at=time();
+//                }
                 $assignment->item_name=$parms['role'];
                 if(!$assignment->save()){
                     return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$assignment->errors];
@@ -213,13 +220,28 @@ class UsersController extends BaseController
             return ["message"=>"角色表信息未删除","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
 
+//        $model->status = 0;
+        // 删除通知
+        NoticeUser::deleteAll(['and',['sid' => Helper::getSid()],['user_id' => $id]]);
+
+        // 删除员工
         $code=$model->delete();
         if (!$code) {
             return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data" => $model->errors];
         }
 
-        // 还差一个去服务器上面删除数据
-        return ["message"=>"删除成功","code"=>1];
+        // 去服务器上面删除数据
+        $url = Yii::$app->params['admin_url'].'/v1/auth/delete-employee';
+        $data_to_admin=[
+            "user_id"=> $id,
+            "instance_id"=> Helper::getSid(),
+        ];
+        $result = Helper::https_request($url,$data_to_admin);
+        if ($result['code'] === 1){
+            return ["code"=>1,"message"=>"删除员工成功！"];
+        }else{
+            return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"具体应用删除员工成功，但总后台删除失败",'data'=>$result];
+        }
     }
 
     /**
