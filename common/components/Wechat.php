@@ -58,7 +58,8 @@ class Wechat
         ];
 
         $result=Helper::https_request($url,$data,false); // 第三个参数:小程序码等文件流直接返回数据即可
-        if (isset($result['errcode'])){
+
+        if (isset(json_decode($result,true)['errcode'])){
             Yii::error($result,'获取小程序码失败');
             return '';
         }else{
