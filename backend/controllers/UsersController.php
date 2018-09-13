@@ -51,8 +51,9 @@ class UsersController extends BaseController
         $keyword=isset($parms['keyword'])?$parms['keyword']:"";//昵称/手机号/邮箱
         $begin=isset($parms['c_begin'])?$parms['c_begin']:"";//查找时间范围开始
         $end=isset($parms['c_end'])?$parms['c_end']:"";//时间范围结束
-        $status=isset($parms['status'])?$parms['status']:"";//用户状态
+        $status=isset($parms['status'])? [$parms['status']]:[0,10];//用户状态
         $role=isset($parms['role'])?$parms['role']:""; //角色
+
 
         $provider = new ActiveDataProvider([
             'query' =>
@@ -65,7 +66,7 @@ class UsersController extends BaseController
                     ->orFilterWhere(['like','user.username',$keyword])
                     ->andFilterWhere(['>=','user.created_at',$begin])
                     ->andFilterWhere(['<=','user.created_at',$end])
-                    ->andFilterWhere(['user.status'=>$status])
+                    ->andFilterWhere(['in','user.status',$status])
                     ->andFilterWhere(['aa.item_name'=>$role])
                     ->orderBy('created_at desc')
         ]);
@@ -215,18 +216,18 @@ class UsersController extends BaseController
             return ["message"=>"该用户不可删除","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
 
-        $code=AuthAssignment::findOne(['user_id'=>$id])->delete();
-        if (!$code) {
-            return ["message"=>"角色表信息未删除","code"=>BaseErrorCode::$PARAMS_ERROR];
-        }
+//        $code=AuthAssignment::findOne(['user_id'=>$id])->delete();
+//        if (!$code) {
+//            return ["message"=>"角色表信息未删除","code"=>BaseErrorCode::$PARAMS_ERROR];
+//        }
 
 //        $model->status = 0;
         // 删除通知
-        NoticeUser::deleteAll(['and',['sid' => Helper::getSid()],['user_id' => $id]]);
+//        NoticeUser::deleteAll(['and',['sid' => Helper::getSid()],['user_id' => $id]]);
 
         // 删除员工
-        $code=$model->delete();
-        if (!$code) {
+        $model->status = 20; // 软删除
+        if (!$model->save()) {
             return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data" => $model->errors];
         }
 
