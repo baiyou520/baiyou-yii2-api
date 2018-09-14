@@ -54,10 +54,22 @@ class CustomersController extends BaseController
             if (empty($config)){
                 $config = new Config();
             }
-            $message_service_welcome = [
-                'welcome_type' => $data['welcome_type'], // 1.图文链接形式;2.纯文字形式
-                'text_content' => $data['text_content']
-            ];
+            if ($data['welcome_type'] === 'link'){
+                $message_service_welcome = [
+                    'welcome_type' => $data['welcome_type'], // 1.图文链接形式;2.纯文字形式
+                    'link_picture' => $data['link_picture'],
+                    'link_url' => $data['link_url'],
+                    'link_title' => $data['link_title'],
+                    'link_desc' => $data['link_desc'],
+                    'picture_url_on_own_sever' => $data['picture_url_on_own_sever']
+                ];
+            }else{
+                $message_service_welcome = [
+                    'welcome_type' => $data['welcome_type'], // 1.图文链接形式;2.纯文字形式
+                    'text_content' => $data['text_content']
+                ];
+            }
+
             $config->content = json_encode($message_service_welcome,JSON_UNESCAPED_UNICODE);
             $config->symbol = 'msg_service_welcome';
             $config->encode = 3;
@@ -79,15 +91,12 @@ class CustomersController extends BaseController
 
     public function actionUploadTempMedia(){
         $sid = Helper::getSid();
-        $data = Yii::$app->request->post();
         $pic_rename = Helper::hex10to64(Yii::$app->user->id). Helper::hex16to64(uniqid(rand())).".jpg"; // 文件唯一名
-        move_uploaded_file($_FILES['file']['tmp_name'],$pic_rename);
+        move_uploaded_file($_FILES['file']['tmp_name'],$pic_rename); // 先上传到自己的服务器
         $path = new CURLFile(realpath($pic_rename));
-        $path = $path->name;
-//        Helper::p($_FILES);
-        $result = Wechat::uploadTempMedia($sid,$path,$_FILES['file']['type']);
+        $result = Wechat::uploadTempMedia($sid,$path); // 再上传到微信服务器
         if (!isset($result['errcode'])){
-            unlink($pic_rename);
+            $result['url'] = Yii::$app->request->hostInfo.'/'.$pic_rename;
             return ["code"=>1,"message"=>"新增临时素材成功","data"=>$result];
         }else{
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"新增临时素材失败","data"=>$result];

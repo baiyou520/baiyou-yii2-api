@@ -136,27 +136,20 @@ class Wechat
      * @author sft@caiyoudata.com
      * @time   2018/9/14 下午1:42
      */
-    public static function uploadTempMedia($sid,$imgUrl,$type){
-
+    public static function uploadTempMedia($sid,$imgUrl){
         $wx_access_token = Wechat::getWechatAccessToken($sid);
         $url="https://api.weixin.qq.com/cgi-bin/media/upload?access_token=".$wx_access_token."&type=image";
-
         $data = array( 'media'=>$imgUrl );
-
-//        Helper::p($data);
         $ch1 = curl_init();
         $timeout = 10;
         curl_setopt ( $ch1, CURLOPT_URL, $url );
         curl_setopt ( $ch1, CURLOPT_POST, 1 );
         curl_setopt ( $ch1, CURLOPT_RETURNTRANSFER, 1 );
         curl_setopt ( $ch1, CURLOPT_CONNECTTIMEOUT, $timeout );
-        curl_setopt ( $ch1, CURLOPT_USERAGENT, "TEST" );
         curl_setopt ( $ch1, CURLOPT_SAFE_UPLOAD, true );
         curl_setopt ( $ch1, CURLOPT_POSTFIELDS, $data );
-
         $result=curl_exec($ch1);
         curl_close($ch1);
-        Helper::p($result);
         return json_decode($result,true);
     }
 //
