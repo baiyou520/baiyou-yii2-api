@@ -122,14 +122,46 @@ class UsersController extends BaseController
 
         // 新增用户表
         $user_id = $results['data']['id']; //百优总后台返回的用户id
-        $user =  User::findOne(['id' => $user_id]);
+        $user =  User::find()->andWhere(['id'=>$user_id])
+                    ->andWhere(['in','status',[0,10]])
+                    ->one();
         if ($user)
             return ["code"=>BaseErrorCode::$OBJECT_ALREADY_EXIST, "message"=>'该用户已经是员工了！'];
-        else{
-            $user = new User();
-            $user->id = $user_id; // 这里的用户表的id不是自增的，而是来自百优总后台返回的用户id
+
+        // 添加曾经删除过的用户
+        $userDeleted =  User::find()->andWhere(['id'=>$user_id])
+            ->andWhere(['in','status',[20]])
+            ->one();
+        if ($userDeleted){
+            $userDeleted['status'] = 10;
+            if ($userDeleted->save()) {
+                $assignment=AuthAssignment::findOne(['user_id'=>$user_id]);
+                $assignment->item_name=$data['role'];
+                if($assignment->save()){
+                    $url = Yii::$app->params['admin_url'].'/v1/auth/add-employee';
+                    $data_to_admin=[
+                        "user_id"=> $user_id,
+                        "instance_id"=> Helper::getSid(),
+                        "is_owner"=> 0,
+                    ];
+                    $result = Helper::https_request($url,$data_to_admin);
+                    if ($result['code'] === 1){
+                        return ["code"=>1,"message"=>"添加员工成功！"];
+                    }else{
+                        return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"具体应用添加员工成功，但总后台添加失败"];
+                    }
+                }else{
+                    return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"用户表添加成功，权限分配失败","data"=>$assignment->errors];
+                }
+            }else{
+                return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$userDeleted->errors];
+            }
         }
 
+
+        // 正常添加
+        $user = new User();
+        $user->id = $user_id; // 这里的用户表的id不是自增的，而是来自百优总后台返回的用户id
         if ($user->load($data, '') && $user->save()) {
             // 分配权限表
             $assignment = new AuthAssignment();
