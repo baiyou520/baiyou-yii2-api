@@ -73,30 +73,30 @@ class DbManager extends \yii\rbac\DbManager
     }
 
 
-//    /**
-//     * {@inheritdoc}
-//     * The roles returned by this method include the roles assigned via [[$defaultRoles]].
-//     */
-//    public function getRolesByUser($userId)
-//    {
-//        if ($this->isEmptyUserId($userId)) {
-//            return [];
-//        }
-//
-//        $query = (new Query())->select('b.*')
-//            ->from(['a' => $this->assignmentTable, 'b' => $this->itemTable])
-//            ->where('{{a}}.[[item_name]]={{b}}.[[name]]')
-//            ->andWhere(['a.user_id' => (string) $userId])
-//            ->andWhere(['b.type' => Item::TYPE_ROLE])
-//            ->andWhere(['a.sid' => Helper::getSid()]); // 复写 sft@caiyoudata.com------添加sid限制条件，实现多租户SAAS
-//
-//        $roles = $this->getDefaultRoleInstances();
-//        foreach ($query->all($this->db) as $row) {
-//            $roles[$row['name']] = $this->populateItem($row);
-//        }
-//
-//        return $roles;
-//    }
+    /**
+     * {@inheritdoc}
+     * The roles returned by this method include the roles assigned via [[$defaultRoles]].
+     */
+    public function getRolesByUser($userId)
+    {
+        if ($this->isEmptyUserId($userId)) {
+            return [];
+        }
+
+        $query = (new Query())->select('b.*')
+            ->from(['a' => $this->assignmentTable, 'b' => $this->itemTable])
+            ->where('{{a}}.[[item_name]]={{b}}.[[name]]')
+            ->andWhere(['a.user_id' => (string) $userId])
+            ->andWhere(['b.type' => Item::TYPE_ROLE])
+            ->andWhere(['a.sid' => Helper::getSid()]); // 复写 sft@caiyoudata.com------添加sid限制条件，实现多租户SAAS
+
+        $roles = $this->getDefaultRoleInstances();
+        foreach ($query->all($this->db) as $row) {
+            $roles[$row['name']] = $this->populateItem($row);
+        }
+
+        return $roles;
+    }
 //
     /**
      * Check whether $userId is empty.
@@ -108,61 +108,61 @@ class DbManager extends \yii\rbac\DbManager
         return !isset($userId) || $userId === '';
     }
 //
-//    /**
-//     * Returns all permissions that are directly assigned to user.
-//     * @param string|int $userId the user ID (see [[\yii\web\User::id]])
-//     * @return Permission[] all direct permissions that the user has. The array is indexed by the permission names.
-//     * @since 2.0.7
-//     */
-//    protected function getDirectPermissionsByUser($userId)
-//    {
-//        $query = (new Query())->select('b.*')
-//            ->from(['a' => $this->assignmentTable, 'b' => $this->itemTable])
-//            ->where('{{a}}.[[item_name]]={{b}}.[[name]]')
-//            ->andWhere(['a.user_id' => (string) $userId])
-//            ->andWhere(['b.type' => Item::TYPE_PERMISSION])
-//            ->andWhere(['a.sid' => Helper::getSid()]); // 复写 sft@caiyoudata.com------添加sid限制条件，实现多租户SAAS
-//
-//        $permissions = [];
-//        foreach ($query->all($this->db) as $row) {
-//            $permissions[$row['name']] = $this->populateItem($row);
-//        }
-//
-//        return $permissions;
-//    }
-//
-//    /**
-//     * Returns all permissions that the user inherits from the roles assigned to him.
-//     * @param string|int $userId the user ID (see [[\yii\web\User::id]])
-//     * @return Permission[] all inherited permissions that the user has. The array is indexed by the permission names.
-//     * @since 2.0.7
-//     */
-//    protected function getInheritedPermissionsByUser($userId)
-//    {
-//        $query = (new Query())->select('item_name')
-//            ->from($this->assignmentTable)
-//            ->where(['user_id' => (string) $userId])
-//            ->andWhere(['sid' => Helper::getSid()]);  // 复写 sft@caiyoudata.com------添加sid限制条件，实现多租户SAAS
-//
-//        $childrenList = $this->getChildrenList();
-//        $result = [];
-//        foreach ($query->column($this->db) as $roleName) {
-//            $this->getChildrenRecursive($roleName, $childrenList, $result);
-//        }
-//
-//        if (empty($result)) {
-//            return [];
-//        }
-//
-//        $query = (new Query())->from($this->itemTable)->where([
-//            'type' => Item::TYPE_PERMISSION,
-//            'name' => array_keys($result),
-//        ]);
-//        $permissions = [];
-//        foreach ($query->all($this->db) as $row) {
-//            $permissions[$row['name']] = $this->populateItem($row);
-//        }
-//
-//        return $permissions;
-//    }
+    /**
+     * Returns all permissions that are directly assigned to user.
+     * @param string|int $userId the user ID (see [[\yii\web\User::id]])
+     * @return Permission[] all direct permissions that the user has. The array is indexed by the permission names.
+     * @since 2.0.7
+     */
+    protected function getDirectPermissionsByUser($userId)
+    {
+        $query = (new Query())->select('b.*')
+            ->from(['a' => $this->assignmentTable, 'b' => $this->itemTable])
+            ->where('{{a}}.[[item_name]]={{b}}.[[name]]')
+            ->andWhere(['a.user_id' => (string) $userId])
+            ->andWhere(['b.type' => Item::TYPE_PERMISSION])
+            ->andWhere(['a.sid' => Helper::getSid()]); // 复写 sft@caiyoudata.com------添加sid限制条件，实现多租户SAAS
+
+        $permissions = [];
+        foreach ($query->all($this->db) as $row) {
+            $permissions[$row['name']] = $this->populateItem($row);
+        }
+
+        return $permissions;
+    }
+
+    /**
+     * Returns all permissions that the user inherits from the roles assigned to him.
+     * @param string|int $userId the user ID (see [[\yii\web\User::id]])
+     * @return Permission[] all inherited permissions that the user has. The array is indexed by the permission names.
+     * @since 2.0.7
+     */
+    protected function getInheritedPermissionsByUser($userId)
+    {
+        $query = (new Query())->select('item_name')
+            ->from($this->assignmentTable)
+            ->where(['user_id' => (string) $userId])
+            ->andWhere(['sid' => Helper::getSid()]);  // 复写 sft@caiyoudata.com------添加sid限制条件，实现多租户SAAS
+
+        $childrenList = $this->getChildrenList();
+        $result = [];
+        foreach ($query->column($this->db) as $roleName) {
+            $this->getChildrenRecursive($roleName, $childrenList, $result);
+        }
+
+        if (empty($result)) {
+            return [];
+        }
+
+        $query = (new Query())->from($this->itemTable)->where([
+            'type' => Item::TYPE_PERMISSION,
+            'name' => array_keys($result),
+        ]);
+        $permissions = [];
+        foreach ($query->all($this->db) as $row) {
+            $permissions[$row['name']] = $this->populateItem($row);
+        }
+
+        return $permissions;
+    }
 }

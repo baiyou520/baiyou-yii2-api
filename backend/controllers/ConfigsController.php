@@ -31,8 +31,60 @@ class ConfigsController extends BaseController
     public function actions()
     {
         $actions = parent::actions();
-
+        unset($actions['index']);
+        unset($actions['view']);
+        unset($actions['create']);
+        unset($actions['delete']);
+        unset($actions['update']);
         return $actions;
+    }
+
+    /**
+     * 获取某配置内容
+     * @return array|null|yii\db\ActiveRecord
+     * @author nwh@caiyoudata.com
+     * @time 2018/7/9 14:43
+     */
+    public function actionIndex(){
+        $params=Yii::$app->request->get();
+        $symbol=isset($params['symbol'])?$params['symbol']:"";
+        $configs=Config::findOne(['symbol'=>$params['symbol']]);
+        if(!empty($configs)){
+            if($configs['encode']==2){
+                $configs['content']=json_decode(($configs['content']),true);
+            }
+            return ["message"=>"OK","code"=>1,"data"=>$configs];
+        }else{
+            return ["message"=>"请检查参数symbol是否正确","code"=>BaseErrorCode::$PARAMS_ERROR];
+        }
+    }
+
+    /**
+     * 修改与添加
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2018/7/9 16:03
+     */
+    public function actionCreate(){
+        $params=Yii::$app->request->post();
+        //同一实例下不能有相同配置
+        $config=Config::findOne(['symbol'=>$params['symbol']]);
+        //为空在新建
+        if(empty($config)){
+            $config=new Config();
+        }
+        //否则修改
+        //对数组形式的内容,进行属性转换
+        if(is_array($params['content'])){
+            $params['encode']=2;
+            $params['content']=json_encode($params['content'],JSON_UNESCAPED_UNICODE);
+        }
+        $config->load($params,'');
+        if($config->save()){
+            return ["message"=>"成功","code"=>1];
+        }else{
+            return ["message"=>"失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$config->errors];
+        }
     }
 
     /**
