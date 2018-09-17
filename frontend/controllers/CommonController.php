@@ -28,12 +28,19 @@ class CommonController extends BaseController
      */
 
     public function actionUploadImgs($id){
-        $pic_group=Category::findOne($id);
+        $pic_group=Category::findOne(['symbol'=>'wechat_uploaded_pic']);
+        if(empty($pic_group)){
+            $pic_group = new Category();
+            $pic_group->symbol = 'wechat_uploaded_pic';
+            $pic_group->name = '微信端上传图片';
+            $pic_group->save();
+        }
+
         if(empty($pic_group)){
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"分组不存在"];
         }
 
-        $medias = Helper::uploadImgs($id);
+        $medias = Helper::uploadImgs($pic_group->category_id);
         if (empty($medias)){
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"上传失败"];
         }else{

@@ -51,7 +51,7 @@ class CreateQueryHelper {
          * ————————————————————————————
          *  添加sid限制条件，实现多租户SAAS
          */
-        $model->andWhere(['in', 'sid', [Helper::getSid(),0]]);
+        $model->andWhere(['in', $modelClass::tableName().'.sid', [Helper::getSid(),0]]);
         return $model;
     }
 
