@@ -46,6 +46,7 @@ class CustomersController extends BaseController
             if (empty($config)){
                 return ["code"=>BaseErrorCode::$FAILED,"message"=>"暂未设置欢迎语"];
             } else {
+
                 return ["code"=>1,"message"=>"获得欢迎语成功","data"=>json_decode($config->content)];
             }
         } else {
@@ -61,7 +62,7 @@ class CustomersController extends BaseController
                     'link_url' => $data['link_url'],
                     'link_title' => $data['link_title'],
                     'link_desc' => $data['link_desc'],
-                    'picture_url_on_own_sever' => $data['picture_url_on_own_sever']
+//                    'picture_url_on_own_sever' => $data['picture_url_on_own_sever']
                 ];
             }else{
                 $message_service_welcome = [
