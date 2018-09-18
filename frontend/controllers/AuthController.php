@@ -11,6 +11,7 @@ namespace baiyou\frontend\controllers;
 use baiyou\common\models\Instance;
 use baiyou\common\models\Customer;
 use baiyou\common\components\Helper;
+use frontend\modules\v1\controllers\InitController;
 use yii\rest\ActiveController;
 use Yii;
 class AuthController extends ActiveController
@@ -75,6 +76,8 @@ class AuthController extends ActiveController
         }
         if (!$res=$customer->save()) {
             return ["message"=>"参数错误","code"=>10002,"data"=>$customer->errors];
+        }else{
+            InitController::initData($customer); // 处理其他应用特有的业务逻辑，比如获得新人优惠券
         }
 
         $customer->generateAccessTokenAfterUpdatingClientInfo(true);
