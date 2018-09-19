@@ -94,7 +94,6 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         $this->access_token_expired_at = date("Y-m-d H:i:s", $tokens[1]['exp']); // Expire
 
         $cookies = Yii::$app->response->cookies;
-
         // 创建sso登录所需的cookies值
         $cookies->add(new \yii\web\Cookie([
             'name' => 'access-token',
@@ -175,12 +174,12 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
             $user = static::find()->where([
                 '=', 'id', $id
             ])
-                ->andWhere([
-                    '=', 'status',  self::STATUS_ACTIVE
-                ])
-                ->andWhere([
-                    '>', 'access_token_expired_at', new Expression('NOW()')
-                ])->one();
+            ->andWhere([
+                '=', 'status',  self::STATUS_ACTIVE
+            ])->one();
+//            ->andWhere([
+//                '>', 'access_token_expired_at', new Expression('NOW()')  // 微信端使用，即永不过期，因为不会做判断
+//            ])->one();
         }
 
         return $user;
@@ -215,7 +214,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         // Collect all the data
         $secret      = static::getSecretKey();
         $currentTime = time();
-        $expire      = $currentTime + 200 * 365 * 24 * 60 * 60; // 微信端使用，即永不过期
+        $expire      = $currentTime + 24 * 60 * 60; // 微信端使用，即永不过期，因为不会做判断
         $request     = Yii::$app->request;
         $hostInfo    = '';
         // There is also a \yii\console\Request that doesn't have this property
