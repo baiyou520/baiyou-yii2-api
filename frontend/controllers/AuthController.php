@@ -68,10 +68,12 @@ class AuthController extends ActiveController
         $data['name'] = $nickname;
         $data['avatar'] = $avatarUrl;
         $data['parent_id'] = $parentId;
+        $is_first_register = false; // 是否首次注册
         if(empty($customer)){
             $customer = new Customer();
             $data['username']=Helper::randomString(11);
             $data['openid'] = $out->openid;
+            $is_first_register = true;
             $customer->load($data, '');
         }
         if (!$res=$customer->save()) {
@@ -83,6 +85,7 @@ class AuthController extends ActiveController
         $customer->generateAccessTokenAfterUpdatingClientInfo(true);
         $result['uid']=$customer->id;
         $result['access_token']=$customer->access_token;
+        $result['is_first_register']=$is_first_register;
         return ["message"=>"认证成功","code"=>1,"data"=>$result];
     }
 
