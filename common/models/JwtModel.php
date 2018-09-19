@@ -101,7 +101,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
             'value' => $this->access_token,
             'domain' => '.baiyoudata.com',
             'httpOnly' => true,
-            'expire' => time() + 10 * 365 * 24 * 60 * 60,
+            'expire' => time() + 7 * 24 * 60 * 60, // 7天过期
         ]));
     }
 
@@ -215,7 +215,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         // Collect all the data
         $secret      = static::getSecretKey();
         $currentTime = time();
-        $expire      = $currentTime + 864000; // 10 day
+        $expire      = $currentTime + 200 * 365 * 24 * 60 * 60; // 微信端使用，即永不过期
         $request     = Yii::$app->request;
         $hostInfo    = '';
         // There is also a \yii\console\Request that doesn't have this property
