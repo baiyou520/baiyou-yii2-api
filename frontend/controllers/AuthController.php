@@ -79,7 +79,7 @@ class AuthController extends ActiveController
         if (!$res=$customer->save()) {
             return ["message"=>"参数错误","code"=>10002,"data"=>$customer->errors];
         }else{
-            InitController::initData($customer); // 处理其他应用特有的业务逻辑，比如获得新人优惠券
+            InitController::initData($customer,$is_first_register); // 处理其他应用特有的业务逻辑，比如获得新人优惠券
         }
 
         $customer->generateAccessTokenAfterUpdatingClientInfo(true);
