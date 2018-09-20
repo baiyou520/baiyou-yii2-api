@@ -204,6 +204,34 @@ class Wechat
         }
     }
 
+    /**
+     * 发送模板消息
+     * @param $at_id
+     * @return mixed
+     * @author sft@caiyoudata.com
+     * @time   2018/9/20 下午5:16
+     */
+    public static function sendTemplateMessage($openid,$template_id,$page,$form_id,$data){
+        $sid = Helper::getSid();
+        $wx_access_token = Wechat::getWechatAccessToken($sid);
+        $url="https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=".$wx_access_token;
+        $data_send=[
+            "touser"=>$openid,
+            "template_id"=>$template_id,
+            "page"=>$page,//"点击进入详情查看,不写就没有点击详情$data['url']",
+            "form_id"=>$form_id,
+            "data"=> $data
+        ];
+        $result=Helper::https_request($url,$data_send);
+        if ($result['errcode'] === 0){
+            return $result;
+        }else {
+            Yii::error($result, '发送模板消息失败');
+            return $result;
+        }
+    }
+
+
 //
 //    /**
 //     * 添加体验者
