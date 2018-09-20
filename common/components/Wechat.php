@@ -152,6 +152,58 @@ class Wechat
         curl_close($ch1);
         return json_decode($result,true);
     }
+
+    /**
+     * 组合模板并添加至帐号下的个人模板库
+     * @param $sid
+     * @param $keyword_id_list
+     * @return mixed|string
+     * @author sft@caiyoudata.com
+     * @time  adt
+     */
+    public static function addTemplateMessage($sid,$at_id,$keyword_id_list){
+
+        $wx_access_token = Wechat::getWechatAccessToken($sid);
+        $url="https://api.weixin.qq.com/cgi-bin/wxopen/template/add?access_token=".$wx_access_token;
+        $data=[
+            "id" => $at_id,
+            "keyword_id_list"=> $keyword_id_list
+        ];
+
+        $result=Helper::https_request($url,$data);
+        if ($result['errcode'] === 0){
+            return $result;
+        }else {
+            Yii::error($result, '组合模板并添加至帐号下的个人模板库失败');
+            return $result;
+        }
+    }
+
+    /**
+     * 获取模板库某个模板标题下关键词库
+     * @param $sid
+     * @param $at_id
+     * @return mixed
+     * @author sft@caiyoudata.com
+     * @time  adt
+     */
+    public static function getTplKeywordsId($sid,$at_id){
+
+        $wx_access_token = Wechat::getWechatAccessToken($sid);
+        $url="https://api.weixin.qq.com/cgi-bin/wxopen/template/library/get?access_token=".$wx_access_token;
+        $data=[
+            "id" => $at_id,
+        ];
+
+        $result=Helper::https_request($url,$data);
+        if ($result['errcode'] === 0){
+            return $result;
+        }else {
+            Yii::error($result, '获取模板库某个模板标题下关键词库失败');
+            return $result;
+        }
+    }
+
 //
 //    /**
 //     * 添加体验者

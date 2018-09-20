@@ -7,6 +7,7 @@
  */
 
 namespace baiyou\backend\controllers;
+use backend\modules\v1\controllers\InitController;
 use baiyou\backend\models\ActionLog;
 use baiyou\backend\models\Config;
 use baiyou\backend\models\Notice;
@@ -39,8 +40,13 @@ class DashboardController extends BaseController
      * @time  adt
      */
     public function actionIndex(){
+
+        // 店铺初始化
+        InitController::init();
+
+        // 用户总数
         $sid = Helper::getSid();
-        $user_total = Customer::find()->count();// 用户总数
+        $user_total = Customer::find()->count();
         $user_new_in_past_24hours = Customer::find()
             ->where(['>', 'created_at', time()-60*60*24])
             ->andWhere(['=', 'sid', $sid])->count();// 过去24小时新增用户数

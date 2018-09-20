@@ -583,6 +583,58 @@ class ConfigsController extends BaseController
         }
     }
 
+    /**
+     * 激活模板消息
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/9/20 上午9:42
+     */
+    public function actionActivateTpl(){
+        $sid = Helper::getSid();
+        $data=Yii::$app->request->post();
+        $config=Config::findOne(["symbol" => 'template_message']);
+        $tpls = json_decode($config->content,true);
+
+        foreach ($tpls as &$tpl) {
+            if ($tpl['at_id'] === $data['at_id']){
+                $results = Wechat::addTemplateMessage($sid,$data['at_id'], json_decode($tpl['keywords']));
+                if($results['errcode'] === 0){
+                    $tpl['tpl_id'] = $results['template_id'];
+                    $config->content = json_encode($tpls,JSON_UNESCAPED_UNICODE);
+                    $config->save();
+                    return ["code"=>1,"message"=>"激活模板消息成功",'data' => $results];
+                } else {
+                    return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"激活模板消息失败"];
+                }
+            }
+        }
+
+        return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"激活模板消息失败,未找到模板id"];
+
+//        $items = array();
+//        foreach($tpls as $value){
+//            $items[$value['at_id']] = $value;
+//        }
+//        $tpl = $items[$data['at_id']];
+
+    }
+
+    /**
+     * 获取模板库某个模板标题下关键词库
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/9/20 上午9:42
+     */
+    public function actionGetTplKeywordsIds(){
+        $sid = Helper::getSid();
+        $data=Yii::$app->request->post();
+        $results = Wechat::getTplKeywordsId($sid,$data['at_id']);
+        if($results['errcode'] === 0){
+            return ["code"=>1,"message"=>"激活模板消息成功",'data' => $results];
+        } else {
+            return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"激活模板消息失败"];
+        }
+    }
 
 //
 //    /**

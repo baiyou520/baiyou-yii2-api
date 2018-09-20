@@ -91,17 +91,8 @@ class UsersController extends BaseController
      */
     public function actionView($id){
 
-//        $user = User::findOne(['and',['id' => $id],['sid' => Helper::getSid()]]);
         $user = User::findOne($id);
 
-//        $user->authAssignments
-//        $user=(new Query())->from("user u")
-//            ->select(["u.*","aa.item_name role","ai.description role_alias"])
-//            ->leftJoin("auth_assignment aa","aa.user_id=u.id")
-//            ->leftJoin("auth_item ai","ai.name=aa.item_name")
-//            ->where(["u.id"=>$id])
-//            ->andWhere(["u.sid"=>Helper::getSid()])
-//            ->one();
         return $user;
     }
     /**
@@ -219,11 +210,6 @@ class UsersController extends BaseController
             }
             if(isset($parms['role'])&&!empty($parms['role'])){
                 $assignment=AuthAssignment::findOne(['user_id'=>$id]);
-//                if(empty($assignment)){
-//                    $assignment=new AuthAssignment();
-//                    $assignment->user_id=$id;
-//                    $assignment->created_at=time();
-//                }
                 $assignment->item_name=$parms['role'];
                 if(!$assignment->save()){
                     return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$assignment->errors];
@@ -247,15 +233,6 @@ class UsersController extends BaseController
         if($model['username']=="sadmin"){
             return ["message"=>"该用户不可删除","code"=>BaseErrorCode::$PARAMS_ERROR];
         }
-
-//        $code=AuthAssignment::findOne(['user_id'=>$id])->delete();
-//        if (!$code) {
-//            return ["message"=>"角色表信息未删除","code"=>BaseErrorCode::$PARAMS_ERROR];
-//        }
-
-//        $model->status = 0;
-        // 删除通知
-//        NoticeUser::deleteAll(['and',['sid' => Helper::getSid()],['user_id' => $id]]);
 
         // 删除员工
         $model->status = 20; // 软删除
@@ -291,11 +268,6 @@ class UsersController extends BaseController
             throw new \yii\web\HttpException(401, 'sid不对，跳回总控制台.');
         }
 
-        // 判断店铺有没有初始化
-        $init_config = Config::findOne(['symbol' => 'init']);
-        if (empty($init_config)){
-            InitController::init();
-        }
 
         //用户角色
         $role_item = $userObj->authAssignments[0]->itemName;
@@ -331,51 +303,8 @@ class UsersController extends BaseController
             'role_alias' => $role_item->title,
         ];
 
-
-//        $instance = Instance::findOne($sid);
-//        $sub_title = '';
-//        $license = '';
-//        $expired_at = '';
-//        switch ($instance->status)
-//        {
-//            case 0:
-//                $sub_title = '欢迎使用'.Yii::$app->params['app-name'].',您的店铺为试用版，为不影响使用，请及时购买正式版！';
-//                $license = '试用版';
-//                $expired_at =  (int)(($instance->expired_at - time()) / 86400)  .'天后过期，请及时续费！';
-//                break;
-//            case 1:
-//                $sub_title = '欢迎回来，祝您生意欣荣！';
-//                $license = '正式版';
-//                $expired_at =  (int)(($instance->expired_at - time()) / 86400) .'天后过期，请及时续费！';
-//                break;
-//            case -1:
-//                $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
-//                $license = '已打烊';
-//                $expired_at = '已打烊，请及时续费！';
-//                break;
-//            default:
-//                break;
-//        }
-//        $qr_code_status = 0; // 出现立即绑定按钮
-//        if ($instance->is_bind == 1){
-//            $qr_code_status = 1; // 出现设置秘钥按钮
-//        }
-//        if ($instance->online_qrcode !== ''){
-//            $qr_code_status = 2; // 出现2个二维码
-//        }
         $app = [
             'app_name' => Yii::$app->params['app-name'],
-//            'sid' => $instance->sid,
-//            'instance_name' => $instance->name,
-//            'status' => $instance->status,
-//            'license' => $license, // 版本
-//            'expired_at' => $expired_at, // 多久过期
-//            'sub_title' => $sub_title,
-//            'instance_thumb' => $instance->thumb,
-//            'experience_qrcode' => Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode, // 体验版二维码，存在总后台的后端
-//            'online_qrcode' => Yii::$app->request->hostInfo.'/'.$instance->online_qrcode,// 上线后二维码,存在具体应用的后端
-//            'qr_code_status' => $qr_code_status,// 如何显示微信小程序二维码区域
-//            'level' => $instance->level, // 购买版本，暂定
         ];
         $responseData = [
             'menu'=>$menu,
@@ -384,39 +313,4 @@ class UsersController extends BaseController
         ];
         return  ['message' => '获取初始化信息成功','code' => 1,'data' => $responseData];
     }
-
-//    /**
-//     * 角色列表,辅助用于用户列表筛选
-//     * @return array|\yii\db\ActiveRecord[]
-//     * @author  billyshen 2018/5/30 上午10:26
-//     */
-//    public function actionRoles(){
-//        $role=AuthItem::find()->select(['name','description'])->where(['type'=>1])->all();
-//        return ['message' => '获取角色信息成功','code' => 1,'data' => $role];
-//    }
-
-//    /**
-//     * 批量启用/禁用
-//     * @return array
-//     * @throws HttpException
-//     * @author  billyshen 2018/6/21 下午2:33
-//     */
-//    public function actionSetStatus(){
-//        $request=Yii::$app->request;
-//        $parms=$request->post();
-//        foreach($parms['id'] as $val){
-//            $user=User::findOne($val);
-//            $item_name=AuthAssignment::find()->where(['user_id'=>$val])->one()['item_name'];
-//            if($item_name=="super_admin"&&$parms['status'] == 0){ //super_admin为默认超级管理员角色名
-//                return ['message'=>'超管不能禁用','code'=>10001];
-//            }
-//            $user->status=$parms['status'];
-//            $code=$user->save();
-//            if(!$code){
-//                return ['message'=>'参数错误','code'=>10002,"data" => $user->errors];
-//            }
-//        }
-//        $msg = $parms['status']===0 ? '禁用成功' : '启用成功';
-//        return ['message'=>$msg,'code'=>1];
-//    }
 }
