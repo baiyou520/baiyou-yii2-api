@@ -97,7 +97,8 @@ class Wechat
             Yii::error($result,'获取小程序码失败');
             return '';
         }else{
-            return 'data:image/jpeg;base64,'.base64_encode($result); // 以base64格式返回
+            return $result; // 直接返回图片流
+//            return 'data:image/jpeg;base64,'.base64_encode($result); // 以base64格式返回
         }
     }
 

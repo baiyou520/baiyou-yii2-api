@@ -35,17 +35,24 @@ class BaseInitController
             $quick_start_menu = [];
             array_push($quick_start_menu,
                 [
+                    'avatar' => 'anticon anticon-setting',
+                    'title' => '微信设置',
+                    'desc' => '设置相关参数，包括店铺设置，微信设置，体验者设置等',
+                    'route' => '/customer/setting'
+                ]);
+            array_push($quick_start_menu,
+                [
                     'avatar' => 'anticon anticon-wechat',
-                    'title' => '客户管理',
-                    'desc' => '查看微信端客户信息',
-                    'route' => '/customer/mgr'
+                    'title' => '客服消息',
+                    'desc' => '当客户想咨询问题时，设置一个欢迎语很重要',
+                    'route' => '/customer/message'
                 ]);
             array_push($quick_start_menu,
                 [
                     'avatar' => 'anticon anticon-file',
-                    'title' => '操作日志',
-                    'desc' => '查看重要操作日志',
-                    'route' => '/setting/action-log'
+                    'title' => '门店信息',
+                    'desc' => '如果您有线下门店，那么设置下门店信息，能让您的客户快速找到您',
+                    'route' => '/setting/store'
                 ]);
             array_push($quick_start_menu,
                 [
@@ -53,13 +60,6 @@ class BaseInitController
                     'title' => '员工管理',
                     'desc' => '管理店铺员工，设置相关权限等',
                     'route' => '/setting/user'
-                ]);
-            array_push($quick_start_menu,
-                [
-                    'avatar' => 'anticon anticon-setting',
-                    'title' => '微信设置',
-                    'desc' => '设置相关参数，包括店铺设置，微信设置，体验者设置等',
-                    'route' => '/customer/setting/wechat'
                 ]);
             $quick_start_menu_config = new Config();
             $quick_start_menu_config->symbol = 'by_quick_start_menu';

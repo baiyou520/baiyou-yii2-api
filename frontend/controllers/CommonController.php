@@ -15,6 +15,7 @@ use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 use baiyou\common\components\Wechat;
 use baiyou\common\models\Customer;
+use yii;
 
 class CommonController extends BaseController
 {
@@ -62,9 +63,39 @@ class CommonController extends BaseController
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"用户不存在"];
         }
         $sid = Helper::getSid();
+
+        // 小程序分享码
         $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/home/home","parentId=".$customer_id);
+        $qr_code_name = $sid.'_'.$customer_id.'_'.'qr_code.jpg';
+        file_put_contents($qr_code_name, $qr);
+
+        // 微信头像
+        $img = file_get_contents($customer->avatar);
+        $wx_avatar_name = $sid.'_'.$customer_id.'_'.'wx_avatar.jpg';
+        file_put_contents($wx_avatar_name,$img);
+
+        // 连接图片服务器
+        $ftp_server = Yii::$app->params['img_server']; //要连接的服务器域名
+        $conn=ftp_connect($ftp_server['domain']); //连接FTP服务器
+        ftp_login($conn,$ftp_server['ftpuser_name'],$ftp_server['ftpuser_passwd']) or die("Cannot login");; //发送用户名和密码
+        ftp_set_option($conn, FTP_USEPASVADDRESS, false); // 解决路由无法到达的问题 https://stackoverflow.com/questions/38982901/php-ftp-passive-ftp-server-behind-nat
+        ftp_pasv($conn, true); // 切换为被动模式
+
+        // 上传小程序分享码
+        ftp_put($conn,'avatars/'.$qr_code_name,$qr_code_name,FTP_BINARY);
+        unlink($qr_code_name); // 删除应用服务器上的图片
+
+        // 上传微信头像
+        ftp_put($conn,'avatars/'.$wx_avatar_name,$wx_avatar_name,FTP_BINARY);
+        unlink($wx_avatar_name); // 删除应用服务器上的图片
+
+        $data = [
+            'fingerprint' => 'https://'.Yii::$app->params['img_server']['domain'].'/assets/fingerprint.png',
+            'qr_code' => 'https://'.Yii::$app->params['img_server']['domain'].'/avatars/'.$qr_code_name,
+            'wx_avatar' => 'https://'.Yii::$app->params['img_server']['domain'].'/avatars/'.$wx_avatar_name,
+        ];
         if ($qr !== ''){
-            return ["code"=>1,"message"=>"获取我的推广码成功","data"=>$qr];
+            return ["code"=>1,"message"=>"获取我的推广码成功",'data'=> $data];
         }else{
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"获取我的推广码失败"];
         }
