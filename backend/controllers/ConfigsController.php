@@ -557,8 +557,9 @@ class ConfigsController extends BaseController
         $sid = Helper::getSid();
         $data = Yii::$app->request->post();
         $qr = Wechat::getWechatQrCodeUnlimited($sid,$data['page'],$data['scene']);
+//        return 'data:image/jpeg;base64,'.base64_encode($result); // 以base64格式返回
         if ($qr !== ''){
-            return ["code"=>1,"message"=>"获取指定小程序码成功","data"=>$qr];
+            return ["code"=>1,"message"=>"获取指定小程序码成功","data"=>'data:image/jpeg;base64,'.base64_encode($qr)];
         }else{
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"获取指定小程序码失败"];
         }
