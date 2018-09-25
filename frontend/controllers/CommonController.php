@@ -11,6 +11,7 @@ namespace baiyou\frontend\controllers;
 
 
 use baiyou\backend\models\Category;
+use baiyou\backend\models\Config;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 use baiyou\common\components\Wechat;
@@ -51,7 +52,6 @@ class CommonController extends BaseController
 
     /**
      * 获取我的推广码
-     * @param $id
      * @return array
      * @author sft@caiyoudata.com
      * @time   2018/9/10 下午2:13
@@ -88,12 +88,20 @@ class CommonController extends BaseController
         // 上传微信头像
         ftp_put($conn,'avatars/'.$wx_avatar_name,$wx_avatar_name,FTP_BINARY);
         unlink($wx_avatar_name); // 删除应用服务器上的图片
-
-        $data = [
+         $data = [
             'fingerprint' => 'https://'.Yii::$app->params['img_server']['domain'].'/assets/fingerprint.png',
             'qr_code' => 'https://'.Yii::$app->params['img_server']['domain'].'/avatars/'.$qr_code_name,
             'wx_avatar' => 'https://'.Yii::$app->params['img_server']['domain'].'/avatars/'.$wx_avatar_name,
         ];
+
+        $configs=Config::findOne(['symbol'=>'dis_share_setting']);
+        if (!empty($configs)){
+            $content  = json_decode($configs->content,true);
+            $data = array_merge($data,[
+                'share_title' => $content['title'],
+                'share_image_url' => $content['imageUrl']
+            ]);
+        }
         if ($qr !== ''){
             return ["code"=>1,"message"=>"获取我的推广码成功",'data'=> $data];
         }else{
