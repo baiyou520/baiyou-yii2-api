@@ -75,9 +75,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         $this->last_login_at = new Expression('NOW()');
 
         // check time is expired or not
-        if($forceRegenerate == true
-            || $this->access_token_expired_at == null
-            || (time() > strtotime($this->access_token_expired_at)))
+        if($forceRegenerate)
         {
             // generate access token
             $this->generateAccessToken();

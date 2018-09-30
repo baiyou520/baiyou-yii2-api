@@ -12,7 +12,6 @@ namespace baiyou\common\models;
  * @property string $nickname 微信昵称
  * @property string $name 姓名(真实姓名，比如取自地址)
  * @property string $openid 微信移动端标识符
- * @property string $access_token_expired_at JWT认证(用于api)
  * @property string $phone  手机号(比如取自地址)
  * @property int $parent_id  推荐人id
  * @property int $status 状态
@@ -38,7 +37,7 @@ class Customer extends JwtModel
     {
         return [
             [['username', 'name', 'openid'], 'required'],
-            [['access_token_expired_at', 'last_login_at'], 'safe'],
+            [['last_login_at'], 'safe'],
             [['parent_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'name', 'phone'], 'string', 'max' => 20],
             [['avatar'], 'string', 'max' => 255],
@@ -60,7 +59,6 @@ class Customer extends JwtModel
             'nickname' => '微信昵称',
             'name' => '姓名(真实姓名，比如取自地址)',
             'openid' => '微信移动端标识符',
-            'access_token_expired_at' => 'JWT认证(用于api)',
             'phone' => ' 手机号(比如取自地址)',
             'parent_id' => ' 推荐人id',
             'status' => '状态',
