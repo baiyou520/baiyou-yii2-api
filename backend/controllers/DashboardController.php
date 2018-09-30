@@ -71,26 +71,27 @@ class DashboardController extends BaseController
             ->andWhere(['>', 'created_at', time()-60*60*24*7])
             ->andWhere(['=', 'status', 1])
             ->orderBy('created_at desc')->all(); // 先取过去七天的重要操作日志，参考https://help.youzan.com/displaylist/detail_4_11697
-//
 
 
         // app 相关信息
         $instance = Instance::findOne($sid);
         $sub_title = '';
         $license = '';
-        $expired_at = '';
         $expired_days = (int)(($instance->expired_at - time()) / 86400);
+        $badge_status = $expired_days > 14? 'success':'error';
+        $expired_at = $expired_days > 14? '您的店铺很健康': $expired_days.'天后过期，请及时续费！';
+        if ($expired_at === 0){
+            $expired_at = '今天就要过期了，快马加鞭去续费吧！';
+        }
         switch ($instance->status)
         {
             case 0:
                 $sub_title = '欢迎使用'.Yii::$app->params['app-name'].',您的店铺为试用版，为不影响使用，请及时购买正式版！';
                 $license = '试用版';
-                $expired_at =  $expired_days===0?'即将过期，请及时续费！' : $expired_days.'天后过期，请及时续费！';
                 break;
             case 1:
                 $sub_title = '欢迎回来，祝您生意欣荣！';
                 $license = '正式版';
-                $expired_at =   $expired_days===0?'即将过期，请及时续费！' : $expired_days.'天后过期，请及时续费！';
                 break;
             case -1:
                 $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
@@ -114,6 +115,7 @@ class DashboardController extends BaseController
             'status' => $instance->status,
             'license' => $license, // 版本
             'expired_at' => $expired_at, // 多久过期
+            'badge_status' => $badge_status, // 运行状态
             'sub_title' => $sub_title,
             'instance_thumb' => $instance->thumb,
             'experience_qrcode' => Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode, // 体验版二维码，存在总后台的后端
