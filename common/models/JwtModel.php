@@ -91,17 +91,17 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         // $this->access_token = Yii::$app->security->generateRandomString();
         $tokens = $this->getJWT();
         $this->access_token = $tokens[0];   // Token
-        $this->access_token_expired_at = date("Y-m-d H:i:s", $tokens[1]['exp']); // Expire
+//        $this->access_token_expired_at = date("Y-m-d H:i:s", $tokens[1]['exp']); // Expire
 
-        $cookies = Yii::$app->response->cookies;
-        // 创建sso登录所需的cookies值
-        $cookies->add(new \yii\web\Cookie([
-            'name' => 'access-token',
-            'value' => $this->access_token,
-            'domain' => '.baiyoudata.com',
-            'httpOnly' => true,
-            'expire' => time() + 7 * 24 * 60 * 60, // 7天过期
-        ]));
+//        $cookies = Yii::$app->response->cookies;
+//        // 创建sso登录所需的cookies值
+//        $cookies->add(new \yii\web\Cookie([
+//            'name' => 'access-token',
+//            'value' => $this->access_token,
+//            'domain' => '.baiyoudata.com',
+//            'httpOnly' => true,
+//            'expire' => time() + 7 * 24 * 60 * 60, // 7天过期
+//        ]));
     }
 
     /*
@@ -214,7 +214,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         // Collect all the data
         $secret      = static::getSecretKey();
         $currentTime = time();
-        $expire      = $currentTime + 24 * 60 * 60; // 微信端使用，即永不过期，因为不会做判断
+//        $expire      = $currentTime + 24 * 60 * 60; // 微信端不过期
         $request     = Yii::$app->request;
         $hostInfo    = '';
         // There is also a \yii\console\Request that doesn't have this property
@@ -229,7 +229,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
             'iss' => $hostInfo,         // Issuer: A string containing the name or identifier of the issuer application. Can be a domain name and can be used to discard tokens from other applications.
             'aud' => $hostInfo,
             'nbf' => $currentTime,       // Not Before: Timestamp of when the token should start being considered valid. Should be equal to or greater than iat. In this case, the token will begin to be valid 10 seconds
-            'exp' => $expire,           // Expire: Timestamp of when the token should cease to be valid. Should be greater than iat and nbf. In this case, the token will expire 60 seconds after being issued.
+//            'exp' => $expire,           // 微信端不过期 Expire: Timestamp of when the token should cease to be valid. Should be greater than iat and nbf. In this case, the token will expire 60 seconds after being issued.
             'data' => [
                 'username'      =>  $this->username,
                 'lastLoginAt'   =>  $this->last_login_at,
