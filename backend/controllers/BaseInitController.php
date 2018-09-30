@@ -72,7 +72,7 @@ class BaseInitController
 
 
         //添加图片默认未分组
-        $catgory_pic = Category::findOne(['symbol' => 'by_quick_start_menu']);
+        $catgory_pic = Category::findOne(['symbol' => 'pic_group']);
         if (empty($catgory_pic)){
             $catgory_pic=new Category();
             $catgory_pic->symbol='pic_group';
