@@ -35,7 +35,7 @@ class Wechat
                 Yii::error($result,'获取公众平台的 API 调用所需的access_token失败');
             }else{
                 $wx_access_token = $result['access_token'];
-                $cache->set("wx_access_token_".$sid,$wx_access_token,$result['expires_in'] - 100); // 提前100秒刷新token
+                $cache->set("wx_access_token_".$sid,$wx_access_token,$result['expires_in'] - 600); // 提前600秒刷新token
             }
         }
         return $wx_access_token;
@@ -122,7 +122,8 @@ class Wechat
 
         $result=Helper::https_request($url,$data,false); // 第三个参数:小程序码等文件流直接返回数据即可
         if (isset($result['errcode'])){
-            Yii::error($result,'获取小程序二维码失败');
+            Helper::send_msg('15850576154','获取二维码'.$result['errmsg']);
+            Yii::error($result['errmsg'],'获取小程序二维码失败');
             return '';
         }else{
             return $result;
