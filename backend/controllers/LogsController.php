@@ -75,7 +75,9 @@ class LogsController extends BaseController
      * @time   2018/7/27 上午11:10
      */
     public function actionGetActionLog(){
+        $sort = \Yii::$app->request->get('sort','');
         $query = CreateQueryHelper::createQuery('baiyou\backend\models\ActionLog');
+        CreateQueryHelper::addOrderSort($sort, 'action_log', $query);
         $provider = new ActiveDataProvider([
             'query' => $query->andFilterWhere(['=','status',1])
         ]);

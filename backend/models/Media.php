@@ -11,8 +11,8 @@ use Yii;
  * @property int $media_id 主键
  * @property string $name 资源名称
  * @property string $url 地址
- * @property int $type 类型：1.图片2.音频3.视频
- * @property int $group_id 分组id,CG表S=pic_group/S=audio_group/S=video_group
+ * @property int $type 类型：1.图片2.音频3.视频4.图标
+ * @property int $group_id 分组id
  * @property int $sid sid，来自总后台数据库instance表中instance_id
  * @property string $key 文件对应到云存储服务中的唯一标识,未来扩展七牛云备用
  * @property string $description 文件的描述内容
@@ -60,8 +60,8 @@ class Media extends \baiyou\common\components\ActiveRecord
             'media_id' => '主键',
             'name' => '资源名称',
             'url' => '地址',
-            'type' => '类型：1.图片2.音频3.视频',
-            'group_id' => '分组id,CG表S=pic_group/S=audio_group/S=video_group',
+            'type' => '类型：1.图片2.音频3.视频4.图标',
+            'group_id' => '分组id',
             'sid' => 'sid，来自总后台数据库instance表中instance_id',
             'created_at' => '创建时间戳',
             'updated_at' => '修改时间戳',

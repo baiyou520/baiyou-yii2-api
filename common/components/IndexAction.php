@@ -144,6 +144,7 @@ class IndexAction extends Action
     {
         $modelClass = $this->modelClass;
         $sort = yii::$app->request->get('sort','');
+//        Helper::p($sort);
         $query = CreateQueryHelper::createQuery($this->modelClass);
         CreateQueryHelper::addOrderSort($sort, $modelClass::tableName(), $query);
         return new ActiveDataProvider([
