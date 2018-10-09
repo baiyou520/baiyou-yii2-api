@@ -444,55 +444,32 @@ class ConfigsController extends BaseController
      * @time   2018/10/9 下午2:13
      */
     public function actionSubmitUpgrade(){
-//        $sid = Helper::getSid();
-//        $data=Yii::$app->request->post();
-//        $url = Yii::$app->params['admin_url'].'/v1/open/getCategories/'.$sid;
-//        $categories = Helper::https_request($url);
-//        $items = array();
-//        foreach($categories['data']['category_list'] as $value){
-//            $items[$value['second_id']] = $value;
-//        }
-//
-//        // 格式化数据，以满足微信开发平台要求
-//        $formated_data =[];
-//        foreach ($data['item_list'] as $item){
-//            $tags = '';
-//            foreach ($item['tag'] as $tag) {
-//                $tags .= $tag.' ';
-//            }
-//            $tags = substr($tags,0,strlen($tags)-1);
-//            $formated_data[] = [
-//                'address' => $item['address'],
-//                'tag' => $tags,
-//                'first_class' => $items[$item['category'][1]]['first_class'],
-//                'second_class' => $items[$item['category'][1]]['second_class'],
-//                'first_id' => $items[$item['category'][1]]['first_id'],
-//                'second_id' => $items[$item['category'][1]]['second_id'],
-//                'title' => $item['title'],
-//            ];
-//        }
-//        $url = Yii::$app->params['admin_url'].'/v1/open/submitAudit/'.$sid;
-//        $data=[
-//            "item_list"=> $formated_data,
-//        ];
-//        $results = Helper::https_request($url,$data);
-//        if ($results['code'] == 1){
-//
-//            $url = Yii::$app->params['admin_url'].'/v1/open/getTemplateInfo/'.$sid;
-//            $tpl_info = Helper::https_request($url);
-//
-//            $model = Config::findOne(['symbol' => 'version_related']);
-//            $released_conf = json_decode($model->content);
-//            $released_conf->released_flag = self::RELEASE_FLAG_PROCESSING;
-//            $released_conf->tpl_version = $tpl_info['data']['template_id'];
-//            $model->content = json_encode($released_conf);
-//            if(!$model->save()){
-//                return ["message"=>"审核已经提交，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
-//            };
-//            return ["code"=>1,"message"=>"提交审核成功","data"=>$results];
-//        }else{
-//            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
-//        }
+        $sid = Helper::getSid();
+        // 提前之前的提交数据
+        $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
+        $formated_data =json_decode($submit_audit_data_config->content,true)['item_list'];
+        $url = Yii::$app->params['admin_url'].'/v1/open/submitAudit/'.$sid;
+        $data=[
+            "item_list"=> $formated_data,
+        ];
+        $results = Helper::https_request($url,$data);
+        if ($results['code'] == 1){
+
+            $url = Yii::$app->params['admin_url'].'/v1/open/getTemplateInfo/'.$sid;
+            $tpl_info = Helper::https_request($url);
+
+            $model = Config::findOne(['symbol' => 'version_related']);
+            $released_conf = json_decode($model->content);
+            $released_conf->released_flag = self::RELEASE_FLAG_PROCESSING;
+            $released_conf->tpl_version = $tpl_info['data']['template_id'];
+            $model->content = json_encode($released_conf);
+            if(!$model->save()){
+                return ["message"=>"审核已经提交，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
+            };
+            return ["code"=>1,"message"=>"提交审核成功","data"=>$results];
+        }else{
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+        }
     }
 
     /**
