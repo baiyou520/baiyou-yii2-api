@@ -405,16 +405,7 @@ class ConfigsController extends BaseController
         $data=[
             "item_list"=> $formated_data,
         ];
-        $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
-        if(empty($submit_audit_data_config)){
-            $submit_audit_data_config = new Config();
-            $submit_audit_data_config->symbol = 'submit_audit_data';
-            $submit_audit_data_config->content = json_encode($data,JSON_UNESCAPED_UNICODE);
-            $submit_audit_data_config->encode = 2;
-            if(!$submit_audit_data_config->save()){
-                return ["message"=>"审核已经提交，但保存提交信息失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$submit_audit_data_config->errors];
-            };
-        }
+
         $results = Helper::https_request($url,$data);
         if ($results['code'] == 1){
 
@@ -429,7 +420,6 @@ class ConfigsController extends BaseController
             if(!$model->save()){
                 return ["message"=>"审核已经提交，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
             };
-
 
             $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
             if(empty($submit_audit_data_config)){
