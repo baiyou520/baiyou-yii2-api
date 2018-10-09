@@ -401,7 +401,6 @@ class ConfigsController extends BaseController
                 'title' => $item['title'],
             ];
         }
-//        Helper::p($formated_data);
         $url = Yii::$app->params['admin_url'].'/v1/open/submitAudit/'.$sid;
         $data=[
             "item_list"=> $formated_data,
@@ -420,10 +419,80 @@ class ConfigsController extends BaseController
             if(!$model->save()){
                 return ["message"=>"审核已经提交，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
             };
+
+
+            $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
+            if(empty($submit_audit_data_config)){
+                $submit_audit_data_config = new Config();
+                $submit_audit_data_config->symbol = 'submit_audit_data';
+                $submit_audit_data_config->content = $formated_data;
+                $submit_audit_data_config->encode = 1;
+                if(!$submit_audit_data_config->save()){
+                    return ["message"=>"审核已经提交，但保存提交信息失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$submit_audit_data_config->errors];
+                };
+            }
             return ["code"=>1,"message"=>"提交审核成功","data"=>$results];
         }else{
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
         }
+    }
+
+    /**
+     * 将第三方提交的代码包提交审核 (更新，即第二次即以上提交，取第一次提交数据即可)
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/10/9 下午2:13
+     */
+    public function actionSubmitUpgrade(){
+//        $sid = Helper::getSid();
+//        $data=Yii::$app->request->post();
+//        $url = Yii::$app->params['admin_url'].'/v1/open/getCategories/'.$sid;
+//        $categories = Helper::https_request($url);
+//        $items = array();
+//        foreach($categories['data']['category_list'] as $value){
+//            $items[$value['second_id']] = $value;
+//        }
+//
+//        // 格式化数据，以满足微信开发平台要求
+//        $formated_data =[];
+//        foreach ($data['item_list'] as $item){
+//            $tags = '';
+//            foreach ($item['tag'] as $tag) {
+//                $tags .= $tag.' ';
+//            }
+//            $tags = substr($tags,0,strlen($tags)-1);
+//            $formated_data[] = [
+//                'address' => $item['address'],
+//                'tag' => $tags,
+//                'first_class' => $items[$item['category'][1]]['first_class'],
+//                'second_class' => $items[$item['category'][1]]['second_class'],
+//                'first_id' => $items[$item['category'][1]]['first_id'],
+//                'second_id' => $items[$item['category'][1]]['second_id'],
+//                'title' => $item['title'],
+//            ];
+//        }
+//        $url = Yii::$app->params['admin_url'].'/v1/open/submitAudit/'.$sid;
+//        $data=[
+//            "item_list"=> $formated_data,
+//        ];
+//        $results = Helper::https_request($url,$data);
+//        if ($results['code'] == 1){
+//
+//            $url = Yii::$app->params['admin_url'].'/v1/open/getTemplateInfo/'.$sid;
+//            $tpl_info = Helper::https_request($url);
+//
+//            $model = Config::findOne(['symbol' => 'version_related']);
+//            $released_conf = json_decode($model->content);
+//            $released_conf->released_flag = self::RELEASE_FLAG_PROCESSING;
+//            $released_conf->tpl_version = $tpl_info['data']['template_id'];
+//            $model->content = json_encode($released_conf);
+//            if(!$model->save()){
+//                return ["message"=>"审核已经提交，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
+//            };
+//            return ["code"=>1,"message"=>"提交审核成功","data"=>$results];
+//        }else{
+//            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+//        }
     }
 
     /**
