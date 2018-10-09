@@ -409,8 +409,8 @@ class ConfigsController extends BaseController
         if(empty($submit_audit_data_config)){
             $submit_audit_data_config = new Config();
             $submit_audit_data_config->symbol = 'submit_audit_data';
-            $submit_audit_data_config->content = $formated_data;
-            $submit_audit_data_config->encode = 1;
+            $submit_audit_data_config->content = json_encode($data,JSON_UNESCAPED_UNICODE);
+            $submit_audit_data_config->encode = 2;
             if(!$submit_audit_data_config->save()){
                 return ["message"=>"审核已经提交，但保存提交信息失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$submit_audit_data_config->errors];
             };
@@ -435,8 +435,8 @@ class ConfigsController extends BaseController
             if(empty($submit_audit_data_config)){
                 $submit_audit_data_config = new Config();
                 $submit_audit_data_config->symbol = 'submit_audit_data';
-                $submit_audit_data_config->content = $formated_data;
-                $submit_audit_data_config->encode = 1;
+                $submit_audit_data_config->content = json_encode($data,JSON_UNESCAPED_UNICODE);
+                $submit_audit_data_config->encode = 2;
                 if(!$submit_audit_data_config->save()){
                     return ["message"=>"审核已经提交，但保存提交信息失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$submit_audit_data_config->errors];
                 };
