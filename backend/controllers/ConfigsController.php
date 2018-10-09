@@ -468,7 +468,7 @@ class ConfigsController extends BaseController
             };
             return ["code"=>1,"message"=>"提交审核成功","data"=>$results];
         }else{
-            return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"提交审核失败,请联系官方客服","data"=>$results];
         }
     }
 
