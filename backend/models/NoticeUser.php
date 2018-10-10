@@ -36,7 +36,7 @@ class NoticeUser extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['sid', 'notice_id'], 'required'],
+            [['notice_id'], 'required'],
             [['sid', 'notice_id', 'user_id', 'is_read', 'created_at', 'updated_at'], 'integer'],
             [['sid'], 'exist', 'skipOnError' => true, 'targetClass' => Instance::className(), 'targetAttribute' => ['sid' => 'sid']],
             [['notice_id'], 'exist', 'skipOnError' => true, 'targetClass' => Notice::className(), 'targetAttribute' => ['notice_id' => 'notice_id']],

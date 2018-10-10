@@ -37,7 +37,7 @@ class Notice extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['sid', 'content'], 'required'],
+            [['content'], 'required'],
             [['sid', 'type', 'related_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['content'], 'string'],
             [['title'], 'string', 'max' => 50],

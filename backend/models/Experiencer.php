@@ -33,7 +33,7 @@ class Experiencer extends ActiveRecord
     public function rules()
     {
         return [
-            [['sid', 'userstr', 'wechat_id', 'status'], 'required'],
+            [['userstr', 'wechat_id', 'status'], 'required'],
             [['sid', 'status', 'created_at', 'updated_at'], 'integer'],
             [['userstr'], 'string', 'max' => 100],
             [['wechat_id'], 'string', 'max' => 100],

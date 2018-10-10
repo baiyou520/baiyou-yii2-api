@@ -40,7 +40,6 @@ class ActionLog extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['sid'], 'required'],
             [['sid', 'user_id', 'trigger_from', 'status', 'created_at', 'updated_at'], 'integer'],
             [['message', 'detail'], 'string'],
             [['user_ip'], 'string', 'max' => 15],

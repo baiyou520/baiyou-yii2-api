@@ -31,7 +31,7 @@ class AuthAssignment extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['item_name', 'sid', 'user_id'], 'required'],
+            [['item_name', 'user_id'], 'required'],
             [['sid', 'user_id', 'created_at'], 'integer'],
             [['item_name'], 'string', 'max' => 64],
             [['item_name', 'sid', 'user_id'], 'unique', 'targetAttribute' => ['item_name', 'sid', 'user_id']],

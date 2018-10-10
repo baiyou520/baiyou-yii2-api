@@ -41,7 +41,7 @@ class Media extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'url', 'type', 'group_id', 'sid', 'height', 'width'], 'required'],
+            [['name', 'url', 'type', 'group_id', 'height', 'width'], 'required'],
             [['type', 'group_id', 'sid', 'height', 'width', 'status', 'created_at', 'updated_at'], 'integer'],
             [['name', 'url'], 'string', 'max' => 100],
             [['key'], 'string', 'max' => 512],

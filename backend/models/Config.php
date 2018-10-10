@@ -29,7 +29,7 @@ class Config extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['symbol', 'content', 'sid'], 'required'],
+            [['symbol', 'content'], 'required'],
             [['content'], 'string'],
             [['encode', 'created_at', 'updated_at', 'sid'], 'integer'],
             [['symbol'], 'string', 'max' => 20],

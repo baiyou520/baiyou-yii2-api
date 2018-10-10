@@ -36,7 +36,7 @@ class Category extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['sid', 'symbol', 'name'], 'required'],
+            [['symbol', 'name'], 'required'],
             [['sid', 'category_pid', 'sort', 'created_at', 'updated_at'], 'integer'],
             [['data'], 'string'],
             [['symbol', 'name'], 'string', 'max' => 20],

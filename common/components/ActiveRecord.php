@@ -34,6 +34,21 @@ class ActiveRecord extends \yii\db\ActiveRecord
                 'updatedAtAttribute' => 'updated_at',
                 'value'              => time(),
             ],
+//            [
+//                /**
+//                 * AttributeBehavior：
+//                 * 绝大部分表需要在新增的时候表明数据是属于哪个实例，故在这里从cookies中得到sid，插入到数据库
+//                 */
+//                'class' => AttributeBehavior::className(),
+//                'attributes' => [
+//                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'sid',
+//                ],
+//                'value' => function ($event) {
+////                    \Yii::error($event,'wewewewe');
+////                    return 21;
+//                    return Helper::getSid();
+//                },
+//            ],
             [
                 /**
                  * AttributeBehavior：
@@ -41,7 +56,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
                  */
                 'class' => AttributeBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_VALIDATE => 'sid',
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'sid',
                 ],
                 'value' => function ($event) {
                     return Helper::getSid();

@@ -35,7 +35,7 @@ class User  extends JwtModel
     public function rules()
     {
         return [
-            [['id', 'sid', 'username', 'name', 'phone'], 'required'],
+            [['id', 'username', 'name', 'phone'], 'required'],
             [['id', 'sid', 'status', 'created_at', 'updated_at'], 'integer'],
             [['username', 'name'], 'string', 'max' => 30],
             [['phone'], 'string', 'max' => 20],

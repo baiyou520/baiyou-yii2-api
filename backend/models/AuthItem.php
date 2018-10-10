@@ -40,7 +40,7 @@ class AuthItem extends \baiyou\common\components\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'sid', 'type'], 'required'],
+            [['name', 'type'], 'required'],
             [['sid', 'type', 'created_at', 'updated_at'], 'integer'],
             [['description', 'data'], 'string'],
             [['name', 'rule_name'], 'string', 'max' => 64],
