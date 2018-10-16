@@ -45,7 +45,7 @@ class Customer extends JwtModel
     public function rules()
     {
         return [
-            [['sid', 'username', 'nickname', 'language', 'province', 'country', 'city', 'gender', 'name', 'openid'], 'required'],
+            [['username', 'nickname', 'name', 'openid'], 'required'],
             [['sid', 'gender', 'parent_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['last_login_at'], 'safe'],
             [['username', 'source_from'], 'string', 'max' => 100],
