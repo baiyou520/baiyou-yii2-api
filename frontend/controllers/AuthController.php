@@ -54,28 +54,29 @@ class AuthController extends ActiveController
         $instance = Instance::findOne($sid);
         $appid = $instance->applet_appid;
         $secret = $instance->applet_appsecret;
-        $jscode=Yii::$app->request->get('jscode');
-        $nickname=Yii::$app->request->get('nickname');
-        $avatarUrl=Yii::$app->request->get('avatarUrl');
-        $parentId= Yii::$app->request->get('parent_id') ?? 0;
+        $data = Yii::$app->request->post();
+        $jscode=$data['jscode'];
+//        $nickname=Yii::$app->request->post('nickname');
+//        $avatarUrl=Yii::$app->request->post('avatarUrl');
+//        $parentId= Yii::$app->request->post('parent_id') ?? 0;
         $url='https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$secret.'&js_code='.$jscode.'&grant_type=authorization_code';
         $out=json_decode($this->wx_https_request($url));
         if(isset($out->errcode) && $out->errcode!=0){
             return ['message'=>'与微信服务器通信失败,请检查appid是否填写正确！','code'=>$out->errcode,'data'=>$out->errmsg];
         }
         $customer=Customer::findOne(['openid'=>$out->openid]);
-        $data['nickname'] = $nickname;
-        $data['name'] = $nickname;
-        $data['avatar'] = $avatarUrl;
-        $data['parent_id'] = $parentId;
+//        $data['nickname'] = $nickname;
+//        $data['name'] = $nickname;
+//        $data['avatar'] = $avatarUrl;
+//        $data['parent_id'] = $parentId;
         $is_first_register = false; // 是否首次注册
         if(empty($customer)){
             $customer = new Customer();
             $data['username']=Helper::randomString(11);
             $data['openid'] = $out->openid;
             $is_first_register = true;
-            $customer->load($data, '');
         }
+        $customer->load($data, '');
         if (!$res=$customer->save()) {
             return ["message"=>"参数错误","code"=>10002,"data"=>$customer->errors];
         }else{
