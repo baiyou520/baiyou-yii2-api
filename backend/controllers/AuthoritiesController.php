@@ -176,11 +176,10 @@ class AuthoritiesController extends BaseController
 //        $request=Yii::$app->request;
 //        Helper::p($params['permissions']);
 //        是否有重复角色
-        $role=AuthItem::find()->where(['type'=>1])
-            ->andWhere(['title'=>$params['title']])
+        $role=AuthItem::find()->where(['name'=>$params['title']])
             ->one();
         if(!empty($role)){
-            return ["message"=>"角色已存在","code"=>BaseErrorCode::$OBJECT_ALREADY_EXIST];
+            return ["message"=>"角色已存在，或与权限点重名，请更换名称","code"=>BaseErrorCode::$OBJECT_ALREADY_EXIST];
         }
 
         $params['type']=1; //类型
