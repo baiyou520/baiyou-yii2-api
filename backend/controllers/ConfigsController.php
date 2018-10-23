@@ -105,7 +105,7 @@ class ConfigsController extends BaseController
                 // 把小程序秘钥回填到总后台
                 $sid = Helper::getSid();
                 $data=Yii::$app->request->post();
-                $url = Yii::$app->params['admin_url'].'/v1/open/setAppSecret/'.$sid;
+                $url = Yii::$app->params['admin_url'].'/v1/cross/setAppSecret/'.$sid;
                 $data_to_admin=[
                     "applet_appsecret"=> $data['applet_appsecret'],
                 ];
@@ -192,7 +192,7 @@ class ConfigsController extends BaseController
     public function actionAddExpMember(){
         $sid = Helper::getSid();
         $data=Yii::$app->request->post();
-        $url = Yii::$app->params['admin_url'].'/v1/open/setExpMember/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/setExpMember/'.$sid;
         $data_to_admin=[
             "wechat_id"=> $data['wechat_id'],
             "action"=> 1 //添加体验者
@@ -222,7 +222,7 @@ class ConfigsController extends BaseController
     public function actionUnbindExpMember($id){
         $sid = Helper::getSid();
         $exp = Experiencer::findOne($id);
-        $url = Yii::$app->params['admin_url'].'/v1/open/setExpMember/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/setExpMember/'.$sid;
         $data=[
             "wechat_id"=> $exp->wechat_id,
             "action"=> 2 //解绑体验者
@@ -298,7 +298,7 @@ class ConfigsController extends BaseController
      */
     public function actionGetPages(){
         $sid = Helper::getSid();
-        $url = Yii::$app->params['admin_url'].'/v1/open/getPages/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/getPages/'.$sid;
         $results = Helper::https_request($url);
         if ($results['code'] == 1){
             return ["code"=>1,"message"=>"获取小程序的第三方提交代码的页面配置成功","data"=>$results['data']['page_list']];
@@ -315,7 +315,7 @@ class ConfigsController extends BaseController
      */
     public function actionGetCategories(){
         $sid = Helper::getSid();
-        $url = Yii::$app->params['admin_url'].'/v1/open/getCategories/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/getCategories/'.$sid;
         $results = Helper::https_request($url);
 
 
@@ -376,7 +376,7 @@ class ConfigsController extends BaseController
     public function actionSubmitAudit(){
         $sid = Helper::getSid();
         $data=Yii::$app->request->post();
-        $url = Yii::$app->params['admin_url'].'/v1/open/getCategories/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/getCategories/'.$sid;
         $categories = Helper::https_request($url);
         $items = array();
         foreach($categories['data']['category_list'] as $value){
@@ -401,7 +401,7 @@ class ConfigsController extends BaseController
                 'title' => $item['title'],
             ];
         }
-        $url = Yii::$app->params['admin_url'].'/v1/open/submitAudit/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/submitAudit/'.$sid;
         $data=[
             "item_list"=> $formated_data,
         ];
@@ -409,7 +409,7 @@ class ConfigsController extends BaseController
         $results = Helper::https_request($url,$data);
         if ($results['code'] == 1){
 
-            $url = Yii::$app->params['admin_url'].'/v1/open/getTemplateInfo/'.$sid;
+            $url = Yii::$app->params['admin_url'].'/v1/cross/getTemplateInfo/'.$sid;
             $tpl_info = Helper::https_request($url);
 
             $model = Config::findOne(['symbol' => 'version_related']);
@@ -448,14 +448,14 @@ class ConfigsController extends BaseController
         // 提前之前的提交数据
         $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
         $formated_data =json_decode($submit_audit_data_config->content,true)['item_list'];
-        $url = Yii::$app->params['admin_url'].'/v1/open/submitAudit/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/submitAudit/'.$sid;
         $data=[
             "item_list"=> $formated_data,
         ];
         $results = Helper::https_request($url,$data);
         if ($results['code'] == 1){
 
-            $url = Yii::$app->params['admin_url'].'/v1/open/getTemplateInfo/'.$sid;
+            $url = Yii::$app->params['admin_url'].'/v1/cross/getTemplateInfo/'.$sid;
             $tpl_info = Helper::https_request($url);
 
             $model = Config::findOne(['symbol' => 'version_related']);
@@ -491,7 +491,7 @@ class ConfigsController extends BaseController
 
         if($released_conf->released_flag === self::RELEASE_FLAG_PROCESSING){ // 审核中，查询具体审核状态
             $sid = Helper::getSid();
-            $url = Yii::$app->params['admin_url'].'/v1/open/getLatestAuditStatus/'.$sid;
+            $url = Yii::$app->params['admin_url'].'/v1/cross/getLatestAuditStatus/'.$sid;
             $results = Helper::https_request($url);
             if ($results['code'] == 1){
                 return ["code"=>1,"message"=>"查询版本状态成功","data"=>$results['data']];
@@ -502,7 +502,7 @@ class ConfigsController extends BaseController
 
         if($released_conf->released_flag === self::RELEASE_FLAG_RELEASED || $released_conf->released_flag === self::RELEASE_FLAG_INVISIBLE){ // 已经成功发布过了，检查是否新版本可以升级
             $sid = Helper::getSid();
-            $url = Yii::$app->params['admin_url'].'/v1/open/getTemplateInfo/'.$sid;
+            $url = Yii::$app->params['admin_url'].'/v1/cross/getTemplateInfo/'.$sid;
             $results = Helper::https_request($url);
             if ($results['code'] == 1){
 //                Helper::p($released_conf['tpl_version']);
@@ -528,8 +528,6 @@ class ConfigsController extends BaseController
 //            }
             }
         }
-
-
     }
 
     /**
@@ -540,7 +538,7 @@ class ConfigsController extends BaseController
      */
     public function actionRelease(){
         $sid = Helper::getSid();
-        $url = Yii::$app->params['admin_url'].'/v1/open/release/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/release/'.$sid;
         $results = Helper::https_request($url);
         if ($results['code'] == 1){
             $model = Config::findOne(['symbol' => 'version_related']);
@@ -572,7 +570,7 @@ class ConfigsController extends BaseController
             $action = 'open';
         }
 
-        $url = Yii::$app->params['admin_url'].'/v1/open/changeVisitStatus/'.$sid.'?action='.$action;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/changeVisitStatus/'.$sid.'?action='.$action;
         $results = Helper::https_request($url);
         if ($results['code'] == 1){
             if ($released_conf->released_flag === self::RELEASE_FLAG_RELEASED){
@@ -619,7 +617,7 @@ class ConfigsController extends BaseController
      */
     public function actionUpgrade(){
         $sid = Helper::getSid();
-        $url = Yii::$app->params['admin_url'].'/v1/open/upgrade/'.$sid;
+        $url = Yii::$app->params['admin_url'].'/v1/cross/upgrade/'.$sid;
         $results = Helper::https_request($url);
         if ($results['code'] == 1){
             $instance = Instance::findOne($sid);

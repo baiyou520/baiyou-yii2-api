@@ -129,7 +129,7 @@ class UsersController extends BaseController
                 $assignment=AuthAssignment::findOne(['user_id'=>$user_id]);
                 $assignment->item_name=$data['role'];
                 if($assignment->save()){
-                    $url = Yii::$app->params['admin_url'].'/v1/auth/add-employee';
+                    $url = Yii::$app->params['admin_url'].'/v1/cross/add-employee';
                     $data_to_admin=[
                         "user_id"=> $user_id,
                         "instance_id"=> Helper::getSid(),
@@ -159,7 +159,7 @@ class UsersController extends BaseController
             $assignment->item_name = $data['role'];
             $assignment->user_id = $user_id;
             if($assignment->save()){
-                $url = Yii::$app->params['admin_url'].'/v1/auth/add-employee';
+                $url = Yii::$app->params['admin_url'].'/v1/cross/add-employee';
                 $data_to_admin=[
                     "user_id"=> $user_id,
                     "instance_id"=> Helper::getSid(),
@@ -187,7 +187,7 @@ class UsersController extends BaseController
      * @time   2018/7/25 下午5:59
      */
     private function checkExist($username){
-        $url = Yii::$app->params['admin_url'].'/v1/auth/check-account-exist';
+        $url = Yii::$app->params['admin_url'].'/v1/cross/check-account-exist';
         $data_to_admin=[
             "username"=> $username,
         ];
@@ -241,7 +241,7 @@ class UsersController extends BaseController
         }
 
         // 去服务器上面删除数据
-        $url = Yii::$app->params['admin_url'].'/v1/auth/delete-employee';
+        $url = Yii::$app->params['admin_url'].'/v1/cross/delete-employee';
         $data_to_admin=[
             "user_id"=> $id,
             "instance_id"=> Helper::getSid(),
