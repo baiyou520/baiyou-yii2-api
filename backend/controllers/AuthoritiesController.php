@@ -44,7 +44,10 @@ class AuthoritiesController extends BaseController
         $query = CreateQueryHelper::createQuery('baiyou\backend\models\AuthItem');
         $provider = new ActiveDataProvider([
             'query' => $query->andFilterWhere(['=','type',1])
-                ->andFilterWhere(['!=','name','root'])
+                ->andFilterWhere(['!=','name','root']),
+            'pagination' => [
+                'pageSize' => 1000
+            ],
         ]);
 
         $data = ['list' => $provider->getModels(),'pagination'=>['total' => $provider->getTotalCount()]];
