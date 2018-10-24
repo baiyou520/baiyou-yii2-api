@@ -73,6 +73,11 @@ class m181024_023200_ajust_auth extends Migration
         $this->update('{{%auth_item_child}}',['parent'=>'super_admin'],['and' ,['parent'=>"系统"],['child'=>"/by/authorities/update-role"]]);
         $this->update('{{%auth_item_child}}',['parent'=>'super_admin'],['and' ,['parent'=>"系统"],['child'=>"/by/authorities/create"]]);
         $this->update('{{%auth_item_child}}',['parent'=>'super_admin'],['and' ,['parent'=>"系统"],['child'=>"/by/authorities/delete-role"]]);
+
+        $this->update('{{%auth_item_child}}',['parent'=>'super_admin'],['and' ,['parent'=>"微信高级设置"],['child'=>"/by/configs/set-applet-secret"]]);
+        $this->update('{{%auth_item_child}}',['parent'=>'super_admin'],['and' ,['parent'=>"微信高级设置"],['child'=>"/by/configs/set-notice-phone"]]);
+        $this->update('{{%auth_item_child}}',['parent'=>'super_admin'],['and' ,['parent'=>"微信高级设置"],['child'=>"/by/configs/upload-cert"]]);
+        $this->delete('{{%auth_item}}',['name'=>'微信高级设置']);
     }
 
     /**
