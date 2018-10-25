@@ -12,11 +12,6 @@ class m181025_071014_adjust_auth2 extends Migration
      */
     public function safeUp()
     {
-        $this->batchInsert('{{%auth_item}}',
-            ['name','sid','type','description','rule_name','data','created_at','updated_at'],
-            [
-                ['客服消息', 0, 2, 'L2设置微信客服欢迎语', NULL, NULL, time(), time()],
-            ]);
         $this->batchInsert('{{%auth_item_child}}',
             ['parent','child'],
             [
