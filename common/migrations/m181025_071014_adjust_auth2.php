@@ -16,8 +16,7 @@ class m181025_071014_adjust_auth2 extends Migration
             ['parent','child'],
             [
                 ['客服消息', '/by/customers/upload-temp-media'],
-                ['客服消息', '/by/customers/welcome'],
-                ['微信管理', '客服消息']
+                ['客服消息', '/by/customers/welcome']
             ]);
 
         $this->batchInsert('{{%auth_item}}',
