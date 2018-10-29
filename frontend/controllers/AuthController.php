@@ -75,6 +75,8 @@ class AuthController extends ActiveController
             $data['username']=Helper::randomString(11);
             $data['openid'] = $out->openid;
             $is_first_register = true;
+        }else{
+            unset($data['parent_id']);
         }
         $customer->load($data, '');
         if (!$res=$customer->save()) {
