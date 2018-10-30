@@ -24,21 +24,28 @@ class Wechat
      * @time   2018/7/18 下午1:57
      */
     public static function getWechatAccessToken($sid){
-        $cache=Yii::$app->cache;
-        $wx_access_token = $cache->get('wx_access_token_'.$sid);
-        if(empty($wx_access_token)){
-            $instance = Instance::findOne($sid);
-            $url="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$instance->applet_appid&secret=$instance->applet_appsecret";
-            $result=Helper::https_request($url);
-
-            if (isset($result['errcode'])){
-                Yii::error($result,'获取公众平台的 API 调用所需的access_token失败');
-            }else{
-                $wx_access_token = $result['access_token'];
-                $cache->set("wx_access_token_".$sid,$wx_access_token,$result['expires_in'] - 600); // 提前600秒刷新token
-            }
+        $url = Yii::$app->params['admin_url'].'/v1/cross/getWechatAccessToken/'.$sid;
+        $results = Helper::https_request($url);
+        if ($results['code'] == 1){
+            return $results['data'];
+        }else{
+            return false;
         }
-        return $wx_access_token;
+//        $cache=Yii::$app->cache;
+//        $wx_access_token = $cache->get('wx_access_token_'.$sid);
+//        if(empty($wx_access_token)){
+//            $instance = Instance::findOne($sid);
+//            $url="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$instance->applet_appid&secret=$instance->applet_appsecret";
+//            $result=Helper::https_request($url);
+//
+//            if (isset($result['errcode'])){
+//                Yii::error($result,'获取公众平台的 API 调用所需的access_token失败');
+//            }else{
+//                $wx_access_token = $result['access_token'];
+//                $cache->set("wx_access_token_".$sid,$wx_access_token,$result['expires_in'] - 600); // 提前600秒刷新token
+//            }
+//        }
+//        return $wx_access_token;
     }
 
     /**
