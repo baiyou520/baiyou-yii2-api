@@ -11,6 +11,8 @@ namespace baiyou\backend\controllers;
 use baiyou\backend\models\Category;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
+use baiyou\common\models\Instance;
+
 class CommonController extends BaseController
 {
     public $modelClass = '';
@@ -23,6 +25,12 @@ class CommonController extends BaseController
      */
 
     public function actionUploadImgs($id){
+
+        $instance=Instance::findOne(Helper::getSid());
+        if($instance['status']<0){
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"店铺已打烊,无法操作"];
+        }
+
         $pic_group=Category::findOne($id);
         if(empty($pic_group)){
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"分组不存在"];
