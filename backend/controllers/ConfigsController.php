@@ -507,7 +507,12 @@ class ConfigsController extends BaseController
             if ($results['code'] == 1){
 //                Helper::p($released_conf['tpl_version']);
                 if ($results['data']['template_id'] > $released_conf->tpl_version){
-                    $data['status'] = 10;
+                    if ($released_conf->released_flag === self::RELEASE_FLAG_RELEASED){
+                        $data['status'] = 101;
+                    }else{
+                        $data['status'] = 102;
+                    }
+//                    $data['status'] = 10;
                     $data['template_id'] = $results['data']['template_id'];
                     $data['user_desc'] = $results['data']['user_desc'];
                     return ["code"=>1,"message"=>"有新的版本","data"=>$data];
