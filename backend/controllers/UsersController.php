@@ -102,6 +102,12 @@ class UsersController extends BaseController
      * @author  billyshen 2018/5/29 下午1:36
      */
     public function actionCreate(){
+
+        $instance=Instance::findOne(Helper::getSid());
+        if($instance['status']<0){
+            return ["code"=>BaseErrorCode::$FAILED,"message"=>"店铺已打烊,无法操作"];
+        }
+
         $request=Yii::$app->request;
         $data=$request->post();
 

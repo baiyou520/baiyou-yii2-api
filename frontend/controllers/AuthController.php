@@ -88,6 +88,7 @@ class AuthController extends ActiveController
         $customer->generateAccessTokenAfterUpdatingClientInfo(true);
         $result['uid']=$customer->id;
         $result['access_token']=$customer->access_token;
+        $result['shop_name']=$instance->name;
         $result['is_first_register']=$is_first_register;
         return ["message"=>"认证成功","code"=>1,"data"=>$result];
     }
