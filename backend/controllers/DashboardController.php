@@ -120,6 +120,7 @@ class DashboardController extends BaseController
             'instance_thumb' => $instance->thumb,
             'experience_qrcode' => Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode, // 体验版二维码，存在总后台的后端
             'online_qrcode' => Yii::$app->request->hostInfo.'/'.$instance->online_qrcode,// 上线后二维码,存在具体应用的后端
+            'helper_qrcode' => Yii::$app->params['helper_qrcode'],// 商户助手小程序地址
             'qr_code_status' => $qr_code_status,// 如何显示微信小程序二维码区域
             'level' => $instance->level, // 购买版本，暂定
         ];
