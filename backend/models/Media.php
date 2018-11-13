@@ -97,7 +97,7 @@ class Media extends \baiyou\common\components\ActiveRecord
             'thumb_url' => function($model) {
                 return 'https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url.'_240x240';
             },
-            'image_size' => function($model) {//需求返回图片像素大小
+            'image_size' => function($model) {//需求返回图片像素大小2
                 return $model->width.'*'.$model->height;
             },
         ];
