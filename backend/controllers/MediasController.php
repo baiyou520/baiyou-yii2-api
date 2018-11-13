@@ -192,7 +192,7 @@ class MediasController extends BaseController
     }
 
     public function group_id($symbol){
-        $pic_group=Category::find()->where(['symbol'=>'pic_group'])->one();
+        $pic_group=Category::find()->where(['symbol'=>$symbol])->one();
         if(empty($pic_group)){
             $pic_group=new Category();
             $data['symbol']=$symbol;
