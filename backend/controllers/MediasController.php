@@ -142,7 +142,7 @@ class MediasController extends BaseController
         //文件id收集
         $media_id=array_column($medias,'media_id');
         //修改文件里的该分组到其他分组里
-        $code=Media::updateAll(['group_id'=>$this->group_id()],['in','media_id',$media_id]);
+        $code=Media::updateAll(['group_id'=>$this->group_id($category['symbol'])],['in','media_id',$media_id]);
         if($code===false){
             return ["message"=>"删除失败","code"=>BaseErrorCode::$DELETE_DB_ERROR,"data"=>"批量删除出错"];
         }
@@ -191,11 +191,11 @@ class MediasController extends BaseController
         }
     }
 
-    public function group_id(){
+    public function group_id($symbol){
         $pic_group=Category::find()->where(['symbol'=>'pic_group'])->one();
         if(empty($pic_group)){
             $pic_group=new Category();
-            $data['symbol']='pic_group';
+            $data['symbol']=$symbol;
             $data['name']="无分组";
             $data['sid']=Helper::getSid();
             $data['sort']=1;
