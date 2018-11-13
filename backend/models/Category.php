@@ -79,7 +79,7 @@ class Category extends \baiyou\common\components\ActiveRecord
         unset($fields['sid']);
         $fields_from_other_tables = [
             'counts' => function($model) {
-                if($model->symbol === 'pic_group') {
+                if(in_array($model->symbol,['pic_group','video_group','icon_group'])) {
                     return count($model->media);
                 }else{
                     return 0;

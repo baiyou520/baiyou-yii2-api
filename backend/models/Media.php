@@ -4,6 +4,7 @@ namespace baiyou\backend\models;
 
 use baiyou\common\models\Instance;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "media".
@@ -95,10 +96,21 @@ class Media extends \baiyou\common\components\ActiveRecord
                 return 'https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url;
             },
             'thumb_url' => function($model) {
-                return 'https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url.'_240x240';
+                if($model->type==1||$model->type==4){
+                    return 'https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url.'_240x240';
+                }elseif($model->type==3){
+                    $cover_pic=ArrayHelper::toArray(Media::findOne($model->width));
+                    return empty($cover_pic)?'':$cover_pic['url'];
+                }else{
+                    return '';
+                }
             },
-            'image_size' => function($model) {//需求返回图片像素大小2
-                return $model->width.'*'.$model->height;
+            'image_size' => function($model) {//需求返回图片像素大小
+                if($model->type==1||$model->type==4){
+                    return $model->width.'*'.$model->height;
+                }else{
+                    return '';
+                }
             },
         ];
         return array_merge($fields,$fields_from_other_tables);
