@@ -99,8 +99,8 @@ class Media extends \baiyou\common\components\ActiveRecord
                 if($model->type==1||$model->type==4){
                     return 'https://'.Yii::$app->params['img_server']['domain'].'/'.$model->url.'_240x240';
                 }elseif($model->type==3){
-                    $cover_pic=ArrayHelper::toArray(Media::findOne($model->width));
-                    return empty($cover_pic)?'':$cover_pic['thumb_url'];
+                    $cover_pic=Media::findOne($model->width);
+                    return empty($cover_pic)?'':ArrayHelper::toArray($cover_pic)['thumb_url'];
                 }else{
                     return '';
                 }
