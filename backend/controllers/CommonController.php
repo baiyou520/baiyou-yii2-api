@@ -117,7 +117,7 @@ class CommonController extends BaseController
             $media->name = $video_name;
             $media->url = $dir.'/'.$video_rename;
             $media->type = 3;//表示视频
-            $media->group_id = $params['group_id'];
+            $media->group_id = $id;
             $media->height = $size;//视频大小
             $media->width = $cover_pic;//视频封面
             if(!$media->save()){
