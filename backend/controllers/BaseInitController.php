@@ -71,7 +71,7 @@ class BaseInitController
         }
 
 
-        //添加图片默认未分组
+        //3.添加图片默认未分组
         $catgory_pic = Category::findOne(['symbol' => 'pic_group']);
         if (empty($catgory_pic)){
             $catgory_pic=new Category();
@@ -82,7 +82,7 @@ class BaseInitController
             }
         }
 
-        // 添加示例模板消息
+        //4. 添加示例模板消息
         $template_message_config = Config::findOne(['symbol' => 'template_message']);
         if (empty($template_message_config)){
             $template_message = [];
@@ -100,6 +100,52 @@ class BaseInitController
             $template_message_config->encode = 2;
             if(!$template_message_config->save()){
                 \Yii::error(json_encode($template_message_config->errors,JSON_UNESCAPED_UNICODE),'添加示例模板消息失败');
+            }
+        }
+        //5. 视频添加未分组 category
+        if(empty(Category::find()->andWhere(['symbol'=>'video_group'])->one())){
+            $category_video=new Category();
+            $category_video->symbol='video_group';
+            $category_video->name='未分组';
+            if(!$category_video->save()){
+                \Yii::error(json_encode($category_video->errors,JSON_UNESCAPED_UNICODE),"初始化,默认视频分组失败");
+            }
+        }
+        //6.添加导航
+        $nav=Config::find()->where(['symbol'=>'navigation','sid'=>Helper::getSid()])->one();
+        if(empty($nav)){
+            $content=[
+                [
+                    'text'=>'首页',
+                    'pagePath'=>'/pages/home/home',
+                    'iconPath'=>'icon-shouye1',
+                    'selectedIconPath'=>'icon-shouye_on1'
+                ],
+                [
+                    'text'=>'分类',
+                    'pagePath'=>'pages/classify/classify',
+                    'iconPath'=>'icon-fenlei1',
+                    'selectedIconPath'=>'icon-fenlei_on'
+                ],
+                [
+                    'text'=>'购物车',
+                    'pagePath'=>'/pages/shop_cart/shop_cart',
+                    'iconPath'=>'icon-gouwuche1',
+                    'selectedIconPath'=>'icon-gouwuche_on'
+                ],
+                [
+                    'text'=>'我的',
+                    'pagePath'=>'/pages/my/my',
+                    'iconPath'=>'icon-wode',
+                    'selectedIconPath'=>'icon-wode_on'
+                ],
+            ];
+            $nav_config=new Config();
+            $nav_config->symbol='navigation';
+            $nav_config->encode = 2;
+            $nav_config->content = json_encode($content,JSON_UNESCAPED_UNICODE);
+            if(!$nav_config->save()){
+                \Yii::error(json_encode($nav_config->errors,JSON_UNESCAPED_UNICODE),'初始化,店铺导航出错');
             }
         }
     }
