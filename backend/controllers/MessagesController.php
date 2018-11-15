@@ -10,8 +10,10 @@ namespace baiyou\backend\controllers;
 
 
 use baiyou\backend\models\Message;
+use baiyou\backend\models\User;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\CreateQueryHelper;
+use baiyou\common\components\Helper;
 use yii\data\ActiveDataProvider;
 use Yii;
 class MessagesController extends BaseController
@@ -68,5 +70,28 @@ class MessagesController extends BaseController
         }else{
             return ["message"=>"新增成功","code"=>1];
         }
+    }
+
+    /**
+     * 获取拥有客服消息权限的员工
+     * @author nwh@caiyoudata.com
+     * @time 2018/11/15 11:59
+     */
+    public function actionGetCustomerServiceUser(){
+        //所有 有 客服消息 的用户
+        //找到店铺 除自己的 所有在职用户
+        $users=User::find()->where(['sid'=>Helper::getSid(),'status'=>10])->andWhere(['<>','id',Yii::$app->user->id])->all();
+        $message_user=[];
+        foreach($users as $value){
+            //循环判断,有客服消息权限的用户
+            if(Yii::$app->authManager->checkAccess( $value['id'] , '客服消息' )){
+                $message_user[]=[
+                    'id'=>$value['id'],
+                    'username'=>$value['username'],
+                    'name'=>$value['name'],
+                ];
+            }
+        }
+        return $message_user;
     }
 }
