@@ -99,9 +99,6 @@ class ConfigsController extends BaseController
         $instance=Instance::findOne($sid);
         if($instance->load($data,'') && $instance->save()){
             if (isset($data['applet_appsecret'])){
-                $instance->online_qrcode = Wechat::getWechatQrCode($sid);
-                $instance->save(); // 更新小程序码，代码略有冗余
-
                 // 把小程序秘钥回填到总后台
                 $sid = Helper::getSid();
                 $data=Yii::$app->request->post();
@@ -112,8 +109,10 @@ class ConfigsController extends BaseController
                 $results = Helper::https_request($url,$data_to_admin);
                 if ($results['code'] !== 1){
                     Yii::error($results['message'],'把小程序秘钥回填到总后台失败');
+                }else{
+                    $instance->online_qrcode = Wechat::getWechatQrCode($sid);
+                    $instance->save(); // 更新小程序码，代码略有冗余
                 }
-
             }
             $instance->experience_qrcode = Yii::$app->params['admin_url'].'/'.$instance->experience_qrcode; // 体验版二维码，存在总后台的后端
             $instance->online_qrcode = Yii::$app->request->hostInfo.'/'.$instance->online_qrcode; // 上线后二维码,存在具体应用的后端
