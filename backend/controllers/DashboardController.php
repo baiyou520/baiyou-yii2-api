@@ -242,6 +242,7 @@ class DashboardController extends BaseController
         $sid = Helper::getSid();
         $instance=Instance::findOne($sid);
         $instance->online_qrcode = Wechat::getWechatQrCode($sid);
+        $instance->online_qrcode = Yii::$app->request->hostInfo.'/'.$instance->online_qrcode; // 上线后二维码,存在具体应用的后端
         if($instance->save()){
             return ["message"=>"操作成功",'code'=>1,'data' =>$instance];
         }else{
