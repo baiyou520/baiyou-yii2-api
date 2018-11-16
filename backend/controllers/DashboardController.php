@@ -14,6 +14,7 @@ use baiyou\backend\models\Notice;
 use baiyou\backend\models\NoticeUser;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
+use baiyou\common\components\Wechat;
 use baiyou\common\models\Customer;
 use baiyou\common\models\Instance;
 use yii;
@@ -231,6 +232,22 @@ class DashboardController extends BaseController
         }
     }
 
+    /**
+     * 更新已上线的小程序码
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2018/11/16 1:54 PM
+     */
+    public function actionUpdateOnlineQrCode(){
+        $sid = Helper::getSid();
+        $instance=Instance::findOne($sid);
+        $instance->online_qrcode = Wechat::getWechatQrCode($sid);
+        if($instance->save()){
+            return ["message"=>"操作成功",'code'=>1,'data' =>$instance];
+        }else{
+            return ["message"=>"操作失败",'code'=>BaseErrorCode::$DELETE_DB_ERROR];
+        }
+    }
 //    public function actionMarkRead(){
 //        $request=\Yii::$app->request;
 //        $params=$request->post();
