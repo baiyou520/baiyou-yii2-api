@@ -118,26 +118,26 @@ class BaseInitController
                 [
                     'text'=>'首页',
                     'pagePath'=>'/pages/home/home',
-                    'iconPath'=>'icon-shouye1',
-                    'selectedIconPath'=>'icon-shouye_on1'
+                    'iconPath'=>'shouye1',
+                    'selectedIconPath'=>'shouye_on1'
                 ],
                 [
                     'text'=>'分类',
                     'pagePath'=>'pages/classify/classify',
-                    'iconPath'=>'icon-fenlei1',
-                    'selectedIconPath'=>'icon-fenlei_on'
+                    'iconPath'=>'fenlei1',
+                    'selectedIconPath'=>'fenlei_on'
                 ],
                 [
                     'text'=>'购物车',
                     'pagePath'=>'/pages/shop_cart/shop_cart',
-                    'iconPath'=>'icon-gouwuche1',
-                    'selectedIconPath'=>'icon-gouwuche_on'
+                    'iconPath'=>'gouwuche1',
+                    'selectedIconPath'=>'gouwuche_on'
                 ],
                 [
                     'text'=>'我的',
                     'pagePath'=>'/pages/my/my',
-                    'iconPath'=>'icon-wode',
-                    'selectedIconPath'=>'icon-wode_on'
+                    'iconPath'=>'wode',
+                    'selectedIconPath'=>'wode_on'
                 ],
             ];
             $nav_config=new Config();
