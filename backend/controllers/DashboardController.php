@@ -242,8 +242,8 @@ class DashboardController extends BaseController
         $sid = Helper::getSid();
         $instance=Instance::findOne($sid);
         $instance->online_qrcode = Wechat::getWechatQrCode($sid);
-        $instance->online_qrcode = Yii::$app->request->hostInfo.'/'.$instance->online_qrcode; // 上线后二维码,存在具体应用的后端
         if($instance->save()){
+            $instance->online_qrcode = Yii::$app->request->hostInfo.'/'.$instance->online_qrcode; // 上线后二维码,存在具体应用的后端
             return ["message"=>"操作成功",'code'=>1,'data' =>$instance];
         }else{
             return ["message"=>"操作失败",'code'=>BaseErrorCode::$DELETE_DB_ERROR];
