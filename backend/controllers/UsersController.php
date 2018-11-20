@@ -311,6 +311,7 @@ class UsersController extends BaseController
 
         $app = [
             'app_name' => Yii::$app->params['app-name'],
+            'sid' => $sid
         ];
         $responseData = [
             'menu'=>$menu,
