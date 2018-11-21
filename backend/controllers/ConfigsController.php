@@ -602,8 +602,12 @@ class ConfigsController extends BaseController
      * @time   2018/9/4 上午11:16
      */
     public function actionGetWechatQrCodeUnlimited(){
-        $sid = Helper::getSid();
         $data = Yii::$app->request->post();
+        if (isset($data['sid'])){
+            $sid = $data['sid'];
+        }else{
+            $sid = Helper::getSid();
+        }
         $qr = Wechat::getWechatQrCodeUnlimited($sid,$data['page'],$data['scene']);
 //        return 'data:image/jpeg;base64,'.base64_encode($result); // 以base64格式返回
         if ($qr !== ''){
