@@ -54,7 +54,7 @@ class AuthController extends ActiveController
         $instance = Instance::findOne($sid);
         $shop_name = $instance->name;
         if ($instance->is_bind === 0){ // 共享版
-            $instance = Instance::findOne(Yii::$app->params['share_sid']);
+            $instance = Instance::find()->where(['sid'=>Yii::$app->params['share_sid']])->one();
         }
         $appid = $instance->applet_appid;
         $secret = $instance->applet_appsecret;
