@@ -124,7 +124,7 @@ class BaseInitController
                 ],
                 [
                     'text'=>'分类',
-                    'pagePath'=>'pages/classify/classify',
+                    'pagePath'=>'/pages/classify/classify',
                     'iconPath'=>'fenlei1',
                     'selectedIconPath'=>'fenlei_on',
                     'link_name'=>'分类'
