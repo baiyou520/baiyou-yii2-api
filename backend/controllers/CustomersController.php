@@ -33,13 +33,22 @@ class CustomersController extends BaseController
 //        unset($actions['update']);
         return $actions;
     }
+
+    /**
+     * "微信客户列表"
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2018/12/19 17:47
+     */
     public function actionIndex(){
         $params=Yii::$app->request->get();
         $name=isset($params['name'])?$params['name']:'';//姓名
         $c_begin=isset($params['c_begin'])?$params['c_begin']:'';//注册开始时间
         $c_begin=strlen($c_begin) === 13 ? $c_begin/1000 : $c_begin;
+        $c_begin=strtotime(date('Y-m-d',$c_begin));
         $c_end=isset($params['c_end'])?$params['c_end']:'';//注册结束时间
         $c_end=strlen($c_end) === 13 ? $c_end/1000 : $c_end;
+        $c_end=strtotime(date('Y-m-d 23:59:59',$c_end));
         $is_buy=isset($params['is_buy'])?$params['is_buy']:'';//是否购买过,订单完成且没有退款
         $buy=[];//已购买的所有用户,用于where查询
         $buy_ids=[];//已购买的所有用户
@@ -48,6 +57,7 @@ class CustomersController extends BaseController
             $order_ids=(new Query())->from('order')->select(['user_id'])
                 ->where(['order_status'=>4])
                 ->andWhere(['<>','is_refund',2])
+                ->andWhere(['sid'=>Helper::getSid()])
                 ->groupBy('user_id')
                 ->all();
             $buy_ids=array_unique(array_column($order_ids,'user_id'));
