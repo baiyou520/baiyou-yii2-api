@@ -152,5 +152,85 @@ class BaseInitController
                 \Yii::error(json_encode($nav_config->errors,JSON_UNESCAPED_UNICODE),'初始化,店铺导航出错');
             }
         }
+        //7 .店铺"用户中心"菜单
+        $customer_center=Config::find()->where(['symbol'=>'customer_center','sid'=>Helper::getSid()])->one();
+        if(empty($customer_center)){
+            $content=[
+                'header'=>[
+                    'menu_name'=>'头部设置',
+                    'is_show'=>1
+                ],
+                'property'=>[
+                    'menu_name'=>'用户资产',
+                    'is_show'=>0
+                ],
+                'order'=>[
+                    'menu_name'=>'订单管理',
+                    'is_show'=>1
+                ],
+                'distribution'=>[
+                    'menu_name'=>'分销中心',
+                    'is_show'=>0
+                ],
+                'menu'=>[
+                    'menu_name'=>'菜单',
+                    'is_show'=>1,
+                    'type'=>1,
+                    'style'=>1,
+                    'detail'=>[
+                        [
+                            'is_show'=>1,
+                            'name'=>'coupon',
+                            'title'=>'我的优惠券'
+                        ],
+                        [
+                            'is_show'=>1,
+                            'name'=>'code',
+                            'title'=>'我的优惠码'
+                        ],
+                        [
+                            'is_show'=>1,
+                            'name'=>'piecing',
+                            'title'=>'我参与的拼团'
+                        ],
+                        [
+                            'is_show'=>1,
+                            'name'=>'address',
+                            'title'=>'地址管理'
+                        ],
+                        [
+                            'is_show'=>1,
+                            'name'=>'spread',
+                            'title'=>'我的推广码'
+                        ],
+                        [
+                            'is_show'=>1,
+                            'name'=>'distribution',
+                            'title'=>'分销赚钱',
+                            'message'=>'提示语'
+                        ],
+                        [
+                            'is_show'=>1,
+                            'name'=>'shop',
+                            'title'=>'门店信息'
+                        ],
+                        [
+                            'is_show'=>1,
+                            'name'=>'coupon',
+                            'title'=>'微信客服'
+                        ]
+
+                    ]
+                ]
+
+            ];
+            $customer_center_config=new Config();
+            $customer_center_config->symbol = 'customer_center';
+            $customer_center_config->encode = 2;
+            $customer_center_config->content=json_encode($content,JSON_UNESCAPED_UNICODE);
+            if(!$customer_center_config->save()){
+                \Yii::error(json_encode($customer_center_config->errors,JSON_UNESCAPED_UNICODE),'初始化,用户中心添加出错');
+            }
+        }
     }
 }

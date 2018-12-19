@@ -12,6 +12,7 @@ use baiyou\backend\models\Config;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 use baiyou\common\components\Wechat;
+use baiyou\common\models\Customer;
 use CURLFile;
 use Yii;
 use yii\db\Query;
@@ -25,14 +26,56 @@ class CustomersController extends BaseController
     {
         $actions = parent::actions();
         // 禁用动作
-//        unset($actions['index']);
+        unset($actions['index']);
         unset($actions['delete']);
         unset($actions['create']);
 //        unset($actions['view']);
 //        unset($actions['update']);
         return $actions;
     }
-
+    public function actionIndex(){
+        $params=Yii::$app->request->get();
+        $name=isset($params['name'])?$params['name']:'';//姓名
+        $c_begin=isset($params['c_begin'])?$params['c_begin']:'';//注册开始时间
+        $c_begin=strlen($c_begin) === 13 ? $c_begin/1000 : $c_begin;
+        $c_end=isset($params['c_end'])?$params['c_end']:'';//注册结束时间
+        $c_end=strlen($c_end) === 13 ? $c_end/1000 : $c_end;
+        $is_buy=isset($params['is_buy'])?$params['is_buy']:'';//是否购买过,订单完成且没有退款
+        $buy=[];//已购买的所有用户,用于where查询
+        $buy_ids=[];//已购买的所有用户
+        $res=Yii::$app->getDb()->createCommand("SHOW TABLES LIKE 'order'")->queryAll();//因为是通用文件,防止部分项目没有order表
+        if(!empty($res)){
+            $order_ids=(new Query())->from('order')->select(['user_id'])
+                ->where(['order_status'=>4])
+                ->andWhere(['<>','is_refund',2])
+                ->groupBy('user_id')
+                ->all();
+            $buy_ids=array_unique(array_column($order_ids,'user_id'));
+            if($is_buy==1){
+                $buy=$buy_ids;
+            }
+        }
+        $model=new ActiveDataProvider([
+            'query'=>Customer::find()
+                ->andFilterWhere(['like','nickname',$name])
+                ->andFilterWhere(['>=','created_at',$c_begin])
+                ->andFilterWhere(['<=','created_at',$c_end])
+                ->andFilterWhere(['in','id',$buy])
+                ->asArray()
+                ->orderBy('id desc')
+        ]);
+        $list=$model->getModels();
+        foreach($list as &$value){
+            if(in_array($value['id'],$buy_ids)){
+                $value['is_buy']=1;
+            }else{
+                $value['is_buy']=0;
+            }
+        }
+        $data['list']=$list;
+        $data['pagination']=['total'=>$model->getTotalCount()];
+        return ['message'=>'OK','code'=>BaseErrorCode::$SUCCESS,'data'=>$data];
+    }
     /**
      * 客服信息 欢迎语
      * @return array
@@ -139,4 +182,56 @@ class CustomersController extends BaseController
 //        $data = ['list' => $models, 'pagination' => ['total' => $totalCount]];
 //        return ['message' => '获取客户列表成功', 'code' => 1, 'data' => $data];
 //    }
+    /**
+     * " 我的"页面设置
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2018/12/19 15:09
+     */
+    public function actionCustomerCenter(){
+        $request=Yii::$app->request;
+        $configs=Config::find()->andWhere(['symbol'=>'customer_center'])->asArray()->one();
+        if(!empty($configs)) {
+            $configs['content'] = json_decode(($configs['content']), true);
+        }
+        if($request->isGet){
+            if(empty($configs)){
+                return ['message'=>'暂未设置','code'=>BaseErrorCode::$FAILED];
+            }else{
+                return ['message'=>'OK','code'=>BaseErrorCode::$SUCCESS,'data'=>$configs['content']];
+            }
+        }elseif($request->isPost){
+            $params=$request->post();
+            //参数检查
+            if(!isset($params['menu'])||empty($params['menu'])){
+                return ['message'=>'参数不对','code'=>BaseErrorCode::$FAILED,'data'=>'参数menu未设置或为空了'];
+            }
+            $menu=$params['menu'];
+            if(!isset($menu['is_show'])||empty($menu['is_show'])){
+                return ['message'=>'菜单必须选择','code'=>BaseErrorCode::$FAILED,'data'=>'菜单里面的参数is_show未设置或为空了'];
+
+            }elseif($menu['is_show']!=1){
+                return ['message'=>'菜单必须选择','code'=>BaseErrorCode::$FAILED,'data'=>'参数is_show必须等于1'];
+            }
+            $detail=$menu['detail'];
+            foreach($detail as $value){
+                if($value['name']=='distribution'&&(!isset($value['message'])||empty($value['message']))){
+                    return ['message'=>'请为分销赚钱添加一个信息','code'=>BaseErrorCode::$FAILED];
+                }
+            }
+            $config = Config::find()->where(['symbol' => 'customer_center', 'sid' => Helper::getSid()])->one();
+            if (empty($config)) {
+                $config = new Config();
+                $config->symbol = 'customer_center';
+                $config->encode = 2;
+            }
+            $config->content=json_encode($params,JSON_UNESCAPED_UNICODE);
+            if(!$config->save()){
+                return ['message'=>'保存失败','code'=>BaseErrorCode::$SAVE_DB_ERROR,'data'=>$config->errors];
+            }
+            return ['message'=>'保存成功','code'=>BaseErrorCode::$SUCCESS];
+        }else{
+            return ['message'=>'请求错误','code'=>BaseErrorCode::$FAILED];
+        }
+    }
 }
