@@ -56,7 +56,7 @@ class CustomersController extends BaseController
         if(!empty($res)){
             $order_ids=(new Query())->from('order')->select(['user_id'])
                 ->where(['order_status'=>4])
-                ->andWhere(['<>','is_refund',2])
+                ->andWhere(['<>','is_refund',1])//不在申请退款中
                 ->andWhere(['sid'=>Helper::getSid()])
                 ->groupBy('user_id')
                 ->all();
