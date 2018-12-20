@@ -45,10 +45,10 @@ class CustomersController extends BaseController
         $name=isset($params['name'])?$params['name']:'';//姓名
         $c_begin=isset($params['c_begin'])?$params['c_begin']:'';//注册开始时间
         $c_begin=strlen($c_begin) === 13 ? $c_begin/1000 : $c_begin;
-        $c_begin=strtotime(date('Y-m-d',$c_begin));
+        $c_begin=strtotime(date('Y-m-d',(int)$c_begin));
         $c_end=isset($params['c_end'])?$params['c_end']:'';//注册结束时间
         $c_end=strlen($c_end) === 13 ? $c_end/1000 : $c_end;
-        $c_end=strtotime(date('Y-m-d 23:59:59',$c_end));
+        $c_end=strtotime(date('Y-m-d 23:59:59',(int)$c_end));
         $is_buy=isset($params['is_buy'])?$params['is_buy']:'';//是否购买过,订单完成且没有退款
         $buy=[];//已购买的所有用户,用于where查询
         $buy_ids=[];//已购买的所有用户
