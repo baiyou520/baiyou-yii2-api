@@ -83,6 +83,8 @@ class CustomersController extends BaseController
             }else{
                 $value['is_buy']=0;
             }
+            $value['created_at']=$value['created_at']*1000;
+            $value['updated_at']=$value['updated_at']*1000;
         }
         $data['list']=$list;
         $data['pagination']=['total'=>$model->getTotalCount()];
@@ -229,6 +231,8 @@ class CustomersController extends BaseController
             foreach($detail as $value){
                 if($value['name']=='distribution'&&(!isset($value['message'])||empty($value['message']))){
                     return ['message'=>'请为分销赚钱添加一个信息','code'=>BaseErrorCode::$FAILED];
+                }elseif(mb_strlen($value['title'])>6){
+                    return ['message'=>'菜单名称字数不能超过6个字','code'=>BaseErrorCode::$FAILED];
                 }
             }
             $config = Config::find()->where(['symbol' => 'customer_center', 'sid' => Helper::getSid()])->one();
