@@ -216,7 +216,7 @@ class BaseInitController
                         ],
                         [
                             'is_show'=>1,
-                            'name'=>'coupon',
+                            'name'=>'wechat',
                             'title'=>'微信客服'
                         ]
 
