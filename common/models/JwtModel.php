@@ -91,15 +91,15 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         $this->access_token = $tokens[0];   // Token
 //        $this->access_token_expired_at = date("Y-m-d H:i:s", $tokens[1]['exp']); // Expire
 
-//        $cookies = Yii::$app->response->cookies;
-//        // 创建sso登录所需的cookies值
-//        $cookies->add(new \yii\web\Cookie([
-//            'name' => 'access-token',
-//            'value' => $this->access_token,
-//            'domain' => '.baiyoudata.com',
-//            'httpOnly' => true,
-//            'expire' => time() + 7 * 24 * 60 * 60, // 7天过期
-//        ]));
+        $cookies = Yii::$app->response->cookies;
+        // 创建sso登录所需的cookies值
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'access-token',
+            'value' => $this->access_token,
+            'domain' => '.baiyoudata.com',
+            'httpOnly' => true,
+            'expire' => time() + 7 * 24 * 60 * 60, // 7天过期
+        ]));
     }
 
     /*
