@@ -98,7 +98,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
             'value' => $this->access_token,
             'domain' => '.baiyoudata.com',
             'httpOnly' => true,
-            'expire' => time() + 70 * 24 * 60 * 60, // 70天过期
+//            'expire' => time() + 70 * 24 * 60 * 60, // 70天过期  永不过期
         ]));
     }
 
