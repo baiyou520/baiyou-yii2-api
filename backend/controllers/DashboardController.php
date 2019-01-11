@@ -252,26 +252,6 @@ class DashboardController extends BaseController
 
     public function actionGetHomeAlias(){
         $sid = Helper::getSid();
-        return ["message"=>"操作成功",'code'=>1,'data' =>$this->lock_url($sid)];
+        return ["message"=>"操作成功",'code'=>1,'data' =>Helper::lockTool($sid,Yii::$app->params['lockSecretCode'])];
     }
-
-    private function lock_url($txt,$key='www.baiyoudata.com')
-    {
-        $txt = $txt.$key;
-        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-=+";
-        $nh = rand(0,64);
-        $ch = $chars[$nh];
-        $mdKey = md5($key.$ch);
-        $mdKey = substr($mdKey,$nh%8, $nh%8+7);
-        $txt = base64_encode($txt);
-        $tmp = '';
-        $i=0;$j=0;$k = 0;
-        for ($i=0; $i<strlen($txt); $i++) {
-            $k = $k == strlen($mdKey) ? 0 : $k;
-            $j = ($nh+strpos($chars,$txt[$i])+ord($mdKey[$k++]))%64;
-            $tmp .= $chars[$j];
-        }
-        return urlencode(base64_encode($ch.$tmp));
-    }
-
 }

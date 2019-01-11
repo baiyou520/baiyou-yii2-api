@@ -97,8 +97,25 @@ class AuthController extends ActiveController
         return ["message"=>"认证成功","code"=>1,"data"=>$result];
     }
 
-    public function actionAliasToSid(){
-
+    /**
+     * 解密别名
+     * @author sft@caiyoudata.com
+     * @time   2019/1/11 11:07 AM
+     */
+    public function actionDecodeAlias(){
+        $data = Yii::$app->request->get();
+        $alias=$data['alias'];
+        $sid = Helper::unlockTool($alias,Yii::$app->params['lockSecretCode']);
+        $cookies = Yii::$app->response->cookies;
+        // 在要发送的响应中添加一个新的 cookie，以明确去到了哪个实例
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'sid',
+            'value' => $sid,
+            'domain' => Yii::$app->params['cookies_domain'],
+            'httpOnly' => true,
+//            'expire' => time() + 10 * 365 * 24 * 60 * 60,
+        ]));
+        return ["message"=>"进入店铺成功","code"=>1,"data"=>$sid];
     }
 
 //    /**
