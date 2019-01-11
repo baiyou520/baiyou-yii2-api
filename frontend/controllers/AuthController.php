@@ -64,7 +64,8 @@ class AuthController extends ActiveController
 //        $avatarUrl=Yii::$app->request->post('avatarUrl');
 //        $parentId= Yii::$app->request->post('parent_id') ?? 0;
         $url='https://api.weixin.qq.com/sns/jscode2session?appid='.$appid.'&secret='.$secret.'&js_code='.$jscode.'&grant_type=authorization_code';
-        $out=Helper::https_request($url);
+//        $out=Helper::https_request($url);
+        $out=json_decode($this->wx_https_request($url));
         if(isset($out->errcode) && $out->errcode!=0){
             return ['message'=>'与微信服务器通信失败,请检查appid是否填写正确！','code'=>$out->errcode,'data'=>$out->errmsg];
         }
@@ -118,28 +119,28 @@ class AuthController extends ActiveController
         return ["message"=>"进入店铺成功","code"=>1,"data"=>$sid];
     }
 
-//    /**
-//     * 辅助方法，发起http请求
-//     * @param $url
-//     * @param null $data
-//     * @return mixed
-//     * @author  billyshen 2018/6/1 下午5:32
-//     */
-//    protected function wx_https_request($url, $data = null){
-//        $curl = curl_init();
-//        curl_setopt($curl, CURLOPT_URL, $url);
-//        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-//        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-//        curl_setopt($curl, CURLOPT_POST, 1);
-//        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-//                'Content-Type: application/json; charset=utf-8',
-//                'Content-Length: ' . strlen($data)
-//            )
-//        );
-//        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-//        $output = curl_exec($curl);
-//        curl_close($curl);
-//        return $output;
-//    }
+    /**
+     * 辅助方法，发起http请求
+     * @param $url
+     * @param null $data
+     * @return mixed
+     * @author  billyshen 2018/6/1 下午5:32
+     */
+    protected function wx_https_request($url, $data = null){
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json; charset=utf-8',
+                'Content-Length: ' . strlen($data)
+            )
+        );
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return $output;
+    }
 
 }
