@@ -121,6 +121,18 @@ class AuthController extends ActiveController
     }
 
     /**
+     * 手机web端登录
+     * @author sft@caiyoudata.com
+     * @time   2019/1/11 11:07 AM
+     */
+    public function actionLoginByPhone(){
+        $customer = Customer::findOne(['phone'=>'15850576154']); // 测试 写死了
+        $customer->generateAccessTokenAfterUpdatingClientInfo(true);
+        $result['uid']=$customer->id;
+        return ["message"=>"认证成功","code"=>1,"data"=>$result];
+    }
+
+    /**
      * 辅助方法，发起http请求
      * @param $url
      * @param null $data
