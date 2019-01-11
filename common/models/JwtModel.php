@@ -96,7 +96,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         $cookies->add(new \yii\web\Cookie([
             'name' => 'access-token',
             'value' => $this->access_token,
-            'domain' => '.baiyoudata.com',
+            'domain' => Yii::$app->params['cookies_domain'],
             'httpOnly' => true,
 //            'expire' => time() + 70 * 24 * 60 * 60, // 70天过期  永不过期
         ]));

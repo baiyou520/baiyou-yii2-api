@@ -249,19 +249,29 @@ class DashboardController extends BaseController
             return ["message"=>"操作失败",'code'=>BaseErrorCode::$DELETE_DB_ERROR];
         }
     }
-//    public function actionMarkRead(){
-//        $request=\Yii::$app->request;
-//        $params=$request->post();
-//        if (isset($params['notice_id'])){
-//            $affected_rows = Notice::updateAll(['status' => 1],['in','notice_id',$params['notice_id']]);
-//        }else{
-//            $affected_rows = Notice::updateAll(['status' => 1],['=','type',$params['type']]);
-//        }
-//
-//        if($affected_rows > 0){
-//            return ["message"=>"操作成功",'code'=>1];
-//        }else{
-//            return ["message"=>"操作失败",'code'=>BaseErrorCode::$DELETE_DB_ERROR];
-//        }
-//    }
+
+    public function actionGetHomeAlias(){
+        $sid = Helper::getSid();
+        return ["message"=>"操作成功",'code'=>1,'data' =>$this->lock_url($sid)];
+    }
+
+    private function lock_url($txt,$key='www.baiyoudata.com')
+    {
+        $txt = $txt.$key;
+        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-=+";
+        $nh = rand(0,64);
+        $ch = $chars[$nh];
+        $mdKey = md5($key.$ch);
+        $mdKey = substr($mdKey,$nh%8, $nh%8+7);
+        $txt = base64_encode($txt);
+        $tmp = '';
+        $i=0;$j=0;$k = 0;
+        for ($i=0; $i<strlen($txt); $i++) {
+            $k = $k == strlen($mdKey) ? 0 : $k;
+            $j = ($nh+strpos($chars,$txt[$i])+ord($mdKey[$k++]))%64;
+            $tmp .= $chars[$j];
+        }
+        return urlencode(base64_encode($ch.$tmp));
+    }
+
 }
