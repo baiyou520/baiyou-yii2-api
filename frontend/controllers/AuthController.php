@@ -96,6 +96,7 @@ class AuthController extends ActiveController
 //        $result['access_token']=$customer->access_token;
         $result['shop_name']=$shop_name;
         $result['is_first_register']=$is_first_register;
+        $result['sessionKey']=isset($out['sessionKey'])?$out['sessionKey']:'';//用户信息解密参数
         return ["message"=>"认证成功","code"=>1,"data"=>$result];
     }
 
