@@ -8,6 +8,7 @@
 
 namespace baiyou\frontend\controllers;
 
+use baiyou\common\components\BaseErrorCode;
 use baiyou\common\models\Instance;
 use baiyou\common\models\Customer;
 use baiyou\common\components\Helper;
@@ -49,7 +50,6 @@ class AuthController extends ActiveController
      * @author  billyshen 2018/6/1 下午5:30
      */
     public function actionWxJsCode2Session(){
-
         // 获得实例信息
         $sid=Helper::getSid();
         $instance = Instance::findOne($sid);
@@ -126,12 +126,17 @@ class AuthController extends ActiveController
      * @time   2019/1/11 11:07 AM
      */
     public function actionLoginByPhone(){
-        $customer = Customer::findOne(['phone'=>'15850576154']); // 测试 写死了
-        $customer->generateAccessTokenAfterUpdatingClientInfo(true);
-        $result['uid']=$customer->id;
-        return ["message"=>"认证成功","code"=>1,"data"=>$result];
+        $params=Yii::$app->request->post();
+        $phone=isset($params['phone'])?$params['phone']:'';
+        $customer = Customer::find()->where(['phone'=>$phone])->one(); // 暂无密码
+        if(empty($customer)){
+            return ['message'=>'手机号码错误','code'=>BaseErrorCode::$OBJECT_NOT_FOUND];
+        }else {
+            $customer->generateAccessTokenAfterUpdatingClientInfo(true);
+            $result['uid'] = $customer->id;
+            return ["message" => "认证成功", "code" => 1, "data" => $result];
+        }
     }
-
     /**
      * 辅助方法，发起http请求
      * @param $url
