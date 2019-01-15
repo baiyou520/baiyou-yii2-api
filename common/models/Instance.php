@@ -50,7 +50,7 @@ class Instance extends \yii\db\ActiveRecord
             [['sid', 'user_id', 'certificate_flag', 'is_bind', 'expired_at', 'status', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 50],
             [['thumb'], 'string', 'max' => 255],
-            [['level'], 'string', 'max' => 20],
+            [['level'], 'string', 'max' => 255],
             [['applet_appid'], 'string', 'max' => 18],
             [['applet_appsecret', 'wx_mch_key'], 'string', 'max' => 32],
             [['experience_qrcode', 'online_qrcode'], 'string', 'max' => 100],
