@@ -9,6 +9,7 @@
 namespace baiyou\frontend\controllers;
 
 use baiyou\common\components\BaseErrorCode;
+use baiyou\common\models\CustomerExt;
 use baiyou\common\models\Instance;
 use baiyou\common\models\Customer;
 use baiyou\common\components\Helper;
@@ -90,6 +91,19 @@ class AuthController extends ActiveController
         }else{
             InitController::initData($customer,$is_first_register); // 处理其他应用特有的业务逻辑，比如获得新人优惠券
         }
+        //检查是否有用户店铺关系表
+        $customer_ext=CustomerExt::find()->where(['customer_id'=>$customer->id,'sid'=>$sid])->one();
+        if(empty($customer_ext)){
+            $sid=Helper::getSid();
+            $customer_ext=new CustomerExt();
+            $customer_ext->customer_id=$customer->id;
+            $customer_ext->sid=$sid;
+            $customer_ext->openid=isset($data['openid'])?$data['openid']:'';
+            $customer_ext->parent_id=isset($data['parent_id'])?$data['parent_id']:0;
+            if($customer_ext->save()){
+                Yii::error(json_encode($customer_ext->errors,JSON_UNESCAPED_UNICODE),'微信登录时,添加用户店铺关系记录失败');
+            }
+        }
 
         $customer->generateAccessTokenAfterUpdatingClientInfo(true);
         $result['uid']=$customer->id;
@@ -122,11 +136,71 @@ class AuthController extends ActiveController
     }
 
     /**
+     * 判断手机号登录还是注册
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2019/1/15 11:32
+     */
+    public function actionCheckPhone(){
+        $params=Yii::$app->request->post();
+        $phone_preg="/^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$/";
+        if(!isset($params['phone'])||empty($params['phone'])){
+            return ['message'=>'请提交手机号','code'=>BaseErrorCode::$FAILED];
+        }elseif(!preg_match($phone_preg,$params['phone'])){
+            return ['message'=>'手机号码不合法','code'=>BaseErrorCode::$FAILED];
+        }
+        $customer=Customer::find()->where(['phone'=>$params['phone']])->one();
+        if(empty($customer)){
+            return ['code'=>BaseErrorCode::$SUCCESS,'message'=>'请注册','data'=>2];
+        }else{
+            return ['code'=>BaseErrorCode::$SUCCESS,'message'=>'请登录','data'=>1];
+        }
+    }
+
+    /**
+     * 登录
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2019/1/15 11:33
+     */
+    public function actionLoginByPhone(){
+        $params=Yii::$app->request->post();
+        $check=$this->check($params);
+        if($check['code']!=1){
+            return $check;
+        }else {
+            //密码检查
+            $customer=$check['data'];
+            $code=\Yii::$app->security->validatePassword((string)$params['password'], $customer['password_hash']);
+            if(empty($code)){
+                return ['message'=>'密码错误','code'=>BaseErrorCode::$FAILED];
+            }
+            //检查是否与店铺存在关系id
+            $sid=Helper::getSid();
+            $customer_ext=CustomerExt::find()->where(['customer_id'=>$customer->id,'sid'=>$sid])->one();
+            if(empty($customer_ext)){
+                $customer_ext=new CustomerExt();
+                $customer_ext->customer_id=$customer->id;
+                $customer_ext->sid=$sid;
+                $customer_ext->openid=isset($params['openid'])?$params['openid']:'';
+                $customer_ext->parent_id=isset($params['parent_id'])?$params['parent_id']:0;
+                if($customer_ext->save()){
+                    Yii::error(json_encode($customer_ext->errors,JSON_UNESCAPED_UNICODE),'登录时,添加加用户店铺关系记录失败');
+                }
+            }
+            Yii::$app->user->id;
+            $customer->generateAccessTokenAfterUpdatingClientInfo(true);
+            $result['uid'] = $customer->id;
+            return ["message" => "认证成功", "code" => 1, "data" => $result];
+        }
+    }
+
+    /**
      * 手机web端登录
      * @author sft@caiyoudata.com
      * @time   2019/1/11 11:07 AM
      */
-    public function actionLoginByPhone(){
+    public function actionLoginByPhones(){
         $params=Yii::$app->request->post();
         $phone=isset($params['phone'])?$params['phone']:'';
         $customer = Customer::find()->where(['phone'=>$phone])->one(); // 暂无密码
@@ -162,4 +236,131 @@ class AuthController extends ActiveController
         return $output;
     }
 
+    /**
+     *注册
+     * @author nwh@caiyoudata.com
+     * @time 2019/1/14 17:31
+     */
+    public function actionReg(){
+        $params=Yii::$app->request->post();
+        $check=$this->check($params,false);
+        if($check['code']!=1){
+            return $check;
+        }else{
+            $tran=Yii::$app->db->beginTransaction();
+            try{
+                //客户表
+//                $customer=Customer::find()->where(['id'=>Yii::$app->user->id])->one();//暂时不用
+                $customer=[];
+                if(empty($customer)){
+                    $customer=new Customer();
+                    $params['nickname'] = $params['name'];
+                }
+                $params['username']=(string)$params['phone'];
+                $params['phone'] = (string)$params['phone'];
+                $params['password']=$customer->setPassword($params['password']);
+                $customer->generateAuthKey();
+                $customer->load($params, '');
+
+                if (!$customer->save()) {
+                    Yii::error(json_encode($customer->errors,JSON_UNESCAPED_UNICODE),'用户注册,用户添加失败');
+
+                    return ['code'=>BaseErrorCode::$SAVE_DB_ERROR,'message'=>'参数错误！','data' =>$customer->errors];
+                }
+                //客户店铺关系表
+                $customer_ext=new CustomerExt();
+                $data_ext['customer_id']=$customer->id;
+                $data_ext['sid']=Helper::getSid();
+                $data_ext['openid']=isset($params['openid'])?$params['openid']:'';
+                $data_ext['parent_id']=isset($params['parent_id'])?$params['parent_id']:0;
+                $customer_ext->load($data_ext, '');
+                if (!$customer_ext->save()) {
+                    Yii::error(json_encode($customer_ext->errors,JSON_UNESCAPED_UNICODE),'用户注册,用户店铺关系表添加失败');
+                    return ['code'=>BaseErrorCode::$SAVE_DB_ERROR,'message'=>'注册失败','data' =>$customer_ext->errors];
+                }
+                $tran->commit();
+            }catch (yii\db\Exception $e){
+                $tran->rollBack();
+                return ['code'=>BaseErrorCode::$SAVE_DB_ERROR,'message'=>'注册失败','data' =>$e->errorInfo];
+
+            }
+            $customer->generateAccessTokenAfterUpdatingClientInfo(true);
+            $result['uid'] = $customer->id;
+            return ['message'=>'注册成功','code'=>BaseErrorCode::$SUCCESS,'data'=>$result];
+        }
+    }
+
+    /**
+     * 发送注册验证码
+     * @author nwh@caiyoudata.com
+     * @time 2019/1/15 13:51
+     */
+    public function actionSendRegCode(){
+        $params=Yii::$app->request->post();
+        if(!isset($params['phone'])||empty($params['phone'])){
+            return ['message'=>'手机号未提交','code'=>BaseErrorCode::$FAILED];
+        }
+        //格式验证
+        $phone="/^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$/";
+        if(!preg_match($phone,$params['phone'])){
+            return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码不合法'];
+        }
+        $cache=Yii::$app->cache;
+        $code=''.rand(1000,9999);
+        $res=$cache->set((string)$params['phone'],[$code,time()],60*5);
+        $res=Helper::send_msg($params['phone'],'您的注册验证码是'.$code.',在5分钟内有效。如非本人操作请忽略本短信。');
+        $res=json_decode($res,true);
+        if($res['error']!=0){
+            return ['message'=>'验证码发送失败','code'=>BaseErrorCode::$FAILED,'data'=>$code];
+        }
+        return ['message'=>'验证码发送成功','code'=>BaseErrorCode::$FAILED];
+    }
+    /**
+     * 登录/注册验证
+     * @param $params
+     * @param bool $login
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2019/1/15 13:50
+     */
+    private function check($params,$login=true){
+        //参数检查
+        if(!isset($params['phone'])||empty($params['phone'])){
+            return ['code'=>BaseErrorCode::$FAILED,'message'=>'请提交手机号'];
+
+        }elseif(!isset($params['password'])||empty($params['password'])){
+            return ['code'=>BaseErrorCode::$FAILED,'message'=>'请提交密码'];
+
+        }
+        //格式验证
+        $phone="/^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$/";
+        if(!preg_match($phone,$params['phone'])){
+            return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码不合法'];
+        }
+        $password="/^[a-zA-Z\d_!]{6,20}$/";
+        if(!preg_match($password,$params['password'])){
+            return ['code'=>BaseErrorCode::$FAILED,'message'=>'密码不合法'];
+        }
+        $customer=Customer::find()->where(['phone'=>$params['phone']])->one();
+        if($login){//登录验证
+            if (empty($customer)){
+                return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码未注册'];
+            }
+        }else{//注册验证
+
+            if(!empty($customer)){
+                return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码已注册'];
+            }
+            //验证码
+            if(!isset($params['code'])||empty($params['code'])){
+                return ['code'=>BaseErrorCode::$FAILED,'message'=>'请提交验证码'];
+            }
+            $cache = Yii::$app->cache;
+            $code = $cache->get((string)$params['phone'])[0];
+            if($code!=$params['code']){
+                return ['code'=>BaseErrorCode::$FAILED,'message'=>'验证码错误'];
+            }
+        }
+        return ['code'=>1,'message'=>'参数通过','data'=>$customer];
+    }
 }

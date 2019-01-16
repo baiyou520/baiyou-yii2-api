@@ -15,7 +15,7 @@ use baiyou\backend\models\NoticeUser;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 use baiyou\common\components\Wechat;
-use baiyou\common\models\Customer;
+use baiyou\common\models\CustomerExt;
 use baiyou\common\models\Instance;
 use yii;
 
@@ -47,8 +47,8 @@ class DashboardController extends BaseController
 
         // 用户总数
         $sid = Helper::getSid();
-        $user_total = Customer::find()->count();
-        $user_new_in_past_24hours = Customer::find()
+        $user_total = CustomerExt::find()->andWhere(['sid'=>$sid])->count();
+        $user_new_in_past_24hours = CustomerExt::find()
             ->where(['>', 'created_at', time()-60*60*24])
             ->andWhere(['=', 'sid', $sid])->count();// 过去24小时新增用户数
 
@@ -63,7 +63,7 @@ class DashboardController extends BaseController
 
 
         // 新增客户
-        $new_customers =  Customer::find()
+        $new_customers =  CustomerExt::find()
             ->where(['>', 'created_at', time()-60*60*24])
             ->andWhere(['=', 'sid', $sid])->all();
 

@@ -94,7 +94,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         $cookies = Yii::$app->response->cookies;
         // 创建sso登录所需的cookies值
         $cookies->add(new \yii\web\Cookie([
-            'name' => 'access-token',
+            'name' => 'wx-access-token',
             'value' => $this->access_token,
             'domain' => Yii::$app->params['cookies_domain'],
             'httpOnly' => true,

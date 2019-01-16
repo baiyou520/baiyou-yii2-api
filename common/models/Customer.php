@@ -45,7 +45,7 @@ class Customer extends JwtModel
     public function rules()
     {
         return [
-            [['username', 'nickname', 'name', 'openid'], 'required'],
+            [['username', 'nickname', 'name'], 'required'],
             [['sid', 'gender', 'parent_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['last_login_at'], 'safe'],
             [['username', 'source_from'], 'string', 'max' => 100],
@@ -86,5 +86,31 @@ class Customer extends JwtModel
             'created_at' => '创建时间戳',
             'updated_at' => '修改时间戳',
         ];
+    }
+    /**
+     * Validates password
+     *
+     * @param string $password password to validate
+     * @return bool if password provided is valid for current user
+     */
+    public function validatePassword($password)
+    {
+        return \Yii::$app->security->validatePassword($password, $this->password_hash);
+    }
+    /**
+     * Generates password hash from password and sets it to the model
+     *
+     * @param string $password
+     */
+    public function setPassword($password)
+    {
+        $this->password_hash = \Yii::$app->security->generatePasswordHash($password);
+    }
+    /**
+     * Generates "remember me" authentication key
+     */
+    public function generateAuthKey()
+    {
+        $this->auth_key = \Yii::$app->security->generateRandomString();
     }
 }

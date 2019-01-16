@@ -12,7 +12,7 @@ use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\CompositeAuth;
-use baiyou\common\components\CookiesAuth;
+use baiyou\common\components\CookiesAuthWx;
 
 class BaseController extends ActiveController
 {
@@ -24,7 +24,7 @@ class BaseController extends ActiveController
         $behaviors['authenticator'] = [
             'class' => CompositeAuth::className(),
             'authMethods' => [
-                CookiesAuth::className(),
+                CookiesAuthWx::className(),
             ],
 
         ];
