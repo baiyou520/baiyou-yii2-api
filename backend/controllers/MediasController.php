@@ -204,4 +204,39 @@ class MediasController extends BaseController
         }
         return $pic_group->category_id;
     }
+    /**
+     * 分组移动a移动b下面
+     * @param $group_id
+     * @author nwh@caiyoudata.com
+     * @time 2018/12/11 10:54
+     */
+    public function actionChangeGroup($id){
+        $params=Yii::$app->request->post();
+
+        $p_category_id=isset($params['p_category_id'])?(int)$params['p_category_id']:'';//上级分组
+
+        $s_category=Category::find()->where(['symbol'=>'pic_group','category_id'=>$id])->one();
+
+        $p_category=Category::find()->where(['symbol'=>'pic_group','category_id'=>$p_category_id])->one();
+        if(empty($s_category)){
+            return ['message'=>'待分组内容未找到','code'=>BaseErrorCode::$FAILED,'data'=>'id未找到对应内容'];
+
+        }elseif(empty($p_category)&&$p_category_id!=0){
+            return ['message'=>'上级分组内容未找到','code'=>BaseErrorCode::$FAILED,'data'=>'p_category_id未找到对应内容'];
+
+        }elseif($s_category['name']=='未分组'){
+            return ['message'=>'未分组不能移动','code'=>BaseErrorCode::$FAILED];
+
+        }elseif($p_category['name']=='未分组'){
+            return ['message'=>'未分组不能添加子分组','code'=>BaseErrorCode::$FAILED];
+
+        }
+        $s_category->category_pid=$p_category_id;
+        if(!$s_category->save()){
+            Yii::error(json_encode($s_category->errors,JSON_UNESCAPED_UNICODE),'文件分组移动失败');
+            return ['message'=>'分组移动失败','code'=>BaseErrorCode::$FAILED,'data'=>$s_category->errors];
+        }else{
+            return ['message'=>'操作成功','code'=>BaseErrorCode::$FAILED];
+        }
+    }
 }

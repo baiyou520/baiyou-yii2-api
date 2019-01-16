@@ -256,6 +256,7 @@ class AuthController extends ActiveController
                 if(empty($customer)){
                     $customer=new Customer();
                     $params['nickname'] = (string)$params['phone'];
+                    $params['name'] = (string)$params['phone'];
                 }
                 $params['username']=(string)$params['phone'];
                 $params['phone'] = (string)$params['phone'];
