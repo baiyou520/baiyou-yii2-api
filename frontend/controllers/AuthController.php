@@ -246,7 +246,7 @@ class AuthController extends ActiveController
      */
     public function actionReg(){
         $params=Yii::$app->request->post();
-        $check=$this->check($params,false);
+        $check=$this->check($params,2);
         if($check['code']!=1){
             return $check;
         }else{
@@ -297,6 +297,47 @@ class AuthController extends ActiveController
     }
 
     /**
+     * 用户登出
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2019/1/17 10:29
+     */
+    public function actionLogout(){
+        $cookies = Yii::$app->response->cookies;
+        $cookies->add(new \yii\web\Cookie([
+            'name' => 'wx-access-token',
+            'value' => '',
+            'domain' => Yii::$app->params['cookies_domain'],
+            'httpOnly' => true,
+            'expire' => time()-3600
+        ]));
+        return ["message"=>"登出成功","code"=>1];
+    }
+
+    /**
+     * 忘记密码
+     * @return array
+     * @author nwh@caiyoudata.com
+     * @time 2019/1/17 11:00
+     */
+    public function actionForgetPassword(){
+        $params=Yii::$app->request->post();
+        //验证数据合法性
+        $check=$this->check($params,3);
+        if ($check['code']!=1){
+            return $check;
+        }
+        $customer = Customer::find()->where(['phone'=>$params['phone']])->one();
+        $customer->setPassword($params['password']);
+        $customer->generateAuthKey();
+        if (!$customer->save()) {
+            return ['message'=>'密码重置失败','code'=>BaseErrorCode::$FAILED];
+        }
+        $customer->generateAccessTokenAfterUpdatingClientInfo(true);
+        $result['uid'] = $customer->id;
+        return ['message'=>'密码修改成功','code'=>BaseErrorCode::$SUCCESS,'data'=>$result];
+    }
+    /**
      * 发送注册验证码
      * @author nwh@caiyoudata.com
      * @time 2019/1/15 13:51
@@ -329,7 +370,7 @@ class AuthController extends ActiveController
      * @author nwh@caiyoudata.com
      * @time 2019/1/15 13:50
      */
-    private function check($params,$login=true){
+    private function check($params,$login=1){
         //参数检查
         if(!isset($params['phone'])||empty($params['phone'])){
             return ['code'=>BaseErrorCode::$FAILED,'message'=>'请提交手机号'];
@@ -344,19 +385,26 @@ class AuthController extends ActiveController
             return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码不合法'];
         }
         $password="/^[a-zA-Z\d_!]{6,20}$/";
-        if(!preg_match($password,$params['password'])){
-            return ['code'=>BaseErrorCode::$FAILED,'message'=>'密码不合法'];
+        if(mb_strlen($params['password'])<6||mb_strlen($params['password'])>20){
+            return ['code'=>BaseErrorCode::$FAILED,'message'=>'密码保持6-20字'];
+
+        }elseif(!preg_match($password,$params['password'])){
+            return ['code'=>BaseErrorCode::$FAILED,'message'=>'密码不应包含特殊字符'];
+
         }
         $customer=Customer::find()->where(['phone'=>$params['phone']])->one();
-        if($login){//登录验证
+        if($login==1||$login==3){//登录/忘记密码 验证
             if (empty($customer)){
                 return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码未注册'];
             }
-        }else{//注册验证
+        }elseif($login==2){//注册验证
 
             if(!empty($customer)){
                 return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码已注册'];
             }
+        }
+        //验证码检测
+        if($login==2||$login==3){
             //验证码
             if(!isset($params['code'])||empty($params['code'])){
                 return ['code'=>BaseErrorCode::$FAILED,'message'=>'请提交验证码'];
@@ -364,7 +412,7 @@ class AuthController extends ActiveController
             $cache = Yii::$app->cache;
             $code = $cache->get((string)$params['phone'])[0];
             if($code!=$params['code']){
-                return ['code'=>BaseErrorCode::$FAILED,'message'=>'验证码错误'];
+                return ['code'=>BaseErrorCode::$FAILED,'message'=>'验证码错误','data'=>$code];
             }
         }
         return ['code'=>1,'message'=>'参数通过','data'=>$customer];

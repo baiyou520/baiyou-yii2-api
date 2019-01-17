@@ -236,7 +236,7 @@ class MediasController extends BaseController
             Yii::error(json_encode($s_category->errors,JSON_UNESCAPED_UNICODE),'文件分组移动失败');
             return ['message'=>'分组移动失败','code'=>BaseErrorCode::$FAILED,'data'=>$s_category->errors];
         }else{
-            return ['message'=>'操作成功','code'=>BaseErrorCode::$FAILED];
+            return ['message'=>'操作成功','code'=>BaseErrorCode::$SUCCESS];
         }
     }
 }

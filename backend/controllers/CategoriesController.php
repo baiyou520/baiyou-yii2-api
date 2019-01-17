@@ -49,6 +49,7 @@ class CategoriesController extends BaseController
             ->all();
         if(!empty($models)){
             if(empty($type)){
+                $models=yii\helpers\ArrayHelper::toArray($models);
                 $models = Helper::generateTree($models, 0, 'category_pid', 'category_id');
             }
             return $models;
