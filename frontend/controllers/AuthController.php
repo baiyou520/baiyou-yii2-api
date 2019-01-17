@@ -185,8 +185,10 @@ class AuthController extends ActiveController
                 $customer_ext->sid=$sid;
                 $customer_ext->openid=isset($params['openid'])?$params['openid']:'';
                 $customer_ext->parent_id=isset($params['parent_id'])?$params['parent_id']:0;
-                if($customer_ext->save()){
+                if(!$customer_ext->save()){
                     Yii::error(json_encode($customer_ext->errors,JSON_UNESCAPED_UNICODE),'登录时,添加加用户店铺关系记录失败');
+                }else{
+                    InitController::initData($customer,true); // 处理其他应用特有的业务逻辑，比如获得新人优惠券
                 }
             }
             Yii::$app->user->id;
@@ -279,6 +281,8 @@ class AuthController extends ActiveController
                 if (!$customer_ext->save()) {
                     Yii::error(json_encode($customer_ext->errors,JSON_UNESCAPED_UNICODE),'用户注册,用户店铺关系表添加失败');
                     return ['code'=>BaseErrorCode::$SAVE_DB_ERROR,'message'=>'注册失败','data' =>$customer_ext->errors];
+                }else{
+                    InitController::initData($customer,true); // 处理其他应用特有的业务逻辑，比如获得新人优惠券
                 }
                 $tran->commit();
             }catch (yii\db\Exception $e){

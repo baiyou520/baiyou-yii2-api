@@ -250,6 +250,12 @@ class DashboardController extends BaseController
         }
     }
 
+    /**
+     * 店铺加密
+     * @return array
+     * @author sft@caiyoudata.com
+     * @time   2019/1/11 11:01 AM
+     */
     public function actionGetHomeAlias(){
         $sid = Helper::getSid();
         return ["message"=>"操作成功",'code'=>1,'data' =>Helper::lockTool($sid,Yii::$app->params['lockSecretCode'])];
