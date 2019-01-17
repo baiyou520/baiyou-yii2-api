@@ -178,9 +178,11 @@ class AuthController extends ActiveController
             }
             //检查是否与店铺存在关系id
             $sid=Helper::getSid();
+            $is_first_register=false;
             $customer_ext=CustomerExt::find()->where(['customer_id'=>$customer->id,'sid'=>$sid])->one();
             if(empty($customer_ext)){
                 $customer_ext=new CustomerExt();
+                $is_first_register=true;
                 $customer_ext->customer_id=$customer->id;
                 $customer_ext->sid=$sid;
                 $customer_ext->openid=isset($params['openid'])?$params['openid']:'';
@@ -194,6 +196,9 @@ class AuthController extends ActiveController
             Yii::$app->user->id;
             $customer->generateAccessTokenAfterUpdatingClientInfo(true);
             $result['uid'] = $customer->id;
+            $result['is_first_register']=$is_first_register;
+            $result['avatar'] = $customer->avatar;
+            $result['nickname'] = $customer->nickname;
             return ["message" => "认证成功", "code" => 1, "data" => $result];
         }
     }
@@ -292,6 +297,9 @@ class AuthController extends ActiveController
             }
             $customer->generateAccessTokenAfterUpdatingClientInfo(true);
             $result['uid'] = $customer->id;
+            $result['avatar'] = $customer->avatar;
+            $result['nickname'] = $customer->nickname;
+            $result['is_first_register']=true;
             return ['message'=>'注册成功','code'=>BaseErrorCode::$SUCCESS,'data'=>$result];
         }
     }
@@ -335,6 +343,8 @@ class AuthController extends ActiveController
         }
         $customer->generateAccessTokenAfterUpdatingClientInfo(true);
         $result['uid'] = $customer->id;
+        $result['avatar'] = $customer->avatar;
+        $result['nickname'] = $customer->nickname;
         return ['message'=>'密码修改成功','code'=>BaseErrorCode::$SUCCESS,'data'=>$result];
     }
     /**
