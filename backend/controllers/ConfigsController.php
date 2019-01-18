@@ -193,7 +193,7 @@ class ConfigsController extends BaseController
         $data=Yii::$app->request->post();
         $url = Yii::$app->params['admin_url'].'/v1/cross/setExpMember/'.$sid;
         $data_to_admin=[
-            "wechat_id"=> $data['wechat_id'],
+            "wechat_id"=> trim($data['wechat_id']),
             "action"=> 1 //添加体验者
         ];
         $results = Helper::https_request($url,$data_to_admin);
