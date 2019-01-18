@@ -79,10 +79,10 @@ class DashboardController extends BaseController
         $sub_title = '';
         $license = '';
         $expired_days = (int)(($instance->expired_at - time()) / 86400);
-        $badge_status = $expired_days > 14? 'success':'error';
-        $expired_at = $expired_days > 14? '您的店铺很健康': $expired_days.'天后过期，请及时续费！';
+        $badge_status = $expired_days > 7? 'success':'error';
+        $expired_at = $expired_days > 7? '运行中': $expired_days.'天后过期';
         if ($expired_at === 0){
-            $expired_at = '今天就要过期了，快马加鞭去续费吧！';
+            $expired_at = '今天过期';
         }
         switch ($instance->status)
         {
@@ -97,7 +97,7 @@ class DashboardController extends BaseController
             case -1:
                 $sub_title = '您的店铺已经打烊，您仍旧可进行部分操作，但客户无法交易，请及时续费！';
                 $license = '已打烊';
-                $expired_at = '已打烊，请及时续费！';
+                $expired_at = '已打烊';
                 break;
             default:
                 break;
