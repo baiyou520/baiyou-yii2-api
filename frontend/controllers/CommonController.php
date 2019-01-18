@@ -58,7 +58,7 @@ class CommonController extends BaseController
      */
     public function actionGetMyDistributionCode(){
         $customer_id=\Yii::$app->user->id;
-        $customer=Customer::findOne($customer_id);
+        $customer=Customer::find()->where(['id'=>$customer_id])->one();
         if(empty($customer)){
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"用户不存在"];
         }

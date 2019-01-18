@@ -46,7 +46,7 @@ class AuthController extends ActiveController
     }
 
     /**
-     * 小程序获取用户openID
+     * 小程序获取用户openID,暂不用 2019/1/18 11:12
      * @return array
      * @author  billyshen 2018/6/1 下午5:30
      */
@@ -71,7 +71,7 @@ class AuthController extends ActiveController
         if(isset($out->errcode) && $out->errcode!=0){
             return ['message'=>'与微信服务器通信失败,请检查appid是否填写正确！','code'=>$out->errcode,'data'=>$out->errmsg];
         }
-        $customer=Customer::findOne(['openid'=>$out->openid]);
+        $customer=Customer::findOne(['openid'=>$out->openid]);//暂不用了
 //        $data['nickname'] = $nickname;
 //        $data['name'] = $nickname;
 //        $data['avatar'] = $avatarUrl;

@@ -36,7 +36,7 @@ class CustomerExt extends \baiyou\common\components\ActiveRecord
             [['customer_id'], 'required'],
             [['customer_id', 'sid', 'parent_id', 'created_at', 'updated_at'], 'integer'],
             [['openid'], 'string', 'max' => 28],
-            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::className(), 'targetAttribute' => ['customer_id' => 'id']],
+//            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Customer::className(), 'targetAttribute' => ['customer_id' => 'id']],
             [['sid'], 'exist', 'skipOnError' => true, 'targetClass' => Instance::className(), 'targetAttribute' => ['sid' => 'sid']],
         ];
     }
@@ -57,13 +57,13 @@ class CustomerExt extends \baiyou\common\components\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCustomer()
-    {
-        return $this->hasOne(Customer::className(), ['id' => 'customer_id']);
-    }
+//    /**
+//     * @return \yii\db\ActiveQuery
+//     */
+//    public function getCustomer()
+//    {
+//        return $this->hasOne(Customer::className(), ['id' => 'customer_id']);
+//    }
 
     /**
      * @return \yii\db\ActiveQuery
