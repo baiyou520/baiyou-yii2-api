@@ -11,6 +11,7 @@ namespace baiyou\backend\controllers;
 use baiyou\backend\models\Category;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
+use baiyou\common\models\Instance;
 use Yii;
 use yii\db\Query;
 
@@ -42,11 +43,27 @@ class CategoriesController extends BaseController
         $symbol=isset($params['symbol'])?$params['symbol']:"";
         $type=isset($params['type'])?$params['type']:"";
         $models = Category::find()
-//            ->select(['category_id', 'name', 'category_pid','sort','data','thumb'])
             ->andWhere(['symbol' => $symbol])
             ->orderBy('sort asc,category_id asc')
-//            ->asArray()
             ->all();
+
+        //如果查询 微信导航
+        if($symbol == 'navigation_link'){
+            $instance_info = Instance::find()->where(['sid'=>Helper::getSid()])->one();
+            $level = json_decode($instance_info['level'],true);
+            if ($level != ''&& $level['name'] == 2){       //企业官网版
+                //如果是企业官网型    导航的分类只显示  首页和微页面
+                $count = count($models);
+                $navigation_link_list = [];
+                for($m=0;$m<$count;$m++){
+                    if($models[$m]['name'] == "首页" || $models[$m]['name'] == "微页面" ){
+                        $navigation_link_list[] = $models[$m];
+                    }
+                }
+                $models = $navigation_link_list;
+            }
+        }
+
         if(!empty($models)){
             if(empty($type)){
                 $models=yii\helpers\ArrayHelper::toArray($models);

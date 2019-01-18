@@ -10,6 +10,7 @@ namespace baiyou\backend\controllers;
 use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\CreateQueryHelper;
 use baiyou\common\components\Helper;
+use baiyou\common\models\Instance;
 use function DeepCopy\deep_copy;
 use Prophecy\Doubler\ClassPatch\HhvmExceptionPatch;
 use yii;
@@ -33,36 +34,49 @@ class AuthoritiesController extends BaseController
         unset($actions['delete']);
         return $actions;
     }
-    /**
-     * 角色列表
-     * @return array
-     * @author nwh@caiyoudata.com
-     * @time 2018/7/18 13:57
-     */
     public function actionIndex(){
+        $instance_id = Helper::getSid();
 
         $query = CreateQueryHelper::createQuery('baiyou\backend\models\AuthItem');
         $provider = new ActiveDataProvider([
             'query' => $query->andFilterWhere(['=','type',1])
-                ->andFilterWhere(['!=','name','root']),
+                ->andFilterWhere(['!=','name','root'])
+                ->orderby('sid asc'),
             'pagination' => [
                 'pageSize' => 1000
             ],
         ]);
 
-        $data = ['list' => $provider->getModels(),'pagination'=>['total' => $provider->getTotalCount()]];
+        // 筛选店铺版本对应的角色列表
+        $instance_info = Instance::find()->where(['sid'=>$instance_id])->one();
+        $level = json_decode($instance_info['level'],true);
+        if ($level == '' || $level['id'] == 0 || $level['name'] == 4){       //试用版和电商旗舰版
+            $level['name'] = 4;
+        }
+        $name = $level['name'];          //1 2 3 4
+        $auth_item = $provider->getModels();
+        $count = count($auth_item);
+        $unset_auth_item = [];
+        $unset_m = [];
+        for($m=0;$m<$count;$m++){
+            if($auth_item[$m]['sid'] == 0){
+                $auth_item[$m]['data'] = json_decode($auth_item[$m]['data'],true);
+                $version_type = $auth_item[$m]['data']['version_type'];
+                if($version_type !=$name){
+                    $unset_auth_item[] = [$m=>$auth_item[$m]];
+                    $unset_m[] = $m;
+                }
+            }
+        }
+        for($um=0;$um<count($unset_m);$um++){
+            unset($auth_item[$unset_m[$um]]);
+        }
+        $auth_item = array_values($auth_item);
+
+
+        $data = ['list' => $auth_item,'pagination'=>['total' => $provider->getTotalCount()]];
         return  ['message' => '获取角色列表成功','code' => 1,'data' => $data];
 
-//        //数据
-//        $roles_system=AuthItem::find()->select(['name','title'])
-//            ->where(['sid'=>0])->andWhere(['type'=>1])->andwhere(['!=','name','root'])->all();
-//        $roles_custom=AuthItem::find()->select(['name','title'])
-//            ->andWhere(['type'=>1])->andwhere(['!=','name','root'])->all();
-//        $roles = array_merge($roles_system,$roles_custom);
-        //总条数
-//        $total=count($roles);
-//        $data=["list"=>$roles,'pagination'=>['total' => $total]];
-//        return ["code"=>1, "message"=>"获取角色列表成功！", "data"=>$data];
     }
 
     /**
