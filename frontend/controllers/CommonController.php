@@ -65,11 +65,10 @@ class CommonController extends BaseController
         $sid = Helper::getSid();
 
         // 小程序分享码
-        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/goods_detail","pId=".$customer_id);
+        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/home/home","pId=".$customer_id);
         $qr_code_name = $sid.'_'.$customer_id.'_'.'qr_code.jpg';
         file_put_contents($qr_code_name, $qr);
-
-
+        
         // 连接图片服务器
         $ftp_server = Yii::$app->params['img_server']; //要连接的服务器域名
         $conn=ftp_connect($ftp_server['domain']); //连接FTP服务器
@@ -81,7 +80,7 @@ class CommonController extends BaseController
         ftp_put($conn,'avatars/'.$qr_code_name,$qr_code_name,FTP_BINARY);
         unlink($qr_code_name); // 删除应用服务器上的图片
 
-        if(empty($customer->avatar)){
+        if(!empty($customer->avatar)){
             // 微信头像
             $img = file_get_contents($customer->avatar);
             $wx_avatar_name = $sid.'_'.$customer_id.'_'.'wx_avatar.jpg';
