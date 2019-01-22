@@ -232,5 +232,17 @@ class BaseInitController
                 \Yii::error(json_encode($customer_center_config->errors,JSON_UNESCAPED_UNICODE),'初始化,用户中心添加出错');
             }
         }
+
+        //8 自动处理超时未处理的退款申请 默认关闭状态
+        $automatically_overtime_refunds=Config::find()->where(['symbol'=>'auto_handle_refund','sid'=>Helper::getSid()])->one();
+        if(empty($automatically_overtime_refunds)){
+            $customer_center_config=new Config();
+            $customer_center_config->symbol = 'auto_handle_refund';
+            $customer_center_config->encode = 3;
+            $customer_center_config->content='0';//0不自动处理,1自动处理
+            if(!$customer_center_config->save()){
+                \Yii::error(json_encode($customer_center_config->errors,JSON_UNESCAPED_UNICODE),'初始化,自动处理退款申请超时配置 出错');
+            }
+        }
     }
 }

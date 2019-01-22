@@ -65,7 +65,7 @@ class CommonController extends BaseController
         $sid = Helper::getSid();
 
         // 小程序分享码
-        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/home/home","pId=".$customer_id);
+        $qr = Wechat::getWechatQrCodeUnlimited($sid,"pages/home/home","pId=".$customer_id.'&sid'.$sid);
         $qr_code_name = $sid.'_'.$customer_id.'_'.'qr_code.jpg';
         file_put_contents($qr_code_name, $qr);
         
@@ -102,8 +102,8 @@ class CommonController extends BaseController
         if (!empty($configs)){
             $content  = json_decode($configs->content,true);
             $data = array_merge($data,[
-                'share_title' => $content['title'],
-                'share_image_url' => $content['imageUrl']
+                'share_title' => isset($content['title'])?$content['title']:'',
+                'share_image_url' => isset($content['imageUrl'])?$content['imageUrl']:''
             ]);
         }
         if ($qr !== ''){
