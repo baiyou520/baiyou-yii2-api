@@ -92,9 +92,10 @@ class CommonController extends BaseController
             $wx_avatar_name='';
         }
          $data = [
-            'fingerprint' => 'https://'.Yii::$app->params['img_server']['domain'].'/assets/fingerprint.png',
-            'qr_code' => 'https://'.Yii::$app->params['img_server']['domain'].'/avatars/'.$qr_code_name,
-            'wx_avatar' => empty($wx_avatar_name)?'':'https://'.Yii::$app->params['img_server']['domain'].'/avatars/'.$wx_avatar_name,
+             'fingerprint' => 'https://'.Yii::$app->params['img_server']['domain'].'/assets/fingerprint.png',
+             'qr_code' => 'https://'.Yii::$app->params['img_server']['domain'].'/avatars/'.$qr_code_name,
+             'wx_avatar' => empty($wx_avatar_name)?'':'https://'.Yii::$app->params['img_server']['domain'].'/avatars/'.$wx_avatar_name,
+             'nickname'=>$customer['nickname']
         ];
 
         $configs=Config::findOne(['symbol'=>'dis_share_setting']);

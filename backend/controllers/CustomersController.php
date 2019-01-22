@@ -68,13 +68,15 @@ class CustomersController extends BaseController
             }
         }
         $model=new ActiveDataProvider([
-            'query'=>Customer::find()
-                ->andFilterWhere(['like','nickname',$name])
-                ->andFilterWhere(['>=','created_at',$c_begin])
-                ->andFilterWhere(['<=','created_at',$c_end])
+            'query'=>(new Query())->from('customer_ext ce')
+                ->innerJoin('customer c','ce.customer_id=c.id')
+                ->select(['c.*','ce.*'])
+                ->where(['ce.sid'=>Helper::getSid()])
+                ->andFilterWhere(['like','c.nickname',$name])
+                ->andFilterWhere(['>=','ce.created_at',$c_begin])
+                ->andFilterWhere(['<=','ce.created_at',$c_end])
                 ->andFilterWhere(['in','id',$buy])
-                ->asArray()
-                ->orderBy('id desc')
+                ->orderBy('c.id desc')
         ]);
         $list=$model->getModels();
         foreach($list as &$value){
