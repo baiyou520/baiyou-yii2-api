@@ -13,6 +13,7 @@ use baiyou\common\components\BaseErrorCode;
 use baiyou\common\components\Helper;
 use baiyou\common\components\Wechat;
 use baiyou\common\models\Customer;
+use common\models\MyMemberCard;
 use CURLFile;
 use Yii;
 use yii\db\Query;
@@ -67,6 +68,13 @@ class CustomersController extends BaseController
                 $buy=$buy_ids;
             }
         }
+        $member_card_id=isset($params['member_card_id'])?$params['member_card_id']:'';//会员卡拥有查询
+        //暂时不能联表查询
+        $card_c_ids=[];
+        if(!empty($member_card_id)){
+            $card_members=MyMemberCard::find()->select(['user_id'])->andWhere(['member_card_id'=>$member_card_id])->andWhere(['<>','status',0])->all();
+            $card_c_ids=array_unique(array_column($card_members,'user_id'));
+        }
         $model=new ActiveDataProvider([
             'query'=>(new Query())->from('customer_ext ce')
                 ->innerJoin('customer c','ce.customer_id=c.id')
@@ -75,7 +83,8 @@ class CustomersController extends BaseController
                 ->andFilterWhere(['like','c.nickname',$name])
                 ->andFilterWhere(['>=','ce.created_at',$c_begin])
                 ->andFilterWhere(['<=','ce.created_at',$c_end])
-                ->andFilterWhere(['in','id',$buy])
+                ->andFilterWhere(['in','id',$buy]) //购买过的
+                ->andFilterWhere(['in','id',$card_c_ids])//有会员卡的
                 ->orderBy('c.id desc')
         ]);
         $list=$model->getModels();

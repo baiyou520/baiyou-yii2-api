@@ -389,6 +389,9 @@ class AuthController extends ActiveController
             return ['code'=>BaseErrorCode::$FAILED,'message'=>'请提交密码'];
 
         }
+        if(empty(Helper::getSid())){
+            return ['message'=>'店铺错误','code'=>BaseErrorCode::$FAILED,'data'=>'cookie里没有sid'];
+        }
         //格式验证
         $phone="/^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$/";
         if(!preg_match($phone,$params['phone'])){

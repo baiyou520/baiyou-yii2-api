@@ -33,7 +33,7 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+        return static::find()->where(['id' => $id, 'status' => self::STATUS_ACTIVE])->one();
     }
 
 
@@ -162,8 +162,6 @@ class JwtModel extends \baiyou\common\components\ActiveRecord implements Identit
         if (self::tableName() == '{{%user}}'){ // 中台SSO，不需要access_token_expired_at
             $user = static::find()->where([
                 '=', 'id', $id
-            ])->andWhere([
-                '=', 'sid',  Helper::getSid()
             ])
             ->andWhere([
                 '=', 'status',  self::STATUS_ACTIVE
