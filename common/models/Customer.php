@@ -2,7 +2,9 @@
 
 namespace baiyou\common\models;
 
-
+use yii\behaviors\AttributeBehavior;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 /**
  * This is the model class for table "customer".
  *
@@ -28,6 +30,72 @@ namespace baiyou\common\models;
  */
 class Customer extends JwtModel
 {
+    public function behaviors()
+    {
+        return [
+            [
+                /**
+                 * TimestampBehavior：
+                 * 创建的时候，默认插入当前时间戳给created_at和updated_at字段
+                 * 更新的时候，默认更新当前时间戳给updated_at字段
+                 */
+                'class'              => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value'              => time(),
+            ],
+            [
+                /**
+                 * AttributeBehavior：
+                 * 由于返回乘以了1000，修改的时候又不会复写crated_at，而前端又可能会传过来,故在此再除以1000
+                 */
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'created_at',
+                ],
+                'value' => function ($event) {
+                    if (strlen($this->created_at) === 13)
+                        return $this->created_at / 1000;
+                    else
+                        return $this->created_at;
+                },
+            ],
+            [
+                /**
+                 * AttributeBehavior：
+                 * 由于前端框架处理10位时间戳比较麻烦，故在此乘以1000
+                 */
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_AFTER_FIND => 'created_at',
+                ],
+                'value' => function ($event) {
+                    return $this->created_at * 1000;
+                },
+            ],
+            [
+                /**
+                 * AttributeBehavior：
+                 * 由于前端框架处理10位时间戳比较麻烦，故在此乘以1000
+                 */
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_AFTER_FIND => 'updated_at',
+                ],
+                'value' => function ($event) {
+                    return $this->updated_at * 1000;
+                },
+            ],
+            [
+                /**
+                 * ActionLogBehavior：
+                 * 操作日志
+                 */
+                'class' => 'baiyou\common\components\ActionLogBehavior',
+            ],
+
+        ];
+    }
     /**
      * {@inheritdoc}
      */
