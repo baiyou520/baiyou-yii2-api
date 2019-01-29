@@ -78,7 +78,8 @@ class CustomersController extends BaseController
         $model=new ActiveDataProvider([
             'query'=>(new Query())->from('customer_ext ce')
                 ->innerJoin('customer c','ce.customer_id=c.id')
-                ->select(['c.*','ce.*'])
+                ->leftJoin('customer c2','c2.id = ce.parent_id')
+                ->select(['c.*','ce.*','c2.name parent_name'])
                 ->where(['ce.sid'=>Helper::getSid()])
                 ->andFilterWhere(['like','c.nickname',$name])
                 ->andFilterWhere(['>=','ce.created_at',$c_begin])
