@@ -87,7 +87,11 @@ class User  extends JwtModel
         unset($fields['sid']);
         $fields_from_other_tables = [
             'role' => function($model) {
-                return $model->authAssignments[0]->item_name;
+                if(!empty($model->authAssignments)){
+                    return $model->authAssignments[0]->item_name;
+                }else{
+                    return '';
+                }
             }
         ];
         return array_merge($fields,$fields_from_other_tables);
