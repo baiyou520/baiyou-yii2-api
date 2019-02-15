@@ -121,7 +121,6 @@ class UsersController extends BaseController
         $user_id = $results['data']['id']; //百优总后台返回的用户id
         $user =  User::find()->andWhere(['id'=>$user_id])
                     ->andWhere(['in','status',[0,10]])
-                    ->andWhere(['username'=>$data['username']])
                     ->one();
         if ($user)
             return ["code"=>BaseErrorCode::$OBJECT_ALREADY_EXIST, "message"=>'该用户已经是员工了！'];
