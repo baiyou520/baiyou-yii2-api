@@ -77,15 +77,15 @@ class CustomersController extends BaseController
         }
         $model=new ActiveDataProvider([
             'query'=>(new Query())->from('customer_ext ce')
-                ->innerJoin('customer c','ce.customer_id=c.id')
-                ->leftJoin('customer c2','c2.id = ce.parent_id')
+                ->innerJoin('customer c','ce.customer_id=c.id')//用户信息
+                ->leftJoin('customer c2','c2.id = ce.parent_id')//用户推荐人信息
                 ->select(['c.*','ce.*','c2.name parent_name'])
                 ->where(['ce.sid'=>Helper::getSid()])
                 ->andFilterWhere(['like','c.nickname',$name])
                 ->andFilterWhere(['>=','ce.created_at',$c_begin])
                 ->andFilterWhere(['<=','ce.created_at',$c_end])
-                ->andFilterWhere(['in','id',$buy]) //购买过的
-                ->andFilterWhere(['in','id',$card_c_ids])//有会员卡的
+                ->andFilterWhere(['in','c.id',$buy]) //购买过的
+                ->andFilterWhere(['in','c.id',$card_c_ids])//有会员卡的
                 ->orderBy('c.id desc')
         ]);
         $list=$model->getModels();
