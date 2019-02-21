@@ -25,9 +25,14 @@ use Yii;
  * @property string $ssl_cert_path cert证书地址
  * @property string $ssl_key_path key证书地址
  * @property string $merchant_id   子商户id
+ * @property int $logo_pic   子商户logo
+ * @property string $logo_url   子商户logourl 提交到微信
  * @property int $protocol_pic 授权函图片ID
+ * @property string $protocol 授权函图片ID 提交到微信
  * @property int $agreement_pic 营业执照或个体工商户营业执照彩照或扫描件
+ * @property string $agreement_media_id 营业执照或个体工商户营业执照彩照或扫描件 提交到微信
  * @property int $operator_pic 营业执照内登记的经营者身份证彩照或扫描件
+ * @property string $operator_media_id 营业执照内登记的经营者身份证彩照或扫描件 提交到微信
  * @property int $status 0:试用，1:正常，-1:过期，-2:删除
  * @property int $created_at 时间戳，创建时间
  * @property int $updated_at 时间戳，修改时间
@@ -51,8 +56,10 @@ class Instance extends \yii\db\ActiveRecord
     {
         return [
             [['sid', 'user_id', 'expired_at'], 'required'],
-            [['sid', 'user_id', 'certificate_flag', 'is_bind', 'expired_at', 'status','protocol_pic','operator_pic', 'agreement_pic',  'created_at', 'updated_at'], 'integer'],
+            [['sid', 'user_id', 'certificate_flag', 'is_bind', 'expired_at', 'status','logo_pic','protocol_pic','operator_pic', 'agreement_pic',  'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 50],
+            [['logo_url'], 'string', 'max' => 138],
+            [['protocol','agreement_media_id','operator_media_id'], 'string', 'max' => 36],
             [['merchant_id'], 'string', 'max' => 25],
             [['thumb'], 'string', 'max' => 255],
             [['level'], 'string', 'max' => 255],
@@ -88,9 +95,14 @@ class Instance extends \yii\db\ActiveRecord
             'ssl_cert_path' => 'cert证书地址',
             'ssl_key_path' => 'key证书地址',
             'merchant_id' => '子商户id',
+            'logo_pic' => '子商户logo',
+            'logo_url' => '子商户logo_url 提交到微信',
             'protocol_pic' => '授权函图片ID',
+            'protocol' => '授权函 提交到微信',
             'agreement_pic' => '营业执照或个体工商户营业执照彩照或扫描件',
+            'agreement_media_id' => '营业执照或个体工商户营业执照彩照或扫描件 提交到微信',
             'operator_pic' => '营业执照内登记的经营者身份证彩照或扫描件',
+            'operator_media_id' => '营业执照内登记的经营者身份证彩照或扫描件 提交到微信',
             'status' => '0:试用，1:正常，-1:过期，-2:删除',
             'created_at' => '时间戳，创建时间',
             'updated_at' => '时间戳，修改时间',
