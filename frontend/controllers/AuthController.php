@@ -251,6 +251,11 @@ class AuthController extends ActiveController
      */
     public function actionReg(){
         $params=Yii::$app->request->post();
+        $sid=Helper::getSid();
+        if($sid<=0){
+            Yii::error('参数'.json_encode($params,JSON_UNESCAPED_UNICODE),'H5注册时,sid错误,sid:'.$sid);
+            return ['message'=>'店铺不存在','code'=>BaseErrorCode::$FAILED];
+        }
         $check=$this->check($params,2);
         if($check['code']!=1){
             return $check;
