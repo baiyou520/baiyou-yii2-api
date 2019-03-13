@@ -648,17 +648,28 @@ class ConfigsController extends BaseController
         $data=Yii::$app->request->post();
         $config=Config::findOne(["symbol" => 'template_message']);
         $tpls = json_decode($config->content,true);
+        $type=isset($data['type'])?$data['type']:1;//1激活或刷新,0关闭
 
         foreach ($tpls as &$tpl) {
             if ($tpl['at_id'] === $data['at_id']){
-                $results = Wechat::addTemplateMessage($sid,$data['at_id'], json_decode($tpl['keywords']));
-                if($results['errcode'] === 0){
-                    $tpl['tpl_id'] = $results['template_id'];
+                if($type==1) {
+                    $results = Wechat::addTemplateMessage($sid, $data['at_id'], json_decode($tpl['keywords']));
+                    if ($results['errcode'] === 0) {
+                        $tpl['tpl_id'] = $results['template_id'];
+                        $config->content = json_encode($tpls, JSON_UNESCAPED_UNICODE);
+                        $config->save();
+                        return ["code" => 1, "message" => "激活模板消息成功", 'data' => $results];
+                    } else {
+                        return ["code" => BaseErrorCode::$PARAMS_ERROR, "message" => "激活模板消息失败"];
+                    }
+                }else{
+                    $tpl['tpl_id'] = '';
                     $config->content = json_encode($tpls,JSON_UNESCAPED_UNICODE);
-                    $config->save();
-                    return ["code"=>1,"message"=>"激活模板消息成功",'data' => $results];
-                } else {
-                    return ["code"=>BaseErrorCode::$PARAMS_ERROR,"message"=>"激活模板消息失败"];
+                    if(!$config->save()){
+                        return ["code"=>1,"message"=>"模板消息关闭失败",'data'=>$config->errors];
+                    }else{
+                        return ["code"=>1,"message"=>"模板消息关闭成功"];
+                    }
                 }
             }
         }
