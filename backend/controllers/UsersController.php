@@ -222,7 +222,7 @@ class UsersController extends BaseController
                 }
 
             }
-            return ["message"=>"修改用户信息成功","code"=>1];
+            return ["message"=>"操作成功","code"=>1];
         }
         return ["message"=>"参数错误","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$user->errors];
     }
