@@ -59,7 +59,7 @@ class UsersController extends BaseController
             'query' =>
                 $query->select(['id','username','phone','user.name','user.created_at','user.updated_at','user.status','aa.item_name as role','ai.title as role_alias'])
                     ->from('user')
-                    ->leftJoin("auth_assignment aa","aa.user_id=user.id")
+                    ->leftJoin("auth_assignment aa","aa.user_id=user.id and aa.sid=user.sid")
                     ->leftJoin('auth_item ai','ai.name=aa.item_name')
                     ->andWhere(['=','aa.sid',Helper::getSid()]) ////这里由于没有设计外键，必须手动加sid
                     ->andFilterWhere(['like','user.name',$keyword])
