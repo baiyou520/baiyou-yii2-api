@@ -69,7 +69,7 @@ class Helper
             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                     'Content-Type: application/json; charset=utf-8',
-                    'Content-Length: ' . strlen(json_encode($data))
+                    'Content-Length: ' . strlen(json_encode($data,JSON_UNESCAPED_UNICODE))
                 )
             );
         }

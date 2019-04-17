@@ -193,7 +193,7 @@ class AuthController extends ActiveController
                     InitController::initData($customer,true); // 处理其他应用特有的业务逻辑，比如获得新人优惠券
                 }
             }
-            Yii::$app->user->id;
+            $customer=Customer::findOne($customer->id);
             $customer->generateAccessTokenAfterUpdatingClientInfo(true);
             $result['uid'] = $customer->id;
             $result['is_first_register']=$is_first_register;
@@ -375,7 +375,7 @@ class AuthController extends ActiveController
         if($res['error']!=0){
             return ['message'=>'验证码发送失败','code'=>BaseErrorCode::$FAILED,'data'=>$code];
         }
-        return ['message'=>'验证码发送成功','code'=>BaseErrorCode::$FAILED];
+        return ['message'=>'验证码发送成功','code'=>BaseErrorCode::$SUCCESS];
     }
     /**
      * 登录/注册验证
