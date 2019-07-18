@@ -406,7 +406,19 @@ class ConfigsController extends BaseController
             "item_list"=> $formated_data,
         ];
 
-        $results = Helper::https_request($url,$data);
+        $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
+        if(empty($submit_audit_data_config)){
+            $submit_audit_data_config = new Config();
+            $submit_audit_data_config->symbol = 'submit_audit_data';
+            $submit_audit_data_config->content = json_encode($data,JSON_UNESCAPED_UNICODE);
+            $submit_audit_data_config->encode = 2;
+            if(!$submit_audit_data_config->save()){
+                return ["message"=>"审核提交信息保存失败，但保存提交信息失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$submit_audit_data_config->errors];
+            };
+        }
+
+//        Yii::error(json_encode($data,JSON_UNESCAPED_UNICODE),'actionSubm2itAudit');
+        $results = Helper::https_request($url);
         if ($results['code'] == 1){
 
             $url = Yii::$app->params['admin_url'].'/v1/cross/getTemplateInfo/'.$sid;
@@ -420,17 +432,6 @@ class ConfigsController extends BaseController
             if(!$model->save()){
                 return ["message"=>"审核已经提交，但更新提交信息配置文件失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$model->errors];
             };
-
-            $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
-            if(empty($submit_audit_data_config)){
-                $submit_audit_data_config = new Config();
-                $submit_audit_data_config->symbol = 'submit_audit_data';
-                $submit_audit_data_config->content = json_encode($data,JSON_UNESCAPED_UNICODE);
-                $submit_audit_data_config->encode = 2;
-                if(!$submit_audit_data_config->save()){
-                    return ["message"=>"审核已经提交，但保存提交信息失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$submit_audit_data_config->errors];
-                };
-            }
             return ["code"=>1,"message"=>"提交审核成功","data"=>$results];
         }else{
             return ["code"=>BaseErrorCode::$FAILED,"message"=>"失败","data"=>$results];
@@ -446,13 +447,13 @@ class ConfigsController extends BaseController
     public function actionSubmitUpgrade(){
         $sid = Helper::getSid();
         // 提前之前的提交数据
-        $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
-        $formated_data =json_decode($submit_audit_data_config->content,true)['item_list'];
+//        $submit_audit_data_config = Config::findOne(['symbol' => 'submit_audit_data']);
+//        $formated_data =json_decode($submit_audit_data_config->content,true)['item_list'];
         $url = Yii::$app->params['admin_url'].'/v1/cross/submitAudit/'.$sid;
-        $data=[
-            "item_list"=> $formated_data,
-        ];
-        $results = Helper::https_request($url,$data);
+//        $data=[
+//            "item_list"=> $formated_data,
+//        ];
+        $results = Helper::https_request($url);
         if ($results['code'] == 1){
 
             $url = Yii::$app->params['admin_url'].'/v1/cross/getTemplateInfo/'.$sid;
