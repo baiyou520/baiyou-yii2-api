@@ -107,7 +107,7 @@ class CategoriesController extends BaseController
         //补充sid
         $params['sid']=Helper::getSid();
         $category->load($params, '');
-        if ($category->validate($params) && $category->save()) {
+        if ($category->save()) {
             return ["message"=>"添加成功","code"=>1];
         }else{
             return ["message"=>"添加失败","code"=>BaseErrorCode::$PARAMS_ERROR,"data"=>$category->errors];
