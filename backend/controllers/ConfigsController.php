@@ -415,6 +415,11 @@ class ConfigsController extends BaseController
             if(!$submit_audit_data_config->save()){
                 return ["message"=>"审核提交信息保存失败，但保存提交信息失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$submit_audit_data_config->errors];
             };
+        }else{
+            $submit_audit_data_config->content = json_encode($data,JSON_UNESCAPED_UNICODE);
+            if(!$submit_audit_data_config->save()){
+                return ["message"=>"更新审核提交信息保存失败，但保存提交信息失败","code"=>BaseErrorCode::$SAVE_DB_ERROR,"data"=>$submit_audit_data_config->errors];
+            };
         }
 
 //        Yii::error(json_encode($data,JSON_UNESCAPED_UNICODE),'actionSubm2itAudit');
