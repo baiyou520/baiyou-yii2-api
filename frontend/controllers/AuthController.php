@@ -144,7 +144,7 @@ class AuthController extends ActiveController
      */
     public function actionCheckPhone(){
         $params=Yii::$app->request->post();
-        $phone_preg="/^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$/";
+        $phone_preg="/^1[3456789]\d{9}$/";
         if(!isset($params['phone'])||empty($params['phone'])){
             return ['message'=>'请提交手机号','code'=>BaseErrorCode::$FAILED];
         }elseif(!preg_match($phone_preg,$params['phone'])){
@@ -363,7 +363,7 @@ class AuthController extends ActiveController
             return ['message'=>'手机号未提交','code'=>BaseErrorCode::$FAILED];
         }
         //格式验证
-        $phone="/^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$/";
+        $phone="/^1[3456789]\d{9}$/";
         if(!preg_match($phone,$params['phone'])){
             return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码不合法'];
         }
@@ -398,7 +398,7 @@ class AuthController extends ActiveController
             return ['message'=>'店铺错误','code'=>BaseErrorCode::$FAILED,'data'=>'cookie里没有sid'];
         }
         //格式验证
-        $phone="/^1(3[0-9]|4[579]|5[0-35-9]|7[0-9]|8[0-9])\d{8}$/";
+        $phone="/^1[3456789]\d{9}$/";
         if(!preg_match($phone,$params['phone'])){
             return ['code'=>BaseErrorCode::$FAILED,'message'=>'手机号码不合法'];
         }
