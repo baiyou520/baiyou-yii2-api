@@ -66,7 +66,7 @@ class Helper
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
         if (!empty($data)){
             curl_setopt($curl, CURLOPT_POST, 1);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data,JSON_UNESCAPED_UNICODE));
             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                     'Content-Type: application/json; charset=utf-8',
                     'Content-Length: ' . strlen(json_encode($data,JSON_UNESCAPED_UNICODE))
